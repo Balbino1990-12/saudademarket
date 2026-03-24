@@ -1,0 +1,25 @@
+{% comment %} Product page template {% endcomment %}
+
+<div class="product-page">
+  <div class="product-image">
+    {% if product.featured_image %}
+      <img src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}" />
+    {% endif %}
+  </div>
+
+  <div class="product-content">
+    <h1>{{ product.title }}</h1>
+    <p class="product-price">{{ product.price | money }}</p>
+    <p class="product-description">{{ product.description }}</p>
+
+    {% if product.available %}
+      <form method="post" action="/cart/add">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" />
+        <input type="number" name="quantity" value="1" min="1" />
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </form>
+    {% else %}
+      <p class="out-of-stock">Out of Stock</p>
+    {% endif %}
+  </div>
+</div>

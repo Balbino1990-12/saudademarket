@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login — PortugalStore</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    /* Language Selector */
+    .lang-selector {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      color: #1f2937;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-width: 110px;
+      justify-content: center;
+    }
+
+    .lang-btn:hover {
+      background: white;
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .lang-btn::after {
+      content: '▼';
+      font-size: 9px;
+      opacity: 0.5;
+      transition: transform 0.3s ease;
+      margin-left: 4px;
+    }
+
+    .lang-btn.active::after {
+      transform: rotate(180deg);
+    }
+
+    .lang-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: white;
+      border-radius: 10px;
+      border: 1.5px solid #e5e7eb;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      min-width: 150px;
+      overflow: hidden;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    .lang-dropdown.active {
+      display: block;
+    }
+
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+      font-weight: 500;
+      color: #374151;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .lang-option:hover {
+      background: #f9fafb;
+      color: #1e40af;
+    }
+
+    .lang-option.active {
+      background: #dbeafe;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .lang-option:last-child {
+      border-bottom: none;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+      padding: 40px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+    }
+
+    .logo-img {
+      max-width: 80px;
+      max-height: 80px;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    .card-title {
+      margin: 24px 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1f2937;
+      text-align: center;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .card-body {
+      padding: 32px;
+    }
+
+    /* Message */
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1f2937;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #1e40af;
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    /* Button */
+    .btn-submit {
+      width: 100%;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Footer */
+    .card-footer {
+      padding: 20px 32px;
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .card-footer a {
+      color: #1e40af;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .card-footer a:hover {
+      color: #1e3a8a;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Selector -->
+  <div class="lang-selector">
+    <button class="lang-btn" id="langBtn">English</button>
+    <div class="lang-dropdown" id="langDropdown">
+      <div class="lang-option active" data-lang="en">English</div>
+      <div class="lang-option" data-lang="fr">Français</div>
+      <div class="lang-option" data-lang="pt">Português</div>
+    </div>
+  </div>
+
+  <!-- Login Container -->
+  <div class="container">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header">
+        <img src="/images/logo.jpg" alt="PortugalStore Logo" class="logo-img">
+      </div>
+
+      <h1 class="card-title">PortugalStore</h1>
+      <p class="card-subtitle" data-i18n="user.userPortal">User Portal</p>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="message" id="message"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="username" data-i18n="user.loginUsername">Username</label>
+            <input
+              class="form-input"
+              type="text"
+              id="username"
+              placeholder="Username"
+              required
+              autofocus
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password" data-i18n="user.loginPassword">Password</label>
+            <input
+              class="form-input"
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            >
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn" data-i18n="user.signIn">Sign In</button>
+        </form>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <p data-i18n="user.noAccount">Don't have an account? <a href="#" onclick="alert('Registration page coming soon!')">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/i18n.js"></script>
+  <script>
+    if (localStorage.getItem('userToken')) {
+      window.location.href = '/user/dashboard.html';
+    }
+
+    // Language Selector
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    const langOptions = document.querySelectorAll('.lang-option');
+
+    // Set initial language button text and active state
+    const savedLang = localStorage.getItem('language') || 'en';
+    const langMap = { en: 'English', fr: 'Français', pt: 'Português' };
+    langBtn.textContent = langMap[savedLang] || 'English';
+    
+    // Mark the saved language as active
+    langOptions.forEach(option => {
+      if (option.getAttribute('data-lang') === savedLang) {
+        option.classList.add('active');
+      } else {
+        option.classList.remove('active');
+      }
+    });
+
+    langBtn.addEventListener('click', (e) => {
+      langDropdown.classList.toggle('active');
+      langBtn.classList.toggle('active');
+      e.stopPropagation();
+    });
+
+    langOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const selectedLang = option.getAttribute('data-lang');
+        
+        // Update UI
+        langOptions.forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        langBtn.textContent = option.textContent;
+        langDropdown.classList.remove('active');
+        langBtn.classList.remove('active');
+        
+        // Store language preference
+        localStorage.setItem('language', selectedLang);
+        
+        // Trigger translation if i18n is available
+        if (window.setLanguage) {
+          window.setLanguage(selectedLang);
+        }
+      });
+    });
+
+    document.addEventListener('click', () => {
+      langDropdown.classList.remove('active');
+      langBtn.classList.remove('active');
+    });
+
+    // Login Handler
+    async function handleLogin(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn.textContent;
+
+      messageEl.className = 'message';
+      messageEl.textContent = '';
+
+      // Validate inputs
+      if (!username || !password) {
+        messageEl.className = 'message error show';
+        messageEl.textContent = 'Username and password are required';
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing In...';
+
+        const resp = await fetch('/api/user/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        console.log('User login response status:', resp.status);
+        
+        if (!resp.ok) {
+          let errorMsg = 'Login failed';
+          try {
+            const err = await resp.json();
+            errorMsg = err.error || err.message || 'Login failed';
+          } catch (e) {
+            errorMsg = `Login failed (Status: ${resp.status})`;
+          }
+          
+          messageEl.className = 'message error show';
+          messageEl.textContent = errorMsg;
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          console.error('User login error:', errorMsg);
+          return;
+        }
+
+        const data = await resp.json();
+        console.log('User login response data:', data);
+        
+        const token = data.token || data.accessToken;
+
+        if (!token) {
+          messageEl.className = 'message error show';
+          messageEl.textContent = 'Login failed: no token returned';
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          console.error('No token in response');
+          return;
+        }
+
+        // Store token and user info
+        localStorage.setItem('userToken', token);
+        if (data.user) {
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+        }
+        
+        messageEl.className = 'message success show';
+        messageEl.textContent = 'Login successful! Redirecting...';
+        
+        console.log('User token stored, redirecting to user dashboard');
+
+        setTimeout(() => {
+          window.location.href = '/user/dashboard.html';
+        }, 1000);
+      } catch (e) {
+        messageEl.className = 'message error show';
+        messageEl.textContent = 'Connection error: ' + e.message;
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        console.error('User login exception:', e);
+      }
+    }
+  </script>
+</body>
+</html>

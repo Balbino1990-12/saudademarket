@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — PortugalStore</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    /* Language Selector */
+    .lang-selector {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 13px;
+      color: #1f2937;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-width: 110px;
+      justify-content: center;
+    }
+
+    .lang-btn:hover {
+      background: white;
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .lang-btn::after {
+      content: '▼';
+      font-size: 9px;
+      opacity: 0.5;
+      transition: transform 0.3s ease;
+      margin-left: 4px;
+    }
+
+    .lang-btn.active::after {
+      transform: rotate(180deg);
+    }
+
+    .lang-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: white;
+      border-radius: 10px;
+      border: 1.5px solid #e5e7eb;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      min-width: 150px;
+      overflow: hidden;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    .lang-dropdown.active {
+      display: block;
+    }
+
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+      font-weight: 500;
+      font-size: 13px;
+      color: #1f2937;
+      transition: all 0.2s ease;
+    }
+
+    .lang-option:last-child {
+      border-bottom: none;
+    }
+
+    .lang-option:hover {
+      background: #f9fafb;
+      padding-left: 20px;
+      color: #667eea;
+    }
+
+    .lang-option.active {
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: center;
+      padding: 50px 24px 32px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #f0f1f4 100%);
+    }
+
+    .logo-img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+    }
+
+    .card-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .card-subtitle {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    /* Form */
+    .card-body {
+      padding: 32px 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      font-size: 12px;
+      color: #374151;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #f9fafb;
+      color: #1f2937;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #ef4444;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      padding: 14px 24px;
+      margin-top: 12px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-submit:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(239, 68, 68, 0.45);
+      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Message */
+    .message {
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 13px;
+      display: none;
+      border-left: 4px solid;
+      animation: slideDown 0.3s ease;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border-left-color: #dc3545;
+    }
+
+    .message.success {
+      background: #f0fdf4;
+      color: #166534;
+      border-left-color: #28a745;
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .lang-selector {
+        top: 16px;
+        right: 16px;
+      }
+
+      .lang-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 100px;
+      }
+
+      .lang-dropdown {
+        min-width: 140px;
+        right: -15px;
+      }
+
+      .lang-option {
+        padding: 10px 12px;
+        font-size: 12px;
+      }
+
+      .card-header {
+        padding: 35px 20px 28px;
+      }
+
+      .logo-img {
+        width: 85px;
+        height: 85px;
+      }
+
+      .card-title {
+        font-size: 24px;
+        margin-top: 12px;
+      }
+
+      .card-subtitle {
+        font-size: 12px;
+        margin-bottom: 20px;
+      }
+
+      .card-body {
+        padding: 24px 20px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-input {
+        padding: 11px 12px;
+        font-size: 15px;
+      }
+
+      .btn-submit {
+        padding: 11px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .card-title {
+        font-size: 22px;
+      }
+
+      .card-body {
+        padding: 20px 16px;
+      }
+
+      .form-input {
+        padding: 10px 12px;
+        font-size: 15px;
+      }
+
+      .btn-submit {
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Selector -->
+  <div class="lang-selector">
+    <button class="lang-btn" id="langBtn">English</button>
+    <div class="lang-dropdown" id="langDropdown">
+      <div class="lang-option active" data-lang="en">English</div>
+      <div class="lang-option" data-lang="fr">Français</div>
+      <div class="lang-option" data-lang="pt">Português</div>
+    </div>
+  </div>
+
+  <!-- Login Container -->
+  <div class="container">
+    <div class="card">
+      <!-- Card Header -->
+      <div class="card-header">
+        <img src="/images/logo.jpg" alt="PortugalStore Logo" class="logo-img">
+      </div>
+
+      <h1 class="card-title">PortugalStore</h1>
+      <p class="card-subtitle" data-i18n="admin.adminPortal">Admin Portal</p>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="message" id="message"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="username" data-i18n="admin.loginUsername">Username</label>
+            <input
+              class="form-input"
+              type="text"
+              id="username"
+              placeholder="Username"
+              required
+              autofocus
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password" data-i18n="admin.loginPassword">Password</label>
+            <input
+              class="form-input"
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            >
+          </div>
+
+          <button type="submit" class="btn-submit" id="submitBtn" data-i18n="admin.signIn">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin/i18n.js"></script>
+  <script>
+    if (localStorage.getItem('adminToken')) {
+      window.location.href = '/admin/products.html';
+    }
+
+    // Language Selector
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    const langOptions = document.querySelectorAll('.lang-option');
+
+    // Set initial language button text and active state
+    const savedLang = localStorage.getItem('language') || 'en';
+    const langMap = { en: 'English', fr: 'Français', pt: 'Português' };
+    langBtn.textContent = langMap[savedLang] || 'English';
+    
+    // Mark the saved language as active
+    langOptions.forEach(option => {
+      if (option.getAttribute('data-lang') === savedLang) {
+        option.classList.add('active');
+      } else {
+        option.classList.remove('active');
+      }
+    });
+
+    langBtn.addEventListener('click', (e) => {
+      langDropdown.classList.toggle('active');
+      langBtn.classList.toggle('active');
+      e.stopPropagation();
+    });
+
+    langOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const selectedLang = option.getAttribute('data-lang');
+        
+        // Update UI
+        langOptions.forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        langBtn.textContent = option.textContent;
+        langDropdown.classList.remove('active');
+        langBtn.classList.remove('active');
+        
+        // Store language preference
+        localStorage.setItem('language', selectedLang);
+        
+        // Trigger translation if i18n is available
+        if (window.setLanguage) {
+          window.setLanguage(selectedLang);
+        }
+      });
+    });
+
+    document.addEventListener('click', () => {
+      langDropdown.classList.remove('active');
+      langBtn.classList.remove('active');
+    });
+
+    // Login Handler
+    async function handleLogin(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn.textContent;
+
+      messageEl.className = 'message';
+      messageEl.textContent = '';
+
+      // Validate inputs
+      if (!username || !password) {
+        messageEl.className = 'message error show';
+        messageEl.textContent = 'Username and password are required';
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing In...';
+
+        const resp = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        console.log('Login response status:', resp.status);
+        
+        if (!resp.ok) {
+          let errorMsg = 'Login failed';
+          try {
+            const err = await resp.json();
+            errorMsg = err.error || err.message || 'Login failed';
+          } catch (e) {
+            errorMsg = `Login failed (Status: ${resp.status})`;
+          }
+          
+          messageEl.className = 'message error show';
+          messageEl.textContent = errorMsg;
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          console.error('Login error:', errorMsg);
+          return;
+        }
+
+        const data = await resp.json();
+        console.log('Login response data:', data);
+        
+        const token = data.token || data.accessToken;
+
+        if (!token) {
+          messageEl.className = 'message error show';
+          messageEl.textContent = 'Login failed: no token returned';
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          console.error('No token in response');
+          return;
+        }
+
+        localStorage.setItem('adminToken', token);
+        messageEl.className = 'message success show';
+        messageEl.textContent = 'Login successful! Redirecting...';
+        
+        console.log('Token stored, redirecting to /admin/products.html');
+
+        setTimeout(() => {
+          window.location.href = '/admin/products.html';
+        }, 1000);
+      } catch (e) {
+        messageEl.className = 'message error show';
+        messageEl.textContent = 'Connection error: ' + e.message;
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        console.error('Login exception:', e);
+      }
+    }
+  </script>
+</body>
+</html>

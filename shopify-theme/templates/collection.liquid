@@ -1,0 +1,72 @@
+{% comment %} Collection template - shows products in a collection with multilanguage support {% endcomment %}
+
+<div class="collection-wrapper">
+  <div class="collection-header" style="padding: 40px 36px; text-align: center; background: #f9f9f9; margin-bottom: 40px;">
+    <h1 style="font-size: 2.4rem; margin-bottom: 12px; color: #111;">{{ collection.title }}</h1>
+    {% if collection.description %}
+    <p style="font-size: 1.1rem; color: #666; max-width: 600px; margin: 0 auto;">{{ collection.description }}</p>
+    {% endif %}
+    <p style="margin-top: 16px; color: #999; font-size: 0.95rem;">{{ collection.products_count }} {% if collection.products_count == 1 %}product{% else %}products{% endif %}</p>
+  </div>
+
+  {% if collection.products.size > 0 %}
+    <div style="padding: 40px 36px;">
+      <div class="collection-products" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px;">
+        {% for product in collection.products %}
+          <div class="product-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;">
+            <a href="{{ product.url }}" style="text-decoration: none; color: inherit; display: block;">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | img_url: '400x400' }}" alt="{{ product.title }}" style="width: 100%; aspect-ratio: 1; object-fit: cover;" />
+              {% endif %}
+              <div style="padding: 16px;">
+                <h3 style="font-size: 1rem; margin: 0 0 8px 0; color: #111;">
+                  <i class="fa fa-tag" style="margin-right:6px;color:var(--accent);"></i>{{ product.title }}
+                </h3>
+                <p style="font-size: 1.2rem; color: #b71f1f; font-weight: 600; margin: 8px 0;">
+                  <i class="fa fa-euro-sign" style="margin-right:4px;"></i>{{ product.price | money }}
+                </p>
+                {% if product.description %}
+                  <p style="font-size: 0.9rem; color: #666; margin: 8px 0; line-height: 1.4;">
+                    <i class="fa fa-info-circle" style="margin-right:4px;color:#888;"></i>{{ product.description | strip_html | truncatewords: 15 }}
+                  </p>
+                {% endif %}
+                <button style="display: inline-flex; align-items:center; gap:6px; margin-top: 12px; padding: 8px 16px; background: #b71f1f; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; transition: background 0.2s;" class="view-btn" data-i18n-btn="collection.view">
+                  <i class="fa fa-shopping-cart"></i><span>View Product</span>
+                </button>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div style="padding: 60px 36px; text-align: center;">
+      <p style="font-size: 1.1rem; color: #999; margin: 0;">No products found in this collection.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Translate "View Product" button on language change
+document.addEventListener('DOMContentLoaded', () => {
+  const viewBtnTranslations = {
+    en: 'View Product',
+    fr: 'Voir le produit',
+    pt: 'Ver produto'
+  };
+  
+  function updateViewButtons(lang) {
+    document.querySelectorAll('[data-i18n-btn="collection.view"]').forEach(btn => {
+      btn.textContent = viewBtnTranslations[lang] || viewBtnTranslations.en;
+    });
+  }
+  
+  const lang = localStorage.getItem('lang') || 'en';
+  updateViewButtons(lang);
+  
+  // Listen for language changes via message event (when script.js changes language)
+  window.addEventListener('languageChanged', (e) => {
+    updateViewButtons(e.detail.lang);
+  });
+});
+</script>

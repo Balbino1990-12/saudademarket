@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portuguese Specialties - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        .specialties-container {
+            padding: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #229954;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-info {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #2980b9;
+        }
+
+        /* Table Styling */
+        .specialties-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .specialties-table thead {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .specialties-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #ecf0f1;
+        }
+
+        .specialties-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .specialties-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .specialty-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-buttons button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Form Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-filter input,
+        .search-filter select {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-filter input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .stat-card .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-option.selected {
+            border-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="specialties-container">
+        <!-- Alert Messages -->
+        <div id="alertBox" class="alert"></div>
+
+        <!-- Page Header -->
+        <div class="section-header">
+            <h2>Portuguese Specialties</h2>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="openAddSpecialtyModal()">+ Add Specialty</button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalSpecialties">0</div>
+                <div class="stat-label">Total Specialties</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCategories">0</div>
+                <div class="stat-label">Categories</div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-filter">
+            <input type="text" id="searchInput" placeholder="Search by name..." onkeyup="filterSpecialties()">
+            <select id="categoryFilter" onchange="filterSpecialties()">
+                <option value="">All Categories</option>
+            </select>
+            <button class="btn btn-secondary" onclick="loadSpecialties()">Refresh</button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading" style="display: none;">
+            Loading specialties...
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>No specialties found</h3>
+            <p>Click the "Add Specialty" button to create the first entry.</p>
+        </div>
+
+        <!-- Specialties Table -->
+        <table class="specialties-table" id="specialtiesTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name (EN)</th>
+                    <th>Category</th>
+                    <th>Icon</th>
+                    <th>Color</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="specialtiesTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add/Edit Specialty Modal -->
+    <div id="specialtyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Specialty</h3>
+                <button class="modal-close" onclick="closeSpecialtyModal()">×</button>
+            </div>
+
+            <form id="specialtyForm" onsubmit="saveSpecialty(event)">
+                <input type="hidden" id="specialtyId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nameEn">Name (English) *</label>
+                        <input type="text" id="nameEn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <input type="text" id="category" required placeholder="e.g., Oils & Vinegars">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nameFr">Name (French)</label>
+                        <input type="text" id="nameFr">
+                    </div>
+                    <div class="form-group">
+                        <label for="namePt">Name (Portuguese)</label>
+                        <input type="text" id="namePt">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Detailed information about this specialty..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="image">Image URL</label>
+                        <input type="url" id="image" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label for="icon">Icon (emoji or symbol)</label>
+                        <input type="text" id="icon" placeholder="🫒, 🥫, 🍷, etc." maxlength="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="color">Color</label>
+                    <input type="color" id="color" value="#27ae60">
+                </div>
+
+                <div class="form-group">
+                    <label for="activeStatus">Active</label>
+                    <select id="activeStatus">
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeSpecialtyModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Specialty</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script>
+        // Store all specialties for filtering
+        let allSpecialties = [];
+        let currentEditId = null;
+
+        /**
+         * Load all specialties from API
+         */
+        async function loadSpecialties() {
+            try {
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('specialtiesTable').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'none';
+
+                const response = await fetch('/api/specialties');
+                const result = await response.json();
+
+                if (result.success) {
+                    allSpecialties = result.data;
+                    displaySpecialties(allSpecialties);
+                    updateStats();
+                    populateCategoryFilter();
+                } else {
+                    showAlert('Failed to load specialties', 'error');
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showAlert('Error loading specialties: ' + error.message, 'error');
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        /**
+         * Display specialties in table
+         */
+        function displaySpecialties(specialties) {
+            const tbody = document.getElementById('specialtiesTableBody');
+            const table = document.getElementById('specialtiesTable');
+
+            if (specialties.length === 0) {
+                table.style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            tbody.innerHTML = specialties.map(s => `
+                <tr>
+                    <td>
+                        ${s.image ? `<img src="${s.image}" alt="${s.name_en}" class="specialty-image">` : 'No Image'}
+                    </td>
+                    <td>
+                        <strong>${s.name_en}</strong>
+                        ${s.name_fr ? `<br><small>${s.name_fr}</small>` : ''}
+                    </td>
+                    <td>${s.category}</td>
+                    <td style="font-size: 20px;">${s.icon || '-'}</td>
+                    <td>
+                        ${s.color ? `<div style="width: 30px; height: 30px; background-color: ${s.color}; border-radius: 4px; border: 1px solid #ddd;"></div>` : '-'}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-info" onclick="editSpecialty(${s.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteSpecialty(${s.id})">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            table.style.display = 'table';
+        }
+
+        /**
+         * Filter specialties by search and category
+         */
+        function filterSpecialties() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+
+            const filtered = allSpecialties.filter(s => {
+                const matchesSearch = s.name_en.toLowerCase().includes(searchTerm) ||
+                                    (s.name_fr && s.name_fr.toLowerCase().includes(searchTerm)) ||
+                                    (s.description && s.description.toLowerCase().includes(searchTerm));
+                const matchesCategory = !category || s.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            displaySpecialties(filtered);
+        }
+
+        /**
+         * Update statistics
+         */
+        function updateStats() {
+            document.getElementById('totalSpecialties').textContent = allSpecialties.length;
+            const categories = new Set(allSpecialties.map(s => s.category));
+            document.getElementById('totalCategories').textContent = categories.size;
+        }
+
+        /**
+         * Populate category filter dropdown
+         */
+        async function populateCategoryFilter() {
+            try {
+                const response = await fetch('/api/specialties/categories/all');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const select = document.getElementById('categoryFilter');
+                    const options = result.data.map(c => `<option value="${c}">${c}</option>`).join('');
+                    select.innerHTML = '<option value="">All Categories</option>' + options;
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        /**
+         * Open add specialty modal
+         */
+        function openAddSpecialtyModal() {
+            currentEditId = null;
+            document.getElementById('specialtyForm').reset();
+            document.getElementById('modalTitle').textContent = 'Add Specialty';
+            document.getElementById('specialtyId').value = '';
+            document.getElementById('color').value = '#27ae60';
+            document.getElementById('specialtyModal').classList.add('active');
+        }
+
+        /**
+         * Close specialty modal
+         */
+        function closeSpecialtyModal() {
+            document.getElementById('specialtyModal').classList.remove('active');
+            currentEditId = null;
+        }
+
+        /**
+         * Edit specialty
+         */
+        async function editSpecialty(id) {
+            try {
+                const response = await fetch(`/api/specialties/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const s = result.data;
+                    document.getElementById('specialtyId').value = s.id;
+                    document.getElementById('nameEn').value = s.name_en;
+                    document.getElementById('nameFr').value = s.name_fr || '';
+                    document.getElementById('namePt').value = s.name_pt || '';
+                    document.getElementById('category').value = s.category;
+                    document.getElementById('description').value = s.description || '';
+                    document.getElementById('image').value = s.image || '';
+                    document.getElementById('icon').value = s.icon || '';
+                    document.getElementById('color').value = s.color || '#27ae60';
+                    document.getElementById('activeStatus').value = s.active ? '1' : '0';
+
+                    document.getElementById('modalTitle').textContent = 'Edit Specialty';
+                    currentEditId = id;
+                    document.getElementById('specialtyModal').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Edit error:', error);
+                showAlert('Error loading specialty: ' + error.message, 'error');
+            }
+        }
+
+        /**
+         * Save specialty (create or update)
+         */
+        async function saveSpecialty(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('specialtyId').value;
+            const specialtyData = {
+                name_en: document.getElementById('nameEn').value,
+                name_fr: document.getElementById('nameFr').value,
+                name_pt: document.getElementById('namePt').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value,
+                icon: document.getElementById('icon').value,
+                color: document.getElementById('color').value,
+                active: document.getElementById('activeStatus').value === '1'
+            };
+
+            try {
+                const url = id ? `/api/specialties/${id}` : '/api/specialties';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(specialtyData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    closeSpecialtyModal();
+                    await loadSpecialties();
+                } else {
+                    showAlert('Failed to save specialty: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showAlert('Error saving specialty: ' + error.message, 'error');
+            }
+        }
+
+        /**
+         * Delete specialty
+         */
+        async function deleteSpecialty(id) {
+            if (!confirm('Are you sure you want to delete this specialty?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/specialties/${id}`, { method: 'DELETE' });
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    await loadSpecialties();
+                } else {
+                    showAlert('Failed to delete specialty: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showAlert('Error deleting specialty: ' + error.message, 'error');
+            }
+        }
+
+        /**
+         * Show alert message
+         */
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert ${type}`;
+            setTimeout(() => {
+                alertBox.className = 'alert';
+            }, 5000);
+        }
+
+        // Close modal when pressing Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSpecialtyModal();
+            }
+        });
+
+        // Load specialties on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSpecialties();
+        });
+    </script>
+</body>
+</html>

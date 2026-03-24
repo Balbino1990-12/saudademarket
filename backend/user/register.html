@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Acheteur - Portugalsstore.fr</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/i18n.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .register-section {
+            padding: 60px 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 50px;
+            margin-top: 20px;
+            max-width: 600px;
+        }
+
+        .register-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .register-subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 32px;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #718096;
+            font-size: 1.2rem;
+        }
+
+        .terms-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .terms-group input[type="checkbox"] {
+            margin-top: 2px;
+            width: auto;
+        }
+
+        .terms-text {
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.4;
+        }
+
+        .terms-link {
+            color: #4299e1;
+            text-decoration: none;
+        }
+
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 8px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.3);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.95rem;
+            color: #718096;
+        }
+
+        .login-link a {
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .message.error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .message.success {
+            background: #c6f6d5;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        @media (max-width: 600px) {
+            .register-section {
+                padding: 40px 16px;
+            }
+
+            .register-card {
+                padding: 40px 24px;
+                max-width: none;
+            }
+
+            .register-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Language dropdown styles */
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            min-width: 120px;
+            z-index: 1000;
+        }
+
+        .lang-dropdown.active {
+            display: block;
+        }
+
+        .lang-option {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #2d3748;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .lang-option:hover,
+        .lang-option.active {
+            background-color: #4299e1;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <div class="logo-text">
+                    <h1>Portugalsstore.fr</h1>
+                    <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
+                </div>
+            </div>
+
+            <div class="search">
+                <input type="search" placeholder="Rechercher un produit..." aria-label="Rechercher" data-i18n="search.placeholder" />
+            </div>
+
+            <div class="header-actions">
+                <button class="icon user" title="Compte">👤</button>
+                <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
+                <div class="language-selector">
+                    <button id="langBtn" class="lang-toggle">FR</button>
+                    <div class="lang-dropdown">
+                        <button data-lang="fr" class="lang-option active">FR</button>
+                        <button data-lang="pt" class="lang-option">PT</button>
+                        <button data-lang="en" class="lang-option">EN</button>
+                    </div>
+                </div>
+                <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
+            </div>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
+                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
+                <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
+                <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
+                <li><a href="cart.html" data-i18n="nav.cart">PANIER</a></li>
+                <li><a href="apropos.html" data-i18n="nav.about">À PROPOS</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="register-section">
+            <div class="register-card">
+                <h1 class="register-title" data-i18n="register.title">Créer un compte</h1>
+                <p class="register-subtitle" data-i18n="register.subtitle">Rejoignez-nous pour découvrir les saveurs du Portugal</p>
+
+                <div id="message" class="message"></div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="name" data-i18n="register.name">Nom complet</label>
+                        <input type="text" id="name" name="name" required placeholder="Votre nom complet" data-i18n-placeholder="register.name_placeholder">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" data-i18n="register.email">Adresse e-mail</label>
+                        <input type="email" id="email" name="email" required placeholder="votre@email.com" data-i18n-placeholder="register.email_placeholder">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="country" data-i18n="register.country">Pays</label>
+                        <select id="country" name="country" required>
+                            <option value="" data-i18n="register.select_country">Sélectionnez votre pays</option>
+                            <option value="FR">France</option>
+                            <option value="PT">Portugal</option>
+                            <option value="BE">Belgique</option>
+                            <option value="LU">Luxembourg</option>
+                            <option value="CH">Suisse</option>
+                            <option value="ES">Espagne</option>
+                            <option value="IT">Italie</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone" data-i18n="register.phone">Numéro de téléphone</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+33 6 12 34 56 78" data-i18n-placeholder="register.phone_placeholder">
+                    </div>
+
+                    <!-- French Address Fields (shown when France is selected) -->
+                    <div id="frenchFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="region" data-i18n="register.region_fr">Région</label>
+                            <select id="region" name="region">
+                                <option value="" data-i18n="register.select_region">Sélectionnez votre région</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department" data-i18n="register.department">Département</label>
+                            <select id="department" name="department">
+                                <option value="" data-i18n="register.select_department">Sélectionnez votre département</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city" data-i18n="register.city">Ville</label>
+                            <select id="city" name="city">
+                                <option value="" data-i18n="register.select_city">Sélectionnez votre ville</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Manual Address Fields (shown for other countries) -->
+                    <div id="manualFields">
+                        <div class="form-group">
+                            <label for="address" data-i18n="register.address">Adresse</label>
+                            <input type="text" id="address" name="address" placeholder="Votre adresse" data-i18n-placeholder="register.address_placeholder">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cityManual" data-i18n="register.city">Ville</label>
+                            <input type="text" id="cityManual" name="city" placeholder="Votre ville" data-i18n-placeholder="register.city_placeholder">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regionManual" data-i18n="register.region">Région</label>
+                            <input type="text" id="regionManual" name="region" placeholder="Votre région" data-i18n-placeholder="register.region_placeholder">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postalCode" data-i18n="register.postal_code">Code postal</label>
+                        <input type="text" id="postalCode" name="postalCode" required placeholder="Votre code postal" data-i18n-placeholder="register.postal_code_placeholder">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" data-i18n="register.password">Mot de passe</label>
+                        <div class="password-group">
+                            <input type="password" id="password" name="password" required placeholder="Minimum 8 caractères" data-i18n-placeholder="register.password_placeholder">
+                            <button type="button" class="password-toggle" id="togglePassword">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" data-i18n="register.confirm_password">Confirmer le mot de passe</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Répétez votre mot de passe" data-i18n-placeholder="register.confirm_placeholder">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="terms-group">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms" class="terms-text" data-i18n="register.terms">
+                                J'accepte les <a href="#" class="terms-link">Conditions générales d'utilisation</a> et la <a href="#" class="terms-link">Politique de confidentialité</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="register-btn" id="registerBtn" data-i18n="register.button">Créer mon compte</button>
+                </form>
+
+                <div class="login-link" data-i18n="register.login_link">
+                    Déjà un compte ? <a href="/user/login.html">Se connecter</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registerForm');
+            const messageEl = document.getElementById('message');
+            const registerBtn = document.getElementById('registerBtn');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            // French administrative data
+            const frenchData = {
+                regions: {
+                    "Île-de-France": {
+                        name: "Île-de-France",
+                        departments: {
+                            "75": { name: "Paris", cities: ["Paris"] },
+                            "77": { name: "Seine-et-Marne", cities: ["Meaux", "Chelles", "Melun", "Pontault-Combault"] },
+                            "78": { name: "Yvelines", cities: ["Versailles", "Saint-Germain-en-Laye", "Mantes-la-Jolie"] },
+                            "91": { name: "Essonne", cities: ["Évry", "Corbeil-Essonnes", "Massy"] },
+                            "92": { name: "Hauts-de-Seine", cities: ["Nanterre", "Boulogne-Billancourt", "Colombes"] },
+                            "93": { name: "Seine-Saint-Denis", cities: ["Bobigny", "Montreuil", "Aulnay-sous-Bois"] },
+                            "94": { name: "Val-de-Marne", cities: ["Créteil", "Vitry-sur-Seine", "Champigny-sur-Marne"] },
+                            "95": { name: "Val-d'Oise", cities: ["Cergy", "Argenteuil", "Sarcelles"] }
+                        }
+                    },
+                    "Provence-Alpes-Côte d'Azur": {
+                        name: "Provence-Alpes-Côte d'Azur",
+                        departments: {
+                            "04": { name: "Alpes-de-Haute-Provence", cities: ["Digne-les-Bains", "Manosque"] },
+                            "05": { name: "Hautes-Alpes", cities: ["Gap", "Briançon"] },
+                            "06": { name: "Alpes-Maritimes", cities: ["Nice", "Cannes", "Antibes", "Grasse"] },
+                            "13": { name: "Bouches-du-Rhône", cities: ["Marseille", "Aix-en-Provence", "Arles", "Martigues"] },
+                            "83": { name: "Var", cities: ["Toulon", "Hyères", "Fréjus", "Draguignan"] },
+                            "84": { name: "Vaucluse", cities: ["Avignon", "Orange", "Carpentras"] }
+                        }
+                    },
+                    "Auvergne-Rhône-Alpes": {
+                        name: "Auvergne-Rhône-Alpes",
+                        departments: {
+                            "01": { name: "Ain", cities: ["Bourg-en-Bresse", "Oyonnax"] },
+                            "03": { name: "Allier", cities: ["Moulins", "Vichy"] },
+                            "07": { name: "Ardèche", cities: ["Privas", "Annonay"] },
+                            "15": { name: "Cantal", cities: ["Aurillac", "Saint-Flour"] },
+                            "26": { name: "Drôme", cities: ["Valence", "Romans-sur-Isère"] },
+                            "38": { name: "Isère", cities: ["Grenoble", "Vienne", "Voiron"] },
+                            "42": { name: "Loire", cities: ["Saint-Étienne", "Roanne"] },
+                            "43": { name: "Haute-Loire", cities: ["Le Puy-en-Velay", "Brioude"] },
+                            "63": { name: "Puy-de-Dôme", cities: ["Clermont-Ferrand", "Montluçon"] },
+                            "69": { name: "Rhône", cities: ["Lyon", "Villeurbanne", "Vénissieux"] },
+                            "73": { name: "Savoie", cities: ["Chambéry", "Albertville"] },
+                            "74": { name: "Haute-Savoie", cities: ["Annecy", "Thonon-les-Bains"] }
+                        }
+                    },
+                    "Grand Est": {
+                        name: "Grand Est",
+                        departments: {
+                            "08": { name: "Ardennes", cities: ["Charleville-Mézières", "Sedan"] },
+                            "10": { name: "Aube", cities: ["Troyes", "Romilly-sur-Seine"] },
+                            "51": { name: "Marne", cities: ["Reims", "Châlons-en-Champagne"] },
+                            "52": { name: "Haute-Marne", cities: ["Chaumont", "Saint-Dizier"] },
+                            "54": { name: "Meurthe-et-Moselle", cities: ["Nancy", "Vandœuvre-lès-Nancy"] },
+                            "55": { name: "Meuse", cities: ["Bar-le-Duc", "Verdun"] },
+                            "57": { name: "Moselle", cities: ["Metz", "Thionville"] },
+                            "67": { name: "Bas-Rhin", cities: ["Strasbourg", "Haguenau"] },
+                            "68": { name: "Haut-Rhin", cities: ["Colmar", "Mulhouse"] },
+                            "88": { name: "Vosges", cities: ["Épinal", "Saint-Dié-des-Vosges"] }
+                        }
+                    },
+                    "Hauts-de-France": {
+                        name: "Hauts-de-France",
+                        departments: {
+                            "02": { name: "Aisne", cities: ["Laon", "Saint-Quentin"] },
+                            "59": { name: "Nord", cities: ["Lille", "Roubaix", "Tourcoing", "Dunkerque"] },
+                            "60": { name: "Oise", cities: ["Beauvais", "Compiègne"] },
+                            "62": { name: "Pas-de-Calais", cities: ["Arras", "Boulogne-sur-Mer", "Calais", "Lens"] },
+                            "80": { name: "Somme", cities: ["Amiens", "Abbeville"] }
+                        }
+                    },
+                    "Normandie": {
+                        name: "Normandie",
+                        departments: {
+                            "14": { name: "Calvados", cities: ["Caen", "Hérouville-Saint-Clair"] },
+                            "27": { name: "Eure", cities: ["Évreux", "Vernon"] },
+                            "50": { name: "Manche", cities: ["Saint-Lô", "Cherbourg-en-Cotentin"] },
+                            "61": { name: "Orne", cities: ["Alençon", "Argentan"] },
+                            "76": { name: "Seine-Maritime", cities: ["Rouen", "Le Havre", "Dieppe"] }
+                        }
+                    },
+                    "Nouvelle-Aquitaine": {
+                        name: "Nouvelle-Aquitaine",
+                        departments: {
+                            "16": { name: "Charente", cities: ["Angoulême", "Cognac"] },
+                            "17": { name: "Charente-Maritime", cities: ["La Rochelle", "Saintes", "Rochefort"] },
+                            "19": { name: "Corrèze", cities: ["Tulle", "Brive-la-Gaillarde"] },
+                            "23": { name: "Creuse", cities: ["Guéret", "La Souterraine"] },
+                            "24": { name: "Dordogne", cities: ["Périgueux", "Bergerac"] },
+                            "33": { name: "Gironde", cities: ["Bordeaux", "Mérignac", "Pessac"] },
+                            "40": { name: "Landes", cities: ["Mont-de-Marsan", "Dax"] },
+                            "47": { name: "Lot-et-Garonne", cities: ["Agen", "Villeneuve-sur-Lot"] },
+                            "64": { name: "Pyrénées-Atlantiques", cities: ["Pau", "Bayonne", "Anglet"] },
+                            "79": { name: "Deux-Sèvres", cities: ["Niort", "Bressuire"] },
+                            "86": { name: "Vienne", cities: ["Poitiers", "Châtellerault"] },
+                            "87": { name: "Haute-Vienne", cities: ["Limoges", "Saint-Junien"] }
+                        }
+                    },
+                    "Occitanie": {
+                        name: "Occitanie",
+                        departments: {
+                            "09": { name: "Ariège", cities: ["Foix", "Pamiers"] },
+                            "11": { name: "Aude", cities: ["Carcassonne", "Narbonne"] },
+                            "12": { name: "Aveyron", cities: ["Rodez", "Millau"] },
+                            "30": { name: "Gard", cities: ["Nîmes", "Alès"] },
+                            "31": { name: "Haute-Garonne", cities: ["Toulouse", "Colomiers", "Blagnac"] },
+                            "32": { name: "Gers", cities: ["Auch", "Condom"] },
+                            "34": { name: "Hérault", cities: ["Montpellier", "Sète", "Béziers"] },
+                            "46": { name: "Lot", cities: ["Cahors", "Figeac"] },
+                            "48": { name: "Lozère", cities: ["Mende", "Marvejols"] },
+                            "65": { name: "Hautes-Pyrénées", cities: ["Tarbes", "Lourdes"] },
+                            "66": { name: "Pyrénées-Orientales", cities: ["Perpignan", "Carcassonne"] },
+                            "81": { name: "Tarn", cities: ["Albi", "Castres"] },
+                            "82": { name: "Tarn-et-Garonne", cities: ["Montauban", "Castelsarrasin"] }
+                        }
+                    },
+                    "Pays de la Loire": {
+                        name: "Pays de la Loire",
+                        departments: {
+                            "44": { name: "Loire-Atlantique", cities: ["Nantes", "Saint-Nazaire", "Rezé"] },
+                            "49": { name: "Maine-et-Loire", cities: ["Angers", "Cholet"] },
+                            "53": { name: "Mayenne", cities: ["Laval", "Mayenne"] },
+                            "72": { name: "Sarthe", cities: ["Le Mans", "Sablé-sur-Sarthe"] },
+                            "85": { name: "Vendée", cities: ["La Roche-sur-Yon", "Les Sables-d'Olonne"] }
+                        }
+                    },
+                    "Bretagne": {
+                        name: "Bretagne",
+                        departments: {
+                            "22": { name: "Côtes-d'Armor", cities: ["Saint-Brieuc", "Lannion"] },
+                            "29": { name: "Finistère", cities: ["Brest", "Quimper", "Concarneau"] },
+                            "35": { name: "Ille-et-Vilaine", cities: ["Rennes", "Saint-Malo", "Fougères"] },
+                            "56": { name: "Morbihan", cities: ["Vannes", "Lorient", "Pontivy"] }
+                        }
+                    },
+                    "Centre-Val de Loire": {
+                        name: "Centre-Val de Loire",
+                        departments: {
+                            "18": { name: "Cher", cities: ["Bourges", "Vierzon"] },
+                            "28": { name: "Eure-et-Loir", cities: ["Chartres", "Dreux"] },
+                            "36": { name: "Indre", cities: ["Châteauroux", "Issoudun"] },
+                            "37": { name: "Indre-et-Loire", cities: ["Tours", "Joué-lès-Tours"] },
+                            "41": { name: "Loir-et-Cher", cities: ["Blois", "Vendôme"] },
+                            "45": { name: "Loiret", cities: ["Orléans", "Montargis"] }
+                        }
+                    },
+                    "Bourgogne-Franche-Comté": {
+                        name: "Bourgogne-Franche-Comté",
+                        departments: {
+                            "21": { name: "Côte-d'Or", cities: ["Dijon", "Beaune"] },
+                            "25": { name: "Doubs", cities: ["Besançon", "Montbéliard"] },
+                            "39": { name: "Jura", cities: ["Lons-le-Saunier", "Dole"] },
+                            "58": { name: "Nièvre", cities: ["Nevers", "Cosne-Cours-sur-Loire"] },
+                            "70": { name: "Haute-Saône", cities: ["Vesoul", "Lure"] },
+                            "71": { name: "Saône-et-Loire", cities: ["Mâcon", "Chalon-sur-Saône"] },
+                            "89": { name: "Yonne", cities: ["Auxerre", "Sens"] },
+                            "90": { name: "Territoire de Belfort", cities: ["Belfort", "Valdoie"] }
+                        }
+                    },
+                    "Corse": {
+                        name: "Corse",
+                        departments: {
+                            "2A": { name: "Corse-du-Sud", cities: ["Ajaccio", "Porto-Vecchio"] },
+                            "2B": { name: "Haute-Corse", cities: ["Bastia", "Calvi"] }
+                        }
+                    }
+                }
+            };
+
+            // Country change handler
+            const countrySelect = document.getElementById('country');
+            const frenchFields = document.getElementById('frenchFields');
+            const manualFields = document.getElementById('manualFields');
+            const regionSelect = document.getElementById('region');
+            const departmentSelect = document.getElementById('department');
+            const citySelect = document.getElementById('city');
+
+            countrySelect.addEventListener('change', function() {
+                const selectedCountry = this.value;
+
+                if (selectedCountry === 'FR') {
+                    frenchFields.style.display = 'block';
+                    manualFields.style.display = 'none';
+
+                    // Populate regions
+                    populateRegions();
+                } else {
+                    frenchFields.style.display = 'none';
+                    manualFields.style.display = 'block';
+
+                    // Clear French dropdowns
+                    regionSelect.innerHTML = '<option value="" data-i18n="register.select_region">Sélectionnez votre région</option>';
+                    departmentSelect.innerHTML = '<option value="" data-i18n="register.select_department">Sélectionnez votre département</option>';
+                    citySelect.innerHTML = '<option value="" data-i18n="register.select_city">Sélectionnez votre ville</option>';
+                }
+            });
+
+            // Populate regions dropdown
+            function populateRegions() {
+                regionSelect.innerHTML = '<option value="" data-i18n="register.select_region">Sélectionnez votre région</option>';
+
+                Object.keys(frenchData.regions).forEach(regionKey => {
+                    const region = frenchData.regions[regionKey];
+                    const option = document.createElement('option');
+                    option.value = regionKey;
+                    option.textContent = region.name;
+                    regionSelect.appendChild(option);
+                });
+            }
+
+            // Region change handler
+            regionSelect.addEventListener('change', function() {
+                const selectedRegion = this.value;
+                departmentSelect.innerHTML = '<option value="" data-i18n="register.select_department">Sélectionnez votre département</option>';
+                citySelect.innerHTML = '<option value="" data-i18n="register.select_city">Sélectionnez votre ville</option>';
+
+                if (selectedRegion && frenchData.regions[selectedRegion]) {
+                    const departments = frenchData.regions[selectedRegion].departments;
+
+                    Object.keys(departments).forEach(deptKey => {
+                        const department = departments[deptKey];
+                        const option = document.createElement('option');
+                        option.value = deptKey;
+                        option.textContent = `${deptKey} - ${department.name}`;
+                        departmentSelect.appendChild(option);
+                    });
+                }
+            });
+
+            // Department change handler
+            departmentSelect.addEventListener('change', function() {
+                const selectedRegion = regionSelect.value;
+                const selectedDepartment = this.value;
+                citySelect.innerHTML = '<option value="" data-i18n="register.select_city">Sélectionnez votre ville</option>';
+
+                if (selectedRegion && selectedDepartment && frenchData.regions[selectedRegion]) {
+                    const cities = frenchData.regions[selectedRegion].departments[selectedDepartment].cities;
+
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            });
+
+            // Function to update placeholders
+            async function updatePlaceholders(lang) {
+                try {
+                    const response = await fetch('/translations.json');
+                    const translations = await response.json();
+                    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                        const key = element.getAttribute('data-i18n-placeholder');
+                        if (translations[lang] && translations[lang][key]) {
+                            element.placeholder = translations[lang][key];
+                        }
+                    });
+                } catch (err) {
+                    console.error('Error updating placeholders:', err);
+                }
+            }
+
+            // Initial placeholder update
+            updatePlaceholders('fr'); // Default to French
+
+            // Language selector functionality
+            const langBtn = document.getElementById('langBtn');
+            const langDropdown = document.querySelector('.lang-dropdown');
+
+            if (langBtn && langDropdown) {
+                langBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    langDropdown.classList.toggle('active');
+                });
+
+                document.querySelectorAll('.lang-option').forEach(option => {
+                    option.addEventListener('click', async function() {
+                        const lang = this.getAttribute('data-lang');
+                        // Update placeholders
+                        await updatePlaceholders(lang);
+                        // Update active class
+                        document.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
+                        this.classList.add('active');
+                        // Update button text
+                        langBtn.textContent = lang.toUpperCase();
+                        langDropdown.classList.remove('active');
+                    });
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                        langDropdown.classList.remove('active');
+                    }
+                });
+            }
+
+            // Password toggle
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+
+            // Form validation
+            function validateForm() {
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const country = document.getElementById('country').value;
+                const postalCode = document.getElementById('postalCode').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const terms = document.getElementById('terms').checked;
+
+                if (!name || !email || !country || !postalCode || !password || !confirmPassword) {
+                    return 'Veuillez remplir tous les champs obligatoires.';
+                }
+
+                // Validate address fields based on country
+                if (country === 'FR') {
+                    const region = document.getElementById('region').value;
+                    const department = document.getElementById('department').value;
+                    const city = document.getElementById('city').value;
+
+                    if (!region || !department || !city) {
+                        return 'Veuillez sélectionner votre région, département et ville.';
+                    }
+                } else {
+                    const address = document.getElementById('address').value.trim();
+                    const city = document.getElementById('cityManual').value.trim();
+
+                    if (!address || !city) {
+                        return 'Veuillez saisir votre adresse et ville.';
+                    }
+                }
+
+                if (password.length < 8) {
+                    return 'Le mot de passe doit contenir au moins 8 caractères.';
+                }
+
+                if (password !== confirmPassword) {
+                    return 'Les mots de passe ne correspondent pas.';
+                }
+
+                if (!terms) {
+                    return 'Veuillez accepter les conditions générales.';
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    return 'Veuillez entrer une adresse e-mail valide.';
+                }
+
+                // Basic postal code validation (can be enhanced per country)
+                const postalCodeRegex = /^[A-Z0-9\s\-]+$/i;
+                if (!postalCodeRegex.test(postalCode) || postalCode.length < 3) {
+                    return 'Veuillez entrer un code postal valide.';
+                }
+
+                return null;
+            }
+
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const error = validateForm();
+                if (error) {
+                    messageEl.className = 'message error';
+                    messageEl.style.display = 'block';
+                    messageEl.textContent = error;
+                    return;
+                }
+
+                registerBtn.disabled = true;
+                registerBtn.textContent = 'Création en cours...';
+
+                const formData = new FormData(form);
+                // Split name into first_name and last_name
+                const fullName = formData.get('name') || '';
+                const nameParts = fullName.split(' ');
+                const first_name = nameParts[0] || '';
+                const last_name = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+                let data = {
+                    username: fullName,
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                    confirm_password: formData.get('confirmPassword'),
+                    first_name,
+                    last_name,
+                    phone_number: formData.get('phone'),
+                    city: '',
+                };
+
+                // Add address data based on country selection
+                if (formData.get('country') === 'FR') {
+                    data.region = formData.get('region');
+                    data.department = formData.get('department');
+                    data.city = formData.get('city');
+                    data.address = ''; // Address is not required for French selection
+                } else {
+                    data.address = formData.get('address');
+                    data.city = formData.get('cityManual');
+                    data.region = formData.get('regionManual');
+                }
+
+                try {
+                    const response = await fetch('/api/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        messageEl.className = 'message success';
+                        messageEl.style.display = 'block';
+                        messageEl.textContent = 'Compte créé avec succès ! Redirection vers la connexion...';
+                        setTimeout(() => {
+                            window.location.href = '/user/login.html';
+                        }, 2000);
+                    } else {
+                        const errorData = await response.json();
+                        let errorMsg = 'Erreur lors de l\'inscription';
+                        // Extract specific error message from errors object
+                        if (errorData.errors && typeof errorData.errors === 'object') {
+                            const firstError = Object.values(errorData.errors)[0];
+                            errorMsg = firstError || errorData.error || errorMsg;
+                        } else if (errorData.error) {
+                            errorMsg = errorData.error;
+                        } else if (errorData.message) {
+                            errorMsg = errorData.message;
+                        }
+                        throw new Error(errorMsg);
+                    }
+                } catch (err) {
+                    messageEl.className = 'message error';
+                    messageEl.style.display = 'block';
+                    messageEl.textContent = err.message || 'Erreur réseau. Veuillez réessayer.';
+                } finally {
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = 'Créer mon compte';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

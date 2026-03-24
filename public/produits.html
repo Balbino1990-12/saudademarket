@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Produits - Portugalsstore.fr</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        #productList .category {
+            transition: none;
+        }
+
+        #productList .category:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+            border-color: transparent;
+        }
+
+        #productList .add-to-cart {
+            transition: none;
+            opacity: 1;
+            transform: none;
+        }
+
+        .card-quantity {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #f6f7f9;
+            border: 1px solid #eceff3;
+        }
+
+        .card-quantity button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 999px;
+            background: #fff;
+            color: #111;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-quantity input {
+            width: 34px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-weight: 700;
+            color: #111;
+            outline: none;
+        }
+
+        .product-stock {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #fff4e8;
+            color: #9a5a00;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .product-detail-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 3000;
+        }
+
+        .product-detail-modal.active {
+            display: flex;
+        }
+
+        .product-detail-dialog {
+            width: min(920px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+            padding: 28px;
+        }
+
+        .product-detail-close {
+            margin-left: auto;
+            display: block;
+            border: none;
+            background: #f3f4f6;
+            color: #111;
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 1.4rem;
+        }
+
+        .product-detail-body {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 28px;
+            margin-top: 10px;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 18px;
+            background: #f7f7f7;
+        }
+
+        .product-detail-info h2 {
+            font-size: 2rem;
+            margin: 0 0 10px;
+            color: #111;
+        }
+
+        .product-detail-meta {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .product-detail-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #c41e1e;
+            margin-bottom: 16px;
+        }
+
+        .product-detail-description {
+            color: #444;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .product-detail-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .product-detail-qty {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .product-detail-qty button {
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #111;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-detail-qty button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .product-detail-qty input {
+            width: 46px;
+            height: 34px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            color: #111;
+            background: #fff;
+        }
+
+        .product-detail-add-cart {
+            border: none;
+            background: linear-gradient(135deg, #c41e1e 0%, #8a1515 100%);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 14px 30px rgba(196, 30, 30, 0.22);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.98rem;
+            letter-spacing: 0.01em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .product-detail-add-cart::before {
+            content: '+';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .product-detail-add-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 34px rgba(196, 30, 30, 0.28);
+        }
+
+        .product-detail-add-cart:active {
+            transform: translateY(0);
+        }
+
+        .product-detail-add-cart:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            box-shadow: none;
+        }
+
+        .product-detail-similar {
+            margin-top: 28px;
+        }
+
+        @media (max-width: 760px) {
+            .product-detail-dialog {
+                padding: 20px;
+            }
+
+            .product-detail-body {
+                grid-template-columns: 1fr;
+            }
+
+            .product-detail-image {
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <div class="logo-text">
+                    <h1>Portugalsstore.fr</h1>
+                    <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
+                </div>
+            </div>
+
+            <div class="search">
+                <input type="search" placeholder="Rechercher un produit..." aria-label="Rechercher" />
+            </div>
+
+            <div class="header-actions">
+                <button class="icon user" title="Compte">👤</button>
+                <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
+                <div class="language-selector">
+                    <button id="langBtn" class="lang-toggle">FR</button>
+                    <div class="lang-dropdown">
+                        <button data-lang="fr" class="lang-option active">FR</button>
+                        <button data-lang="pt" class="lang-option">PT</button>
+                        <button data-lang="en" class="lang-option">EN</button>
+                    </div>
+                </div>
+                <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
+            </div>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
+                <li><a href="produits.html" class="active" data-i18n="nav.products">PRODUITS</a></li>
+                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
+                <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
+                <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
+                <li><a href="cart.html" data-i18n="nav.cart">PANIER</a></li>
+                <li><a href="apropos.html" data-i18n="nav.about">À PROPOS</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section style="padding: 24px 36px 8px;">
+            <h1 style="font-size: 2rem; margin: 0; color: #111;">All products</h1>
+        </section>
+        <section class="product-list" id="productList" style="padding:28px 36px; display:flex; flex-wrap:wrap; gap:18px;"></section>
+        
+        <!-- Recommendations Section -->
+        <section id="recommendationsContainer" style="padding: 40px 36px; background: #f9f9f9; margin-top: 40px;">
+            <!-- Recommendations will be loaded here by JavaScript -->
+        </section>
+    </main>
+
+    <div id="productDetailModal" class="product-detail-modal" aria-hidden="true">
+        <div class="product-detail-dialog">
+            <button id="closeProductDetailModal" class="product-detail-close" aria-label="Close">&times;</button>
+            <div class="product-detail-body">
+                <img id="productDetailImage" class="product-detail-image" src="/images/logo.jpg" alt="Product image" />
+                <div class="product-detail-info">
+                    <h2 id="productDetailTitle">Product</h2>
+                    <div id="productDetailCategory" class="product-detail-meta"></div>
+                    <div id="productDetailStock" class="product-detail-meta"></div>
+                    <div class="product-detail-qty">
+                        <button id="productDetailQtyMinus" type="button" aria-label="Decrease quantity">−</button>
+                        <input id="productDetailQtyInput" type="number" min="1" value="1" readonly />
+                        <button id="productDetailQtyPlus" type="button" aria-label="Increase quantity">+</button>
+                        <span id="productDetailQtyAvailable" class="product-detail-meta" style="margin-left:8px; color:#666; font-size:0.9rem;">Available: --</span>
+                    </div>
+                    <div id="productDetailPrice" class="product-detail-price"></div>
+                    <div id="productDetailDescription" class="product-detail-description"></div>
+                    <div class="product-detail-actions">
+                        <button id="productDetailAddToCart" class="product-detail-add-cart" type="button">Add to cart now</button>
+                    </div>
+                </div>
+            </div>
+            <div id="similarProductsContainer" class="product-detail-similar"></div>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>

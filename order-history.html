@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order History - PortugalStore</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/css/style.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    .history-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(60,60,90,0.12);
+      padding: 32px;
+    }
+    .history-header {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d2d2d;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .order-list {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+    }
+    .order-list th, .order-list td {
+      padding: 16px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .order-list th {
+      background: #f9f9f9;
+      font-weight: 700;
+      color: #444;
+    }
+    .order-items {
+      margin-top: 8px;
+      margin-bottom: 8px;
+      padding-left: 24px;
+    }
+    .order-items span {
+      display: inline-block;
+      margin-right: 16px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .history-message {
+      font-size: 1rem;
+      color: #2d2d2d;
+      text-align: center;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="history-container">
+    <div class="history-header">Order History</div>
+    <table class="order-list" id="orderList">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Date</th>
+          <th>Address</th>
+          <th>Total</th>
+          <th>Items</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="history-message" id="historyMessage"></div>
+  </div>
+  <script>
+    async function fetchOrders() {
+      const token = localStorage.getItem('buyerToken');
+      if (!token) {
+        window.location.href = '/user/login.html';
+        return [];
+      }
+      const res = await fetch('/api/orders', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    }
+
+    function renderOrders(orders) {
+      const tbody = document.querySelector('#orderList tbody');
+      tbody.innerHTML = '';
+      if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;">No orders found.</td></tr>';
+        return;
+      }
+      orders.forEach(order => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${order.id}</td>
+          <td>${new Date(order.created_at).toLocaleString()}</td>
+          <td>${order.address}</td>
+          <td>€${order.total.toFixed(2)}</td>
+          <td>
+            <div class="order-items">
+              ${order.items.map(item => `<span>${item.name_en} x${item.quantity}</span>`).join('')}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function loadOrders() {
+      const orders = await fetchOrders();
+      renderOrders(orders);
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>

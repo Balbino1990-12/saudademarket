@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portugalsstore.fr - Épicerie Portugaise en Ligne</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="/js/i18n.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <div class="logo-text">
+                    <h1>Portugalsstore.fr</h1>
+                    <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
+                </div>
+            </div>
+
+            <div class="search">
+                <input type="search" placeholder="Rechercher un produit..." aria-label="Rechercher" data-i18n="search.placeholder" />
+            </div>
+
+            <div class="header-actions">
+                <button class="icon user" id="profileBtn" title="Compte">👤 <span id="buyerUsername" style="font-weight:600;margin-left:4px;"></span></button>
+                <div id="profileDropdown" class="profile-dropdown" style="display:none">
+                    <div class="profile-header">
+                        <div class="profile-avatar"></div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="profileName">Nom d'utilisateur</div>
+                            <div class="profile-meta" id="profileMeta">-</div>
+                        </div>
+                    </div>
+                    <button class="profile-all-profiles">👤 See all profiles</button>
+                    <div class="profile-divider"></div>
+                    <div class="profile-menu">
+                        <button class="profile-menu-item">⚙️ Settings & privacy</button>
+                        <button class="profile-menu-item">❓ Help & support</button>
+                        <button class="profile-menu-item">🌙 Display & accessibility</button>
+                        <button class="profile-menu-item">💬 Give feedback <span style="font-size:0.8em;opacity:0.7;">CTRL B</span></button>
+                    </div>
+                    <div class="profile-divider"></div>
+                    <button class="profile-logout" id="profileLogout">🚪 Log out</button>
+                </div>
+                <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
+                <div class="language-selector">
+                    <button id="langBtn" class="lang-toggle">FR</button>
+                    <div class="lang-dropdown">
+                        <button data-lang="fr" class="lang-option active">FR</button>
+                        <button data-lang="pt" class="lang-option">PT</button>
+                        <button data-lang="en" class="lang-option">EN</button>
+                    </div>
+                </div>
+                <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
+            </div>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active" data-i18n="nav.home">ACCUEIL</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
+                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
+                <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
+                <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
+                <li><a href="cart.html" data-i18n="nav.cart">PANIER</a></li>
+                <li><a href="apropos.html" data-i18n="nav.about">À PROPOS</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="text">
+                <h1>
+                    <span data-i18n="hero.title">Découvrez les</span>
+                    <span class="highlight" data-i18n="hero.highlight">Saveurs du Portugal</span>
+                </h1>
+                <p data-i18n="hero.subtitle">Livrées en France</p>
+                <div class="hero-features">
+                    <span data-i18n="hero.feature1">Produits authentiques</span>
+                    <span data-i18n="hero.feature2">Livraison rapide</span>
+                    <span data-i18n="hero.feature3">Paiement sécurisé</span>
+                </div>
+                <button id="shopBtn" data-i18n="hero.cta">DÉCOUVRIR LA BOUTIQUE →</button>
+            </div>
+            <div class="image">
+                <img src="/images/hero.jpg" alt="Produits portugais" />
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section id="recommendationsContainer" style="padding: 60px 36px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <!-- Recommendations will be loaded here by JavaScript -->
+        </section>
+
+        <section class="categories" id="categories">
+            <h2 class="section-title" data-i18n="categories_title">Shop by Categories</h2>
+            <!-- categories will be injected by script.js -->
+        </section>
+
+        <!-- all products section -->
+        <section class="all-products-section">
+            <div class="container">
+                <h2 class="section-title" data-i18n="all_products_title">All Products</h2>
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be injected by script.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- feature boxes section -->
+        <section class="features">
+            <div class="feature-box">
+                <div class="feature-icon">✓</div>
+                <h3 data-i18n="features.authentic">PRODUITS AUTHENTIQUES DU PORTUGAL</h3>
+            </div>
+            <div class="feature-box">
+                <div class="feature-icon">🚚</div>
+                <h3 data-i18n="features.shipping">LIVRAISON RAPIDE EN FRANCE</h3>
+            </div>
+            <div class="feature-box">
+                <div class="feature-icon">🔒</div>
+                <h3 data-i18n="features.secure">PAIEMENT SÉCURISÉ</h3>
+            </div>
+            <div class="feature-box">
+                <div class="feature-icon">💬</div>
+                <h3 data-i18n="features.support">SERVICE CLIENT EN FRANÇAIS</h3>
+            </div>
+        </section>
+
+        <!-- specialties section -->
+        <section class="specialties" id="specialties">
+            <h2 data-i18n="specialties">Nos Spécialités Portugaises</h2>
+            <div class="specialty-list">
+                <!-- specialties injected by script.js -->
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section id="recommendationsContainer" style="padding: 60px 36px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <!-- Recommendations will be loaded here by JavaScript -->
+        </section>
+
+        <!-- CTA footer section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 data-i18n="cta_title">Apportez le Meilleur du Portugal chez Vous!</h2>
+                <div class="cta-features">
+                    <p>✓ <span data-i18n="cta_features">+ de 200 produits • Expédition rapide • Qualité garantie</span></p>
+                </div>
+            </div>
+            <button class="cta-btn" data-i18n="cta_button">COMMANDER MAINTENANT →</button>
+            <div class="cta-website" data-i18n="website">www.portugalsstore.fr</div>
+        </section>
+    </main>
+
+    <script src="/js/script.js"></script>
+
+    <script>
+    // Profile dropdown logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('profileBtn');
+        const dropdown = document.getElementById('profileDropdown');
+        const nameEl = document.getElementById('profileName');
+        const metaEl = document.getElementById('profileMeta');
+        const logoutBtn = document.getElementById('profileLogout');
+        // Fill profile info
+        try {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user && user.username) {
+                nameEl.textContent = user.username;
+                document.getElementById('buyerUsername').textContent = user.username;
+                metaEl.textContent = user.email || '';
+            }
+        } catch {}
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.style.display = 'none';
+            }
+        });
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('currentUser');
+            window.location.href = '/user/login.html';
+        });
+    });
+    </script>
+
+    <script>
+    // Show logged-in buyer username if available
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user && user.username) {
+                document.getElementById('buyerUsername').textContent = user.username;
+            }
+        } catch {}
+    });
+    </script>
+
+    <!-- Category Products Modal -->
+    <div id="categoryModal" class="category-modal">
+        <div class="category-modal-content">
+            <button class="category-modal-close" id="closeCategoryModalBtn">&times;</button>
+            <h2 id="categoryModalTitle"></h2>
+            <div class="category-products-grid" id="categoryProductsGrid">
+                <!-- Products for selected category will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialty Products Modal -->
+    <div id="specialtyModal" class="category-modal">
+        <div class="category-modal-content">
+            <button class="category-modal-close" id="closeSpecialtyModalBtn">&times;</button>
+            <h2 id="specialtyModalTitle"></h2>
+            <div class="category-products-grid" id="specialtyProductsGrid">
+                <!-- Products for selected specialty will be injected here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+</html>

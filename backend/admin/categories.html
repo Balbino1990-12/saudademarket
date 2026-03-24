@@ -1,0 +1,1638 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories Management – PortugalStore Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #c41e1e;
+            --primary-dark: #8a1515;
+            --secondary: #2c3e50;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #1a1a1a;
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --bg-light: #f5f6f8;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo-section:hover {
+            transform: translateY(-2px);
+        }
+
+        .logo-section img {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .header-title {
+            display: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #0f172a 0%, #091422 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            padding: 24px 0;
+            position: fixed;
+            height: calc(100% - 60px);
+            top: 60px;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            padding: 12px 24px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            text-decoration: none;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .sidebar-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(148, 163, 184, 0.15);
+            color: #ffffff;
+            border-left-color: #c41e1e;
+        }
+
+        .sidebar-item.active {
+            background: rgba(196, 30, 30, 0.25);
+            color: #ffffff;
+            border-left-color: #f97316;
+            font-weight: 700;
+        }
+
+        .sidebar-item.active::after {
+            content: '';
+            margin-left: auto;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .sidebar-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            background: var(--white);
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .content-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(196, 30, 30, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(196, 30, 30, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--dark);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Categories Table */
+        .table-container {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
+            border-bottom: 2px solid var(--gray-300);
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--gray-100);
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+            width: 32px;
+            text-align: center;
+        }
+
+        .category-color {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+        }
+
+        .category-status {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--success);
+            color: var(--white);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .category-status.inactive {
+            background: var(--gray-400);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background: var(--info);
+            color: var(--white);
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+            to {
+                opacity: 1;
+                backdrop-filter: blur(4px);
+            }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 0;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 32px 32px 24px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
+            border-bottom: 2px solid var(--gray-200);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-close {
+            background: var(--gray-200);
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--gray-600);
+            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: var(--white);
+            transform: rotate(90deg);
+        }
+
+        .form-section {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .form-row.two-columns {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-row.three-columns {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--gray-500);
+        }
+
+        input:hover, textarea:hover, select:hover {
+            border-color: var(--gray-400);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(196, 30, 30, 0.1);
+            background: linear-gradient(135deg, #fff 0%, rgba(196, 30, 30, 0.02) 100%);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-input {
+            width: 60px;
+            height: 44px;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding: 24px 32px;
+            background: var(--gray-100);
+            border-radius: 0 0 16px 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--gray-600);
+            margin-bottom: 24px;
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+        }
+
+        .lang-btn {
+            background: var(--gray-200);
+            color: var(--dark);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .lang-btn:hover {
+            background: var(--gray-300);
+        }
+
+        .lang-btn::after {
+            content: '▼';
+            margin-left: 6px;
+            font-size: 0.65rem;
+        }
+
+        .lang-btn.active::after {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            margin-top: 4px;
+            box-shadow: var(--shadow-md);
+            display: none;
+            flex-direction: column;
+            z-index: 200;
+            min-width: 150px;
+        }
+
+        .lang-dropdown.active {
+            display: flex;
+        }
+
+        .lang-option {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            color: var(--gray-700);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .lang-option:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .lang-option.active {
+            background: linear-gradient(135deg, rgba(196, 30, 30, 0.08) 0%, rgba(196, 30, 30, 0.04) 100%);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
+            color: var(--white);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 60px;
+                width: 100%;
+                max-width: 280px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 99;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .content-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-sm {
+                width: 100%;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                border-radius: 16px;
+            }
+
+            .form-row.two-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .header-title {
+                display: block;
+                flex: 1;
+                margin-left: 12px;
+                font-size: 1rem;
+            }
+
+            .container {
+                position: relative;
+            }
+
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 99;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .content-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-sm {
+                width: 100%;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                border-radius: 16px;
+            }
+
+            .form-row.two-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .header {
+                gap: 8px;
+            }
+
+            .logo-section {
+                gap: 8px;
+            }
+
+            .logo-section img {
+                height: 32px;
+            }
+
+            .logo-text h1 {
+                font-size: 1rem;
+            }
+
+            .logo-text p {
+                display: none;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .content-body {
+                padding: 12px;
+            }
+
+            .content-header {
+                padding: 16px;
+            }
+
+            .content-header h2 {
+                font-size: 1.2rem;
+            }
+
+            th, td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+
+            .action-buttons {
+                gap: 4px;
+            }
+
+            .btn-sm {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+
+            .modal {
+                padding: 0;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                max-height: 100vh;
+                border-radius: 16px 16px 0 0;
+            }
+
+            .modal-header {
+                padding: 20px 20px 16px;
+            }
+
+            .modal-header h3 {
+                font-size: 1.1rem;
+            }
+
+            .form-section {
+                padding: 16px 20px;
+            }
+
+            .form-section-title {
+                font-size: 0.85rem;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            input, textarea, select {
+                padding: 10px 12px;
+                font-size: 16px;
+            }
+
+            .form-actions {
+                padding: 16px 20px;
+            }
+
+            .btn {
+                padding: 11px 16px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    <script src="/js/i18n.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <a href="index.html" class="logo-section">
+                <img src="/images/logo.jpg" alt="PortugalStore Logo">
+                <div class="logo-text">
+                    <h1>PortugalStore</h1>
+                    <p>Admin Panel</p>
+                </div>
+            </a>
+            <span class="header-title" data-i18n="categories">Categories</span>
+        </div>
+
+        <div class="header-right">
+            <div class="language-selector" id="langSelector">
+                <button class="lang-btn" id="langBtn">EN</button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button class="lang-option active" data-lang="en">English</button>
+                    <button class="lang-option" data-lang="fr">Français</button>
+                    <button class="lang-option" data-lang="pt">Português</button>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn" data-i18n="logout">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title" id="sidebarMenuTitle">MENU</div>
+                <a href="index.html" class="sidebar-item" data-section="dashboard" data-label-fr="Tableau de bord" data-label-pt="Painel" data-label-en="Dashboard">
+                    <span class="sidebar-icon">📊</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="products.html" class="sidebar-item" data-section="products" data-label-fr="Produits" data-label-pt="Produtos" data-label-en="Products">
+                    <span class="sidebar-icon">📦</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="categories.html" class="sidebar-item" data-section="categories" data-label-fr="Catégories" data-label-pt="Categorias" data-label-en="Categories">
+                    <span class="sidebar-icon">📂</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="users.html" class="sidebar-item" data-section="users" data-label-fr="Utilisateurs" data-label-pt="Utilizadores" data-label-en="Users">
+                    <span class="sidebar-icon">👥</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="roles.html" class="sidebar-item" data-section="roles" data-label-fr="Rôles" data-label-pt="Funções" data-label-en="Roles">
+                    <span class="sidebar-icon">⚙️</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="specialties.html" class="sidebar-item" data-section="specialties" data-label-fr="Nos Spécialités Portugaises" data-label-pt="Especialidades" data-label-en="Specialties">
+                    <span class="sidebar-icon">🫒</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="#" class="sidebar-item" data-section="orders" data-label-fr="Commandes" data-label-pt="Encomendas" data-label-en="Orders">
+                    <span class="sidebar-icon">📋</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="#" class="sidebar-item" data-section="customers" data-label-fr="Clients" data-label-pt="Clientes" data-label-en="Customers">
+                    <span class="sidebar-icon">👤</span>
+                    <span class="sidebar-label"></span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title" id="sidebarSettingsTitle">PARAMÈTRES</div>
+                <a href="#" class="sidebar-item" data-section="analytics" data-label-fr="Analyse" data-label-pt="Análise" data-label-en="Analytics">
+                    <span class="sidebar-icon">📈</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="#" class="sidebar-item" data-section="settings" data-label-fr="Paramètres" data-label-pt="Configurações" data-label-en="Settings">
+                    <span class="sidebar-icon">⚙️</span>
+                    <span class="sidebar-label"></span>
+                </a>
+                <a href="#" class="sidebar-item" data-section="languages" data-label-fr="Langues" data-label-pt="Línguas" data-label-en="Languages">
+                    <span class="sidebar-icon">🌐</span>
+                    <span class="sidebar-label"></span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="content-header">
+                <h2>📂 Categories Management</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="addCategoryBtn" data-i18n="add_category">
+                        ✏️ Add Category
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-body">
+                <div class="table-container">
+                    <table id="categoriesTable">
+                        <thead>
+                            <tr>
+                                <th data-i18n="icon">Icon</th>
+                                <th data-i18n="category_name">Category Name</th>
+                                <th data-i18n="description">Description</th>
+                                <th data-i18n="color">Color</th>
+                                <th data-i18n="status">Status</th>
+                                <th data-i18n="actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="text-align: center; color: var(--gray-600);">
+                                <td colspan="6" style="padding: 40px;">Loading categories...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">✏️ Add Category</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">×</button>
+            </div>
+
+            <form id="categoryForm">
+                <!-- Category Names Section -->
+                <div class="form-section">
+                    <div class="form-section-title">🌐 Category Names</div>
+                    
+                    <div class="form-group">
+                        <label for="categoryNameEn">Category Name (English)</label>
+                        <input type="text" id="categoryNameEn" placeholder="Enter category name in English" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryNameFr">Nom de la Catégorie (Français)</label>
+                        <input type="text" id="categoryNameFr" placeholder="Entrez le nom de la catégorie en français" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoryNamePt">Nome da Categoria (Português)</label>
+                        <input type="text" id="categoryNamePt" placeholder="Digite o nome da categoria em português" required>
+                    </div>
+                </div>
+
+                <!-- Details Section -->
+                <div class="form-section">
+                    <div class="form-section-title">📋 Category Details</div>
+                    
+                    <div class="form-group">
+                        <label for="categoryDescription">Description</label>
+                        <textarea id="categoryDescription" placeholder="Brief description of the category"></textarea>
+                    </div>
+
+                    <div class="form-row two-columns">
+                        <div class="form-group">
+                            <label for="categoryIcon">Icon (Emoji)</label>
+                            <input type="text" id="categoryIcon" placeholder="e.g., ⚙️·" value="📦" maxlength="2">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryColor">Color</label>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="categoryColor" class="color-input" value="#c41e1e">
+                                <span id="colorValue">#c41e1e</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="categoryActive" checked>
+                            <span>Active</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">
+                        ✕ Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🗑️ Delete Category</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">×</button>
+            </div>
+
+            <div class="form-section" style="border-bottom: none;">
+                <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 0;">
+                    <div style="font-size: 2.5rem;">⚠️</div>
+                    <div>
+                        <p id="deleteMessage" style="margin: 0; color: var(--gray-700); font-size: 0.95rem; line-height: 1.6;">
+                            Are you sure you want to delete this category? This action cannot be undone.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">
+                    ✕ Cancel
+                </button>
+                <button type="button" class="btn btn-delete-confirm" onclick="confirmDelete()">
+                    🗑️ Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let categories = [];
+        let currentLanguage = 'en';
+        let currentEditingCategoryId = null;
+        let translations = {};
+
+        // Load categories on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!checkAuth()) return;
+            
+            const savedLanguage = localStorage.getItem('adminLanguage') || localStorage.getItem('selectedLanguage') || 'en';
+            currentLanguage = savedLanguage;
+            localStorage.setItem('adminLanguage', currentLanguage);
+            localStorage.setItem('selectedLanguage', currentLanguage);
+            updateLanguageUI(currentLanguage);
+            if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                window.i18n.setLanguage(currentLanguage);
+            }
+
+            initLanguageSelector();
+            setupEventListeners();
+            await loadCategories();
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        function initLanguageSelector() {
+            const langBtn = document.getElementById('langBtn');
+            const langDropdown = document.getElementById('langDropdown');
+            const langOptions = document.querySelectorAll('.lang-option');
+
+            if (!langBtn || !langDropdown) return;
+
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.language-selector')) {
+                    langDropdown.classList.remove('active');
+                }
+            });
+
+            langOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const lang = option.getAttribute('data-lang');
+                    if (lang) {
+                        currentLanguage = lang;
+                        localStorage.setItem('adminLanguage', lang);
+                        localStorage.setItem('selectedLanguage', lang);
+                        updateLanguageUI(lang);
+                        if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                            window.i18n.setLanguage(lang);
+                        }
+                        langDropdown.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+                function updateLanguageUI(lang) {
+            const langBtn = document.getElementById('langBtn');
+            const langMap = { en: 'EN', fr: 'FR', pt: 'PT' };
+            if (langBtn) {
+                langBtn.textContent = langMap[lang] || 'EN';
+            }
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
+            });
+
+            // Fix sidebar labels - ensure only ONE label per item showing correct language
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                // Remove ALL existing labels first
+                item.querySelectorAll('.sidebar-label').forEach(label => {
+                    label.remove();
+                });
+                
+                // Get the correct translation from data attributes
+                const labelText = item.getAttribute(`data-label-${lang}`) || 
+                                 item.getAttribute('data-label-en') || '';
+                
+                // Create ONE new clean label with the correct language text
+                const newLabel = document.createElement('span');
+                newLabel.className = 'sidebar-label';
+                newLabel.textContent = labelText;
+                
+                // Insert after the icon
+                const icon = item.querySelector('.sidebar-icon');
+                if (icon) {
+                    icon.insertAdjacentElement('afterend', newLabel);
+                } else {
+                    item.appendChild(newLabel);
+                }
+            });
+
+            // Notify other listeners about admin language change
+            window.dispatchEvent(new CustomEvent('adminLanguageChanged', { detail: { lang } }));
+        }
+
+        function setupEventListeners() {
+            const addCategoryBtn = document.getElementById('addCategoryBtn');
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const categoryForm = document.getElementById('categoryForm');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const colorInput = document.getElementById('categoryColor');
+
+            addCategoryBtn.addEventListener('click', openCategoryModal);
+            menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+            categoryForm.addEventListener('submit', saveCategory);
+            logoutBtn.addEventListener('click', logout);
+            colorInput.addEventListener('change', (e) => {
+                document.getElementById('colorValue').textContent = e.target.value;
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.sidebar') && !e.target.closest('.menu-toggle')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            setActiveSidebarItem();
+            updateSidebarLanguage(localStorage.getItem('adminLanguage') || 'en');
+        }
+
+        function updateSidebarLanguage(lang) {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const sidebarMenuTitle = document.getElementById('sidebarMenuTitle');
+            const sidebarSettingsTitle = document.getElementById('sidebarSettingsTitle');
+
+            // Update section titles
+            if (sidebarMenuTitle) sidebarMenuTitle.textContent = 'MENU';
+            if (sidebarSettingsTitle) {
+                if (lang === 'fr') sidebarSettingsTitle.textContent = 'PARAMÈTRES';
+                else if (lang === 'pt') sidebarSettingsTitle.textContent = 'CONFIGURAÇÕES';
+                else sidebarSettingsTitle.textContent = 'SETTINGS';
+            }
+
+            // Update menu labels
+            sidebarItems.forEach(item => {
+                const labelSpan = item.querySelector('.sidebar-label');
+                if (!labelSpan) return;
+
+                const labelValue = item.getAttribute(`data-label-${lang}`)
+                    || item.getAttribute('data-label-en')
+                    || item.getAttribute('data-label-fr')
+                    || item.getAttribute('data-label-pt');
+
+                if (labelValue) {
+                    labelSpan.textContent = labelValue;
+                }
+            });
+        }
+
+        // Listen for language changes
+        window.addEventListener('adminLanguageChanged', (e) => {
+            updateSidebarLanguage(e.detail.lang);
+        });
+
+
+        function setActiveSidebarItem() {
+            const filename = window.location.pathname.split('/').pop() || 'index.html';
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+            sidebarItems.forEach(item => {
+                const href = item.getAttribute('href') || '';
+                const section = item.getAttribute('data-section') || '';
+                const itemFilename = href.split('?')[0];
+                
+                // Match by actual filename or index.html as default
+                const isActive = itemFilename === filename || 
+                                (filename === '' && itemFilename === 'index.html') ||
+                                (filename === 'index.html' && itemFilename === 'index.html') ||
+                                (section === 'categories' && filename === 'categories.html');
+                
+                if (isActive) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        async function loadCategories() {
+            try {
+                console.log('[Categories] Loading categories...');
+                const response = await fetch('/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                categories = await response.json();
+                console.log('[Categories] Loaded categories:', categories);
+                renderCategories();
+            } catch (err) {
+                console.error('[Categories] Error loading categories:', err);
+                alert('Error loading categories: ' + err.message);
+            }
+        }
+
+        function renderCategories() {
+            const tbody = document.querySelector('#categoriesTable tbody');
+            
+            if (!categories || categories.length === 0) {
+                tbody.innerHTML = `
+                    <tr style="text-align: center; color: var(--gray-600);">
+                        <td colspan="6" style="padding: 40px;">No categories found</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = categories.map(category => {
+                const nameField = `name_${currentLanguage}`;
+                const categoryName = category[nameField] || category.name_en;
+                const statusClass = category.active ? '' : 'inactive';
+                const statusText = category.active ? 'Active' : 'Inactive';
+
+                return `
+                    <tr>
+                        <td>
+                            <span class="category-icon">${category.icon || '📦'}</span>
+                        </td>
+                        <td class="category-name">${categoryName}</td>
+                        <td>${category.description || '-'}</td>
+                        <td>
+                            <span class="category-color" style="background-color: ${category.color || '#c41e1e'};"></span>
+                        </td>
+                        <td>
+                            <span class="category-status ${statusClass}">${statusText}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-sm btn-edit" onclick="editCategory('${category.id}')">✏ Edit</button>
+                                <button class="btn-sm btn-delete" onclick="openDeleteModal('${category.id}')">🗑️ Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openCategoryModal(categoryId = null) {
+            const modal = document.getElementById('categoryModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('categoryForm');
+
+            if (categoryId) {
+                title.textContent = '✏ Edit Category';
+                const category = categories.find(c => c.id === categoryId);
+                if (category) {
+                    document.getElementById('categoryNameEn').value = category.name_en || '';
+                    document.getElementById('categoryNameFr').value = category.name_fr || '';
+                    document.getElementById('categoryNamePt').value = category.name_pt || '';
+                    document.getElementById('categoryDescription').value = category.description || '';
+                    document.getElementById('categoryIcon').value = category.icon || '📦';
+                    document.getElementById('categoryColor').value = category.color || '#c41e1e';
+                    document.getElementById('colorValue').textContent = category.color || '#c41e1e';
+                    document.getElementById('categoryActive').checked = category.active !== false;
+                }
+            } else {
+                title.textContent = '✏️ Add Category';
+                form.reset();
+                document.getElementById('categoryIcon').value = '📦';
+                document.getElementById('categoryColor').value = '#c41e1e';
+                document.getElementById('colorValue').textContent = '#c41e1e';
+                document.getElementById('categoryActive').checked = true;
+            }
+
+            currentEditingCategoryId = categoryId;
+            modal.classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            const modal = document.getElementById('categoryModal');
+            modal.classList.remove('active');
+            currentEditingCategoryId = null;
+        }
+
+        async function saveCategory(e) {
+            e.preventDefault();
+
+            const categoryData = {
+                name_en: document.getElementById('categoryNameEn').value,
+                name_fr: document.getElementById('categoryNameFr').value,
+                name_pt: document.getElementById('categoryNamePt').value,
+                description: document.getElementById('categoryDescription').value,
+                icon: document.getElementById('categoryIcon').value || '📦',
+                color: document.getElementById('categoryColor').value,
+                active: document.getElementById('categoryActive').checked
+            };
+
+            try {
+                const url = currentEditingCategoryId 
+                    ? `/api/categories/${currentEditingCategoryId}`
+                    : '/api/categories';
+                
+                const method = currentEditingCategoryId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    },
+                    body: JSON.stringify(categoryData)
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(currentEditingCategoryId ? 'Category updated!' : 'Category created!');
+                    closeCategoryModal();
+                    await loadCategories();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error saving category:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function editCategory(categoryId) {
+            openCategoryModal(categoryId);
+        }
+
+        function openDeleteModal(categoryId) {
+            const modal = document.getElementById('deleteModal');
+            currentEditingCategoryId = categoryId;
+            modal.classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('active');
+            currentEditingCategoryId = null;
+        }
+
+        async function confirmDelete() {
+            try {
+                const response = await fetch(`/api/categories/${currentEditingCategoryId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Category deleted!');
+                    closeDeleteModal();
+                    await loadCategories();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Error deleting category:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUsername');
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "home": "HOME",
+    "products": "PRODUCTS",
+    "specialties": "SPECIALTIES",
+    "wine": "WINE & PORT",
+    "grocery": "GROCERY",
+    "gifts": "GIFT BOXES",
+    "about": "ABOUT US",
+    "contact": "CONTACT"
+  },
+  "header": {
+    "search": "Search",
+    "account": "Account",
+    "cart": "Cart"
+  },
+  "features": {
+    "authentic": "Authentic products from Portugal",
+    "delivery": "Fast delivery to France",
+    "secure": "Secure payment",
+    "support": "Customer service in English"
+  },
+  "specialties": {
+    "heading": "Our Portuguese Specialties"
+  },
+  "hero": {
+    "intro": "Discover the",
+    "highlight": "Flavors of Portugal",
+    "sub": "Delivered to France",
+    "features": {
+      "authentic": "Authentic products",
+      "delivery": "Fast delivery",
+      "secure": "Secure payment"
+    },
+    "cta": "SHOP NOW →"
+  },
+  "nav": {
+    "home": "HOME",
+    "products": "PRODUCTS",
+    "specialties": "SPECIALTIES",
+    "wine": "WINE & PORT",
+    "grocery": "GROCERY",
+    "gifts": "GIFT BOXES",
+    "about": "ABOUT US",
+    "contact": "CONTACT"
+  },
+  "pages": {
+    "produits": {
+      "title": "Our Products",
+      "description": "Explore our complete selection of authentic and delicious Portuguese products, specially imported for you."
+    },
+    "specialites": {
+      "title": "Our Portuguese Specialties",
+      "description": "Discover the most delicious and authentic specialties from Portugal, carefully selected for you."
+    },
+    "vins": {
+      "title": "Portuguese Wine & Port",
+      "description": "Explore our exclusive selection of premium wines and Ports, straight from Portugal."
+    },
+    "epicerie": {
+      "title": "Our Grocery",
+      "description": "Find all the essential ingredients for cooking authentic traditional Portuguese dishes."
+    },
+    "coffrets": {
+      "title": "Gourmet Gift Baskets",
+      "description": "Give the flavors of Portugal with our luxurious and authentic gift baskets, perfect for any occasion."
+    },
+    "apropos": {
+      "title": "About Us",
+      "description": "PortugalStore.fr is your trusted source for authentic and quality Portuguese products, delivered straight to your door."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "Have questions? Our customer service is ready to help you. Contact us for any information about our products."
+    },
+    "produtos": {
+      "title": "Our Products",
+      "description": "Explore our complete selection of authentic and delicious Portuguese products, specially imported for you."
+    },
+    "especialidades": {
+      "title": "Our Portuguese Specialties",
+      "description": "Discover the most delicious and authentic specialties from Portugal, carefully selected for you."
+    },
+    "vinhos": {
+      "title": "Portuguese Wine & Port",
+      "description": "Explore our exclusive selection of premium wines and Ports, straight from Portugal."
+    },
+    "mercaria": {
+      "title": "Our Grocery",
+      "description": "Find all the essential ingredients for cooking authentic traditional Portuguese dishes."
+    },
+    "cabazes": {
+      "title": "Gourmet Gift Baskets",
+      "description": "Give the flavors of Portugal with our luxurious and authentic gift baskets, perfect for any occasion."
+    },
+    "sobre": {
+      "title": "About Us",
+      "description": "PortugalStore.fr is your trusted source for authentic and quality Portuguese products, delivered straight to your door."
+    },
+    "contactos": {
+      "title": "Contact Us",
+      "description": "Have questions? Our customer service is ready to help you. Contact us for any information about our products."
+    }
+  }
+}

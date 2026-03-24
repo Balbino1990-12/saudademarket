@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Acheteur - Portugalsstore.fr</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/i18n.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.6s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+        .logo-img {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+        .card-title {
+            margin: 24px 0 8px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+        }
+        .card-subtitle {
+            font-size: 15px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .card-body {
+            padding: 32px;
+        }
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .message.show { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .message.success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1f2937;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+        .form-input::placeholder { color: #9ca3af; }
+        .btn-submit {
+            width: 100%;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
+        }
+        .btn-submit:active:not(:disabled) { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .card-footer {
+            padding: 20px 32px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .card-footer a {
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .card-footer a:hover {
+            color: #1e3a8a;
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 0 8px; }
+            .card-body { padding: 20px 8px; }
+            .card-footer { padding: 16px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <img src="/images/logo.jpg" alt="Portugalsstore.fr" class="logo-img" />
+            </div>
+            <h1 class="card-title">Portugalsstore.fr</h1>
+            <p class="card-subtitle">Connectez-vous à votre compte acheteur</p>
+            <div class="card-body">
+                <div class="message" id="message"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Adresse e-mail</label>
+                        <input class="form-input" type="email" id="email" name="email" required placeholder="votre@email.com" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Mot de passe</label>
+                        <input class="form-input" type="password" id="password" name="password" required placeholder="Votre mot de passe" autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn-submit" id="loginBtn">Se connecter</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a href="#">Mot de passe oublié ?</a><br>
+                Pas encore de compte ? <a href="/user/register.html">Créer un compte</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const messageEl = document.getElementById('message');
+            const loginBtn = document.getElementById('loginBtn');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                if (!email || !password) {
+                    messageEl.className = 'message error show';
+                    messageEl.textContent = 'Veuillez saisir votre e-mail et mot de passe.';
+                    return;
+                }
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Connexion...';
+                try {
+                    const resp = await fetch('/api/user/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: email, password })
+                    });
+                    if (!resp.ok) {
+                        let errMsg = 'Échec de la connexion.';
+                        try { const err = await resp.json(); errMsg = err.error || err.message || errMsg; } catch {}
+                        messageEl.className = 'message error show';
+                        messageEl.textContent = errMsg;
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Se connecter';
+                        return;
+                    }
+                    const data = await resp.json();
+                    const token = data.token || data.accessToken;
+                    if (!token) {
+                        messageEl.className = 'message error show';
+                        messageEl.textContent = 'Connexion impossible : aucun token.';
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Se connecter';
+                        return;
+                    }
+                    localStorage.setItem('userToken', token);
+                    if (data.user) {
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    }
+                    messageEl.className = 'message success show';
+                    messageEl.textContent = 'Connexion réussie ! Redirection...';
+                    // Redirect based on user role
+                    const redirectUrl = data.user && data.user.role === 'seller' ? '/user/dashboard.html' : 'index.html';
+                    setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+                } catch (err) {
+                    messageEl.className = 'message error show';
+                    messageEl.textContent = 'Erreur réseau. Veuillez réessayer.';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Se connecter';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "home": "ACCUEIL",
+    "products": "PRODUITS",
+    "specialties": "SPÉCIALITÉS",
+    "wine": "VIN & PORTO",
+    "grocery": "ÉPICERIE",
+    "gifts": "COFFRETS",
+    "about": "À PROPOS",
+    "contact": "CONTACT"
+  },
+  "header": {
+    "search": "Recherche",
+    "account": "Mon compte",
+    "cart": "Panier"
+  },
+  "features": {
+    "authentic": "PRODUITS AUTHENTIQUES DU PORTUGAL",
+    "delivery": "LIVRAISON RAPIDE EN FRANCE",
+    "secure": "PAIEMENT SÉCURISÉ",
+    "support": "SERVICE CLIENT EN FRANÇAIS"
+  },
+  "specialties": {
+    "heading": "Nos Spécialités Portugaises"
+  },
+  "hero": {
+    "intro": "Découvrez les",
+    "highlight": "Saveurs du Portugal",
+    "sub": "Livrées en France",
+    "features": {
+      "authentic": "Produits authentiques",
+      "delivery": "Livraison rapide",
+      "secure": "Paiement sécurisé"
+    },
+    "cta": "DÉCOUVRIR LA BOUTIQUE →"
+  },
+  "nav": {
+    "home": "ACCUEIL",
+    "products": "PRODUITS",
+    "specialties": "SPÉCIALITÉS",
+    "wine": "VIN & PORTO",
+    "grocery": "ÉPICERIE",
+    "gifts": "COFFRETS",
+    "about": "À PROPOS",
+    "contact": "CONTACT"
+  },
+  "pages": {
+    "produits": {
+      "title": "Nos Produits",
+      "description": "Explorez notre sélection complète de produits portugais authentiques et délicieux, spécialement importés pour vous."
+    },
+    "specialites": {
+      "title": "Nos Spécialités Portugaises",
+      "description": "Découvrez les spécialités les plus savoureuses et authentiques du Portugal, sélectionnées avec soin pour vous."
+    },
+    "vins": {
+      "title": "Vin & Porto Portugais",
+      "description": "Explorez notre sélection exclusive de vins et Portos de qualité supérieure, directement du Portugal."
+    },
+    "epicerie": {
+      "title": "Notre Épicerie",
+      "description": "Trouvez tous les produits de base essentiels pour cuisiner les plats portugais traditionnels authentiques."
+    },
+    "coffrets": {
+      "title": "Coffrets Gourmands",
+      "description": "Offrez les saveurs du Portugal avec nos coffrets cadeaux luxueux et authentiques, parfaits pour tous les occasions."
+    },
+    "apropos": {
+      "title": "À Propos de Nous",
+      "description": "Portugalsstore.fr est votre source de confiance pour les produits portugais authentiques et de qualité, livrés directement en France."
+    },
+    "contact": {
+      "title": "Nous Contacter",
+      "description": "Avez des questions ? Notre service client en français est prêt à vous aider. Contactez-nous pour tout renseignement sur nos produits."
+    },
+    "produtos": {
+      "title": "Nos Produits",
+      "description": "Explorez notre sélection complète de produits portugais authentiques et délicieux, spécialement importés pour vous."
+    },
+    "especialidades": {
+      "title": "Nos Spécialités Portugaises",
+      "description": "Découvrez les spécialités les plus savoureuses et authentiques du Portugal, sélectionnées avec soin pour vous."
+    },
+    "vinhos": {
+      "title": "Vin & Porto Portugais",
+      "description": "Explorez notre sélection exclusive de vins et Portos de qualité supérieure, directement du Portugal."
+    },
+    "mercaria": {
+      "title": "Notre Épicerie",
+      "description": "Trouvez tous les produits de base essentiels pour cuisiner les plats portugais traditionnels authentiques."
+    },
+    "cabazes": {
+      "title": "Coffrets Gourmands",
+      "description": "Offrez les saveurs du Portugal avec nos coffrets cadeaux luxueux et authentiques, parfaits pour tous les occasions."
+    },
+    "sobre": {
+      "title": "À Propos de Nous",
+      "description": "Portugalsstore.fr est votre source de confiance pour les produits portugais authentiques et de qualité, livrés directement en France."
+    },
+    "contactos": {
+      "title": "Nous Contacter",
+      "description": "Avez des questions ? Notre service client en français est prêt à vous aider. Contactez-nous pour tout renseignement sur nos produits."
+    }
+  }
+}

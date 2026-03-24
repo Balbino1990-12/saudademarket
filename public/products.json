@@ -1,0 +1,201 @@
+[
+  {
+    "id": "charcutaria-salame",
+    "name_fr": "Salami Traditionnel",
+    "name_pt": "Salame Tradicional Português",
+    "name_en": "Traditional Portuguese Salami",
+    "image": "/images/charcutaria.jpg",
+    "price": 8.99,
+    "category": "charcutaria"
+  },
+  {
+    "id": "charcutaria-presunto",
+    "name_fr": "Jambon Serrano",
+    "name_pt": "Presunto Serrano",
+    "name_en": "Serrano Ham",
+    "image": "/images/charcutaria.jpg",
+    "price": 15.99,
+    "category": "charcutaria"
+  },
+  {
+    "id": "charcutaria-linguica",
+    "name_fr": "Linguiça Portugaise",
+    "name_pt": "Linguiça Portuguesa",
+    "name_en": "Portuguese Sausage",
+    "image": "/images/charcutaria.jpg",
+    "price": 7.5,
+    "category": "charcutaria"
+  },
+  {
+    "id": "charcutaria-carapau",
+    "name_fr": "Saucisse Fumée",
+    "name_pt": "Saucisse Fumada",
+    "name_en": "Smoked Sausage",
+    "image": "/images/charcutaria.jpg",
+    "price": 6.99,
+    "category": "charcutaria"
+  },
+  {
+    "id": "fromage-serra-acumana",
+    "name_fr": "Fromage Serra Accumulée",
+    "name_pt": "Queijo Serra da Estrela",
+    "name_en": "Serra da Estrela Cheese",
+    "image": "/images/queijos.jpg",
+    "price": 18.5,
+    "category": "fromages"
+  },
+  {
+    "id": "fromage-manchego",
+    "name_fr": "Fromage Manchego",
+    "name_pt": "Queijo Manchego",
+    "name_en": "Manchego Cheese",
+    "image": "/images/queijos.jpg",
+    "price": 12.5,
+    "category": "fromages"
+  },
+  {
+    "id": "fromage-evora",
+    "name_fr": "Fromage d'Évora",
+    "name_pt": "Queijo de Évora",
+    "name_en": "Évora Cheese",
+    "image": "/images/queijos.jpg",
+    "price": 14.99,
+    "category": "fromages"
+  },
+  {
+    "id": "fromage-bico-cana",
+    "name_fr": "Fromage Frais Cannelle",
+    "name_pt": "Queijo Fresco Pimenta",
+    "name_en": "Fresh Spiced Cheese",
+    "image": "/images/queijos.jpg",
+    "price": 9.99,
+    "category": "fromages"
+  },
+  {
+    "id": "fromage-cabra",
+    "name_fr": "Fromage de Chèvre",
+    "name_pt": "Queijo de Cabra",
+    "name_en": "Goat Cheese",
+    "image": "/images/queijos.jpg",
+    "price": 11.99,
+    "category": "fromages"
+  },
+  {
+    "id": "vin-porto-tawny-10",
+    "name_fr": "Vin de Porto Tawny 10 Ans",
+    "name_pt": "Vinho do Porto Tawny 10 Anos",
+    "name_en": "Port Wine Tawny 10 Years",
+    "image": "/images/vinhos.jpg",
+    "price": 22,
+    "category": "vins"
+  },
+  {
+    "id": "vin-porto-ruby",
+    "name_fr": "Vin de Porto Ruby",
+    "name_pt": "Vinho do Porto Ruby",
+    "name_en": "Port Wine Ruby",
+    "image": "/images/vinhos.jpg",
+    "price": 16,
+    "category": "vins"
+  },
+  {
+    "id": "vin-porto-vintage",
+    "name_fr": "Vin de Porto Vintage",
+    "name_pt": "Vinho do Porto Vintage",
+    "name_en": "Port Wine Vintage",
+    "image": "/images/vinhos.jpg",
+    "price": 28.5,
+    "category": "vins"
+  },
+  {
+    "id": "vin-madere",
+    "name_fr": "Vin de Madère",
+    "name_pt": "Vinho da Madeira",
+    "name_en": "Madeira Wine",
+    "image": "/images/vinhos.jpg",
+    "price": 19.99,
+    "category": "vins"
+  },
+  {
+    "id": "vinho-verde",
+    "name_fr": "Vinho Verde Blanc",
+    "name_pt": "Vinho Verde",
+    "name_en": "Green Wine White",
+    "image": "/images/vinhos.jpg",
+    "price": 8.5,
+    "category": "vins"
+  },
+  {
+    "id": "vinho-douro",
+    "name_fr": "Vin de la Vallée de Douro",
+    "name_pt": "Vinho do Douro",
+    "name_en": "Douro Valley Wine",
+    "image": "/images/vinhos.jpg",
+    "price": 13.99,
+    "category": "vins"
+  },
+  {
+    "id": "bolachas-natas",
+    "name_fr": "Biscuits à la Crème",
+    "name_pt": "Pastéis de Nata",
+    "name_en": "Custard Pastry",
+    "image": "/images/doces.jpg",
+    "price": 6.5,
+    "category": "douceurs"
+  },
+  {
+    "id": "bolachas-doces",
+    "name_fr": "Biscuits Portugais",
+    "name_pt": "Biscoitos Doces",
+    "name_en": "Sweet Cookies",
+    "image": "/images/doces.jpg",
+    "price": 5,
+    "category": "douceurs"
+  },
+  {
+    "id": "bolachas-acucar",
+    "name_fr": "Biscuits Au Sucre",
+    "name_pt": "Biscoitos de Açúcar",
+    "name_en": "Sugar Cookies",
+    "image": "/images/doces.jpg",
+    "price": 4.5,
+    "category": "douceurs"
+  },
+  {
+    "id": "chocolate-portugues",
+    "name_fr": "Chocolat Portugais",
+    "name_pt": "Chocolate Português",
+    "name_en": "Portuguese Chocolate",
+    "image": "/images/doces.jpg",
+    "price": 5.99,
+    "category": "douceurs"
+  },
+  {
+    "id": "doce-abobora",
+    "name_fr": "Confiture de Courge",
+    "name_pt": "Doce de Abóbora",
+    "name_en": "Pumpkin Jam",
+    "image": "/images/doces.jpg",
+    "price": 7.5,
+    "category": "douceurs"
+  },
+  {
+    "id": "marmelada",
+    "name_fr": "Pâte de Coing",
+    "name_pt": "Marmelada Caseira",
+    "name_en": "Quince Jam",
+    "image": "/images/doces.jpg",
+    "price": 6.99,
+    "category": "douceurs"
+  },
+  {
+    "id": "white",
+    "name_fr": "Brance",
+    "name_pt": "Branco",
+    "name_en": "White",
+    "category": "vins",
+    "price": 30,
+    "image": "/images/default.jpg",
+    "description": "Vinho Branco de Porto"
+  }
+]

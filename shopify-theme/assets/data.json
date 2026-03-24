@@ -1,0 +1,18 @@
+{
+  "categories": [
+    { "name_fr": "Charcuterie", "name_pt": "Charcutaria", "name_en": "Charcuterie", "image": "{{ 'charcutaria.jpg' | asset_url }}", "link": "/collections/all" },
+    { "name_fr": "Fromages", "name_pt": "Queijos", "name_en": "Cheeses", "image": "{{ 'queijos.jpg' | asset_url }}", "link": "/collections/all" },
+    { "name_fr": "Vins & Porto", "name_pt": "Vinhos & Porto", "name_en": "Wines & Port", "image": "{{ 'vinhos.jpg' | asset_url }}", "link": "/collections/vins" },
+    { "name_fr": "Conserves", "name_pt": "Conservas", "name_en": "Canned Goods", "image": "{{ 'conservas.jpg' | asset_url }}", "link": "/collections/all" },
+    { "name_fr": "Douceurs", "name_pt": "Doces", "name_en": "Sweets", "image": "{{ 'doces.jpg' | asset_url }}", "link": "/collections/all" },
+    { "name_fr": "Épicerie", "name_pt": "Mercaria", "name_en": "Grocery", "image": "{{ 'mercaria.jpg' | asset_url }}", "link": "/collections/epicerie" }
+  ],
+  "specialties": [
+    { "name_fr": "Huile d'Olive", "name_pt": "Azeite", "name_en": "Olive Oil", "image": "{{ 'azeite.jpg' | asset_url }}" },
+    { "name_fr": "Pastéis de Nata", "name_pt": "Pastéis de Nata", "name_en": "Pastéis de Nata", "image": "{{ 'pasteis.jpg' | asset_url }}" },
+    { "name_fr": "Morue", "name_pt": "Bacalhau", "name_en": "Cod", "image": "{{ 'bacalhau.jpg' | asset_url }}" },
+    { "name_fr": "Chorizo & Jambon", "name_pt": "Chouriço e Presunto", "name_en": "Chorizo & Ham", "image": "{{ 'chourico.jpg' | asset_url }}" },
+    { "name_fr": "Vins & Liqueurs", "name_pt": "Vinhos & Licores", "name_en": "Wines & Liqueurs", "image": "{{ 'vinhos_licores.jpg' | asset_url }}" },
+    { "name_fr": "Coffrets Gourmets", "name_pt": "Cabazes Gourmet", "name_en": "Gourmet Gift Boxes", "image": "{{ 'cabazes.jpg' | asset_url }}" }
+  ]
+}

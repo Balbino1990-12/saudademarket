@@ -1,0 +1,48 @@
+<section class="categories" id="categories">
+  <h2 data-i18n="nav.categories">NOS CATÉGORIES</h2>
+  <p class="categories-subtitle" data-i18n="nav.subtitle">Explorez notre sélection de produits portugais authentiques</p>
+  <div class="categories-grid">
+    {% if section.blocks.size > 0 %}
+      {% for block in section.blocks %}
+        {% assign col = block.settings.collection %}
+        {% if col %}
+          <a class="category" href="{{ col.url }}">
+            <img src="{{ col.image | img_url: 'medium' }}" alt="{{ col.title }}" loading="lazy" />
+            <div class="category-content">
+              <h3 class="category-name">{{ col.title }}</h3>
+              <a class="discover-link" href="{{ col.url }}">&gt;&gt; <span data-i18n="nav.subtitle">Conhecer</span></a>
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <!-- categories will be rendered client-side from data.json asset -->
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Categories",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "collection_block",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Categories"
+    }
+  ]
+}
+{% endschema %}

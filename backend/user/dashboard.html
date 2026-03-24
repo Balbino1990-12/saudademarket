@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – PortugalStore User Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #1e40af;
+            --secondary: #0f766e;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #eab308;
+            --info: #0284c7;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --white: #ffffff;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-500: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #loadingOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--white);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Main Wrapper */
+        .wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e3a8a 0%, #1a38a8 50%, #0f766e 100%);
+            color: var(--white);
+            padding: 20px 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 0 20px;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+            flex-wrap: nowrap !important;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            padding-left: 24px;
+            border-left-color: #4ade80;
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(90deg, rgba(74, 222, 128, 0.2) 0%, transparent 100%);
+            color: var(--white);
+            border-left-color: #4ade80;
+            font-weight: 600;
+        }
+
+        .sidebar-item.active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 24px;
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+            border-radius: 2px 0 0 2px;
+        }
+
+        .sidebar-icon {
+            font-size: 1.5rem !important;
+            width: auto !important;
+            height: auto !important;
+            display: inline !important;
+            flex-shrink: 0;
+            color: #ffffff !important;
+        }
+
+        /* Page Content */
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #pageContent {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        #pageContent.loaded {
+            opacity: 1;
+        }
+
+        /* Section Content Styling */
+        .section-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 24px;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-title p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        .language-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: var(--shadow-lg);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.95rem;
+        }
+
+        .language-option:last-child {
+            border-bottom: none;
+        }
+
+        .language-option:hover {
+            background: var(--light);
+        }
+
+        .language-option.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 40px 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Welcome Section */
+        .welcome-card {
+            background: var(--white);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .welcome-card h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .welcome-card p {
+            color: var(--gray-500);
+            font-size: 1.1rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .card-description {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .card-button:hover {
+            background: var(--primary-dark);
+            transform: translateX(4px);
+        }
+
+        /* Profile Section */
+        .profile-section {
+            background: var(--white);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .profile-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .profile-info p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        /* Profile Details Grid */
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .detail-item p {
+            font-size: 1rem;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 60px;
+                padding: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .sidebar-section {
+                display: flex;
+                gap: 0;
+                margin-bottom: 0;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .sidebar-item {
+                flex-direction: column;
+                gap: 4px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .header-left, .header-right {
+                width: 100%;
+            }
+
+            .header-right {
+                justify-content: center;
+            }
+
+            .welcome-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 20px 16px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="/js/i18n.js"></script>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading Dashboard...</div>
+        </div>
+    </div>
+
+    <!-- Page Content with Sidebar -->
+    <div id="pageContent">
+        <!-- Wrapper for sidebar and main content -->
+        <div class="wrapper">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <!-- Main Navigation Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title" data-i18n="main">Main</div>
+                    <a class="sidebar-item active" data-section="dashboard" onclick="switchSection('dashboard', event)">
+                        <span class="sidebar-icon">📊</span>
+                        <span data-i18n="dashboard">Dashboard</span>
+                    </a>
+                    <a class="sidebar-item" data-section="products" data-permission="manage_products" onclick="switchSection('products', event)">
+                        <span class="sidebar-icon">📦</span>
+                        <span data-i18n="my_products">My Products</span>
+                    </a>
+                    <a class="sidebar-item" data-section="categories" data-permission="manage_categories" onclick="switchSection('categories', event)">
+                        <span class="sidebar-icon">📂</span>
+                        <span data-i18n="categories">Categories</span>
+                    </a>
+                    <a class="sidebar-item" data-section="orders" data-permission="view_activities" onclick="switchSection('orders', event)">
+                        <span class="sidebar-icon">📋</span>
+                        <span data-i18n="activities">Activities</span>
+                    </a>
+                </div>
+
+                <!-- Account Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title" data-i18n="account">Account</div>
+                    <a class="sidebar-item" data-section="settings" onclick="switchSection('settings', event)">
+                        <span class="sidebar-icon">⚙️</span>
+                        <span data-i18n="settings">Settings</span>
+                    </a>
+                    <a class="sidebar-item" onclick="handleLogout()" style="cursor: pointer;">
+                        <span class="sidebar-icon">🚪</span>
+                        <span data-i18n="logout">Logout</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content Wrapper -->
+            <div class="main-wrapper">
+                <!-- Header -->
+                <div class="header">
+                    <div class="header-left">
+                        <div class="logo">
+                            <img src="/images/logo.jpg" alt="PortugalStore Logo" style="height: 40px; width: auto; border-radius: 4px;">
+                        </div>
+                        <div class="header-title">
+                            <h1>PortugalStore</h1>
+                            <p data-i18n="seller_dashboard">Seller Dashboard</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-info">
+                            <span id="userDisplayName">Loading...</span>
+                        </div>
+                        <div class="language-selector">
+                            <button class="language-btn" id="languageBtn" onclick="toggleLanguageDropdown()">
+                                <span id="languageFlag">🇬🇧</span>
+                                <span id="languageCode">EN</span>
+                            </button>
+                            <div class="language-dropdown" id="languageDropdown">
+                                <div class="language-option active" data-lang="en" onclick="switchLanguage('en')">
+                                    <span>🇬🇧 English</span>
+                                </div>
+                                <div class="language-option" data-lang="fr" onclick="switchLanguage('fr')">
+                                    <span>🇫🇷 Français</span>
+                                </div>
+                                <div class="language-option" data-lang="pt" onclick="switchLanguage('pt')">
+                                    <span>🇵🇹 Português</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="container">
+                    <!-- Dashboard Section -->
+                    <div class="section-content" id="dashboard-section">
+                        <!-- Welcome Section -->
+                        <div class="welcome-card">
+                            <h2 data-i18n="welcome_back">Welcome back, <span id="welcomeName">User</span>! 👋</h2>
+                            <p data-i18n="welcome">Manage your products, track orders, and grow your business on PortugalStore.</p>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="grid">
+                            <div class="card" id="products-card" style="display: none;">
+                                <div class="card-icon">📦</div>
+                                <div class="card-title" data-i18n="my_products">My Products</div>
+                                <div class="card-description" data-i18n="manage_products_desc">View and manage your product listings.</div>
+                                <button class="card-button" onclick="switchSection('products')" data-i18n="view_products">View Products →</button>
+                            </div>
+
+                            <div class="card" id="categories-card" style="display: none;">
+                                <div class="card-icon">📂</div>
+                                <div class="card-title" data-i18n="categories">Categories</div>
+                                <div class="card-description" data-i18n="manage_categories_desc">Manage product categories.</div>
+                                <button class="card-button" onclick="switchSection('categories')" data-i18n="categories">Manage Categories →</button>
+                            </div>
+
+                            <div class="card" id="activities-card" style="display: none;">
+                                <div class="card-icon">📋</div>
+                                <div class="card-title" data-i18n="activities">Activities</div>
+                                <div class="card-description" data-i18n="manage_activities_desc">View your account activities.</div>
+                                <button class="card-button" onclick="switchSection('orders')" data-i18n="view_activities">View Activities →</button>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-icon">⚙️</div>
+                                <div class="card-title" data-i18n="account_settings">Account Settings</div>
+                                <div class="card-description" data-i18n="account_settings_desc">Update your profile and preferences.</div>
+                                <button class="card-button" onclick="switchSection('settings')" data-i18n="edit_settings">Edit Settings →</button>
+                            </div>
+                        </div>
+
+                        <!-- Profile Section -->
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div class="profile-avatar" id="profileAvatar">?</div>
+                    <div class="profile-info">
+                        <h3 id="profileName">User Name</h3>
+                        <p id="profileRole" style="color: var(--primary); font-weight: 600;">Seller</p>
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <label>Email</label>
+                        <p id="profileEmail">–</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Username</label>
+                        <p id="profileUsername">–</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Phone</label>
+                        <p id="profilePhone">–</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>City</label>
+                        <p id="profileCity">–</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Account Status</label>
+                        <p id="profileStatus">–</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Member Since</label>
+                        <p id="profileMemberSince">–</p>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Section -->
+                    <div class="section-content" id="products-section" style="display: none;">
+                        <div class="welcome-card">
+                            <h2 data-i18n="my_products">My Products 📦</h2>
+                            <p data-i18n="manage_products">Manage all your product listings and inventory.</p>
+                        </div>
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; color: var(--dark); font-size: 1.1rem;" data-i18n="products_management">Products Management</h3>
+                                    <p style="margin: 8px 0 0 0; color: var(--gray-500);" data-i18n="add_edit_delete">Add, edit, and delete your products</p>
+                                </div>
+                                <button id="addProductBtn" style="padding: 10px 20px; background: var(--primary); color: var(--white); border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;" data-i18n="add_product">+ Add Product</button>
+                            </div>
+
+                            <!-- Products Table -->
+                            <div id="productsTableContainer" style="overflow-x: auto; margin-top: 20px;">
+                                <table id="productsTable" style="width: 100%; border-collapse: collapse; display: none;">
+                                    <thead>
+                                        <tr style="background: var(--light); border-bottom: 2px solid var(--border);">
+                                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--dark);" data-i18n="product_name">Product Name</th>
+                                            <th style="padding: 12px; text-align: left; font-weight: 600; color: var(--dark);" data-i18n="category">Category</th>
+                                            <th style="padding: 12px; text-align: right; font-weight: 600; color: var(--dark);" data-i18n="price">Price</th>
+                                            <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--dark);" data-i18n="image">Image</th>
+                                            <th style="padding: 12px; text-align: center; font-weight: 600; color: var(--dark);" data-i18n="actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productsTableBody"></tbody>
+                                </table>
+
+                                <!-- Empty State -->
+                                <div id="productsEmptyState" style="text-align: center; padding: 60px 20px; color: var(--gray-500);">
+                                    <div style="font-size: 3rem; margin-bottom: 16px;">📦</div>
+                                    <h3 style="margin: 0 0 8px 0; color: var(--dark);" data-i18n="no_products_yet">No Products Yet</h3>
+                                    <p style="margin: 0 0 20px 0;" data-i18n="create_first_product">Create your first product to get started</p>
+                                </div>
+
+                                <!-- Loading State -->
+                                <div id="productsLoadingState" style="text-align: center; padding: 40px 20px; color: var(--gray-500); display: none;">
+                                    <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid var(--gray-300); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                    <p style="margin-top: 12px;" data-i18n="loading_products">Loading products...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Section -->
+                    <div class="section-content" id="categories-section" style="display: none;">
+                        <div class="welcome-card">
+                            <h2 data-i18n="categories_section">Categories 📂</h2>
+                            <p data-i18n="manage_categories_desc">Organize and manage product categories.</p>
+                        </div>
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; color: var(--dark); font-size: 1.1rem;" data-i18n="categories_management">Categories Management</h3>
+                                    <p style="margin: 8px 0 0 0; color: var(--gray-500);" data-i18n="create_first_product">Create and manage product categories</p>
+                                </div>
+                            </div>
+                            <p style="color: var(--gray-500); text-align: center; padding: 40px 0;">
+                                🔄 <span data-i18n="coming_soon">Coming soon...</span> <span data-i18n="feature_coming_soon">Category management interface will be available here.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Orders/Activities Section -->
+                    <div class="section-content" id="orders-section" style="display: none;">
+                        <div class="welcome-card">
+                            <h2 data-i18n="activities">Activities 📋</h2>
+                            <p data-i18n="manage_activities_desc">Track all your account activities and events.</p>
+                        </div>
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0; color: var(--dark); font-size: 1.1rem;" data-i18n="activity_log">Activity Log</h3>
+                                    <p style="margin: 8px 0 0 0; color: var(--gray-500);" data-i18n="manage_activities_desc">View your account activities</p>
+                                </div>
+                            </div>
+                            <p style="color: var(--gray-500); text-align: center; padding: 40px 0;">
+                                🔄 <span data-i18n="coming_soon">Coming soon...</span> <span data-i18n="feature_coming_soon">Activity log will be displayed here.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div class="section-content" id="settings-section" style="display: none;">
+                        <div class="welcome-card">
+                            <h2 data-i18n="account_settings">Account Settings ⚙️</h2>
+                            <p data-i18n="account_settings_desc">Manage your profile and account settings.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title" data-i18n="manage_settings">Settings Management</div>
+                            <div class="card-description">This section will allow you to edit your account settings.</div>
+                            <p style="color: var(--gray-500); margin-top: 16px;" data-i18n="feature_coming_soon">Feature coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userToken = null;
+        let currentUser = null;
+        let userPermissions = {};
+        let permissionCheckInterval = null;
+        const PERMISSION_CHECK_INTERVAL = 30000; // Check every 30 seconds
+        let currentLanguage = 'en';
+        let translations = {};
+
+        // Load user data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load language from localStorage or default to 'en'
+            currentLanguage = localStorage.getItem('dashboardLanguage') || 'en';
+            console.log('[Dashboard] Loaded language from storage:', currentLanguage);
+            
+            // Load translations
+            loadTranslations();
+            
+            // Set initial language display
+            setLanguageBtnDisplay();
+            
+            loadUserData();
+        });
+
+        // Stop permission polling when user leaves the page
+        window.addEventListener('beforeunload', () => {
+            stopPermissionPolling();
+        });
+
+        // Close language dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const selector = document.querySelector('.language-selector');
+            if (selector && !selector.contains(e.target)) {
+                const dropdown = document.getElementById('languageDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        });
+
+        async function loadTranslations() {
+            try {
+                const response = await fetch('/translations.json');
+                if (response.ok) {
+                    translations = await response.json();
+                    console.log('[Dashboard] ✅ Translations loaded successfully');
+                } else {
+                    console.warn('[Dashboard] Failed to fetch translations:', response.status);
+                }
+            } catch (err) {
+                console.error('[Dashboard] Failed to load translations:', err);
+            }
+        }
+
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function setLanguageBtnDisplay() {
+            const flags = { en: '🇬🇧', fr: '🇫🇷', pt: '🇵🇹' };
+            const codes = { en: 'EN', fr: 'FR', pt: 'PT' };
+            
+            document.getElementById('languageFlag').textContent = flags[currentLanguage] || '🇬🇧';
+            document.getElementById('languageCode').textContent = codes[currentLanguage] || 'EN';
+            
+            // Update active option in dropdown
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.getAttribute('data-lang') === currentLanguage) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        function switchLanguage(lang) {
+            if (lang !== currentLanguage) {
+                currentLanguage = lang;
+                localStorage.setItem('dashboardLanguage', lang);
+                console.log('[Dashboard] Language switched to:', lang);
+                
+                // Update button display
+                setLanguageBtnDisplay();
+                
+                // Update document language
+                document.documentElement.lang = lang;
+                
+                // Apply translations
+                applyTranslations();
+                
+                // Close dropdown
+                const dropdown = document.getElementById('languageDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        }
+
+        function applyTranslations() {
+            if (!translations[currentLanguage]) {
+                console.warn('[Dashboard] No translations found for:', currentLanguage);
+                return;
+            }
+
+            const trans = translations[currentLanguage];
+            console.log('[Dashboard] Applying translations for language:', currentLanguage);
+
+            // Translate all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (key && trans[key]) {
+                    // Check if element has child elements
+                    const hasChildren = element.children.length > 0;
+                    
+                    if (hasChildren) {
+                        // Preserve child elements, only update own text
+                        const childHTML = Array.from(element.children).map(child => child.outerHTML).join('');
+                        element.innerHTML = trans[key] + childHTML;
+                    } else {
+                        // No children, safe to update textContent
+                        element.textContent = trans[key];
+                    }
+                    console.log('[Dashboard] Translated [' + key + ']: "' + trans[key] + '"');
+                }
+            });
+
+            console.log('[Dashboard] ✅ All translations applied');
+        }
+
+        window.toggleLanguageDropdown = toggleLanguageDropdown;
+        window.switchLanguage = switchLanguage;
+
+        function loadUserData() {
+            // Get token from localStorage
+            userToken = localStorage.getItem('userToken');
+            const storedUser = localStorage.getItem('currentUser');
+
+            console.log('[Dashboard] Token found:', !!userToken);
+            console.log('[Dashboard] User info found:', !!storedUser);
+
+            if (!userToken || !storedUser) {
+                console.warn('[Dashboard] No user token or info found, redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/user/login.html';
+                }, 500);
+                return;
+            }
+
+            try {
+                currentUser = JSON.parse(storedUser);
+                console.log('[Dashboard] User data loaded:', currentUser.username);
+                displayUserInfo();
+                
+                // Fetch fresh permissions from server (not cached from login)
+                fetchFreshPermissions().then(() => {
+                    filterMenuByPermissions();
+                    hideLoadingOverlay();
+                    // Start periodic permission checks
+                    startPermissionPolling();
+                }).catch(err => {
+                    console.warn('[Dashboard] Could not fetch fresh permissions, using cached:', err);
+                    userPermissions = currentUser.permissions || {};
+                    filterMenuByPermissions();
+                    hideLoadingOverlay();
+                    // Start periodic permission checks even if initial fetch failed
+                    startPermissionPolling();
+                });
+            } catch (err) {
+                console.error('[Dashboard] Error parsing user info:', err);
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('currentUser');
+                setTimeout(() => {
+                    window.location.href = '/user/login.html';
+                }, 500);
+            }
+        }
+
+        async function fetchFreshPermissions() {
+            try {
+                if (!currentUser || !currentUser.role) {
+                    console.warn('[Dashboard] Cannot fetch permissions: no role found');
+                    return;
+                }
+
+                console.log('[Dashboard] Fetching fresh permissions for role:', currentUser.role);
+                
+                const response = await fetch(`/api/roles`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const roles = await response.json();
+                console.log('[Dashboard] API returned roles:', roles);
+                
+                const userRole = roles.find(r => r.name.toLowerCase() === currentUser.role.toLowerCase());
+                console.log('[Dashboard] Found user role:', userRole);
+                
+                if (userRole) {
+                    // Parse permissions if they're a string
+                    let permissions = userRole.permissions;
+                    if (typeof permissions === 'string') {
+                        try {
+                            permissions = JSON.parse(permissions);
+                        } catch (parseErr) {
+                            console.error('[Dashboard] Failed to parse permissions:', parseErr);
+                            permissions = {};
+                        }
+                    }
+                    
+                    console.log('[Dashboard] ✅ Fresh permissions extracted:', permissions);
+                    userPermissions = permissions || {};
+                    
+                    // Update localStorage with fresh permissions
+                    currentUser.permissions = userPermissions;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    console.log('[Dashboard] Permissions updated in localStorage');
+                } else {
+                    console.warn('[Dashboard] Role not found in API response');
+                    userPermissions = currentUser.permissions || {};
+                }
+            } catch (err) {
+                console.error('[Dashboard] Error fetching fresh permissions:', err);
+                // Fall back to cached permissions
+                userPermissions = currentUser.permissions || {};
+            }
+        }
+
+        function displayUserInfo() {
+            if (!currentUser) return;
+
+            const firstName = currentUser.first_name || 'User';
+            const lastName = currentUser.last_name || '';
+            const fullName = `${firstName} ${lastName}`.trim();
+            const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+
+            // Update header
+            document.getElementById('userDisplayName').textContent = fullName;
+
+            // Update welcome section
+            document.getElementById('welcomeName').textContent = firstName;
+
+            // Update profile section
+            document.getElementById('profileName').textContent = fullName;
+            document.getElementById('profileUsername').textContent = currentUser.username || '–';
+            document.getElementById('profileEmail').textContent = currentUser.email || '–';
+            document.getElementById('profilePhone').textContent = currentUser.phone_number || '–';
+            document.getElementById('profileCity').textContent = currentUser.city || '–';
+            document.getElementById('profileRole').textContent = (currentUser.role || 'seller').toUpperCase();
+            document.getElementById('profileStatus').textContent = currentUser.active ? '✅ Active' : '❌ Inactive';
+            
+            // Format member since date
+            if (currentUser.created_at) {
+                const date = new Date(currentUser.created_at);
+                document.getElementById('profileMemberSince').textContent = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+
+            // Update avatar
+            document.getElementById('profileAvatar').textContent = initials || '?';
+        }
+
+        async function startPermissionPolling() {
+            // Clear any existing interval
+            if (permissionCheckInterval) {
+                clearInterval(permissionCheckInterval);
+            }
+            
+            console.log('[Dashboard] ⏱️ Starting permission polling (every 30 seconds)');
+            
+            // Check immediately
+            await checkAndUpdatePermissions();
+            
+            // Then check periodically
+            permissionCheckInterval = setInterval(async () => {
+                await checkAndUpdatePermissions();
+            }, PERMISSION_CHECK_INTERVAL);
+        }
+
+        function stopPermissionPolling() {
+            if (permissionCheckInterval) {
+                clearInterval(permissionCheckInterval);
+                permissionCheckInterval = null;
+                console.log('[Dashboard] ⏹️ Stopped permission polling');
+            }
+        }
+
+        async function checkAndUpdatePermissions() {
+            try {
+                if (!currentUser || !currentUser.role) {
+                    return;
+                }
+
+                const response = await fetch(`/api/roles`, {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const roles = await response.json();
+                const userRole = roles.find(r => r.name.toLowerCase() === currentUser.role.toLowerCase());
+                
+                if (!userRole) {
+                    console.warn('[Dashboard] Role not found in API response');
+                    return;
+                }
+
+                // Parse permissions if they're a string
+                let newPermissions = userRole.permissions;
+                if (typeof newPermissions === 'string') {
+                    try {
+                        newPermissions = JSON.parse(newPermissions);
+                    } catch (parseErr) {
+                        console.error('[Dashboard] Failed to parse permissions:', parseErr);
+                        newPermissions = {};
+                    }
+                }
+
+                // Check if permissions have changed
+                const permissionsChanged = JSON.stringify(userPermissions) !== JSON.stringify(newPermissions);
+
+                if (permissionsChanged) {
+                    console.log('[Dashboard] 📢 PERMISSIONS UPDATED!');
+                    console.log('[Dashboard] Old permissions:', userPermissions);
+                    console.log('[Dashboard] New permissions:', newPermissions);
+                    
+                    // Update permissions
+                    userPermissions = newPermissions || {};
+                    currentUser.permissions = userPermissions;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Re-filter menu with new permissions
+                    filterMenuByPermissions();
+                    
+                    // Show notification
+                    showPermissionUpdateNotification();
+                }
+            } catch (err) {
+                console.warn('[Dashboard] Error checking permissions:', err);
+            }
+        }
+
+        function showPermissionUpdateNotification() {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.2rem;">✅</span>
+                    <span>Your permissions have been updated. Menu has been refreshed.</span>
+                </div>
+            `;
+            
+            // Add animation keyframes
+            if (!document.getElementById('notificationStyles')) {
+                const style = document.createElement('style');
+                style.id = 'notificationStyles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOut {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(400px);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+
+        function filterMenuByPermissions() {
+            console.log('[Dashboard] 🔍 Filtering menu items based on permissions');
+            console.log('[Dashboard] Current permissions object:', userPermissions);
+            
+            // Get all menu items that have permission requirements
+            const menuItems = document.querySelectorAll('.sidebar-item[data-permission]');
+            console.log('[Dashboard] Found', menuItems.length, 'menu items with permission requirements');
+            
+            menuItems.forEach(item => {
+                const requiredPermission = item.getAttribute('data-permission');
+                const sectionName = item.getAttribute('data-section');
+                const permissionValue = userPermissions[requiredPermission];
+                const hasPermission = permissionValue === true || permissionValue === 1 || permissionValue === '1' || permissionValue === 'true';
+                
+                console.log(`[Dashboard] Item "${sectionName}" requires "${requiredPermission}": value="${permissionValue}" (type: ${typeof permissionValue}) → hasPermission: ${hasPermission}`);
+                
+                if (!hasPermission) {
+                    console.log(`[Dashboard] ❌ HIDING menu item: ${sectionName} (permission: ${requiredPermission})`);
+                    item.style.setProperty('display', 'none', 'important');
+                } else {
+                    console.log(`[Dashboard] ✅ SHOWING menu item: ${sectionName} (permission: ${requiredPermission})`);
+                    item.style.setProperty('display', 'flex', 'important');
+                }
+            });
+
+            // Also show/hide quick action cards based on permissions
+            const permissionMap = {
+                'manage_products': 'products-card',
+                'manage_categories': 'categories-card',
+                'view_activities': 'activities-card'
+            };
+
+            Object.keys(permissionMap).forEach(permission => {
+                const cardId = permissionMap[permission];
+                const card = document.getElementById(cardId);
+                if (card) {
+                    const permissionValue = userPermissions[permission];
+                    const hasPermission = permissionValue === true || permissionValue === 1 || permissionValue === '1' || permissionValue === 'true';
+                    
+                    if (hasPermission) {
+                        console.log(`[Dashboard] ✅ Showing quick action card (${permission}): value="${permissionValue}"`);
+                        card.style.setProperty('display', 'block', 'important');
+                    } else {
+                        console.log(`[Dashboard] ❌ Hiding quick action card (${permission}): value="${permissionValue}"`);
+                        card.style.setProperty('display', 'none', 'important');
+                    }
+                }
+            });
+        }
+
+        function hideLoadingOverlay() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const pageContent = document.getElementById('pageContent');
+            
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('hidden');
+            }
+            
+            if (pageContent) {
+                setTimeout(() => {
+                    pageContent.classList.add('loaded');
+                }, 50);
+            }
+        }
+
+        function switchSection(sectionName, event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            // Hide all sections
+            const sections = document.querySelectorAll('.section-content');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show the selected section
+            const selectedSection = document.getElementById(`${sectionName}-section`);
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+            }
+
+            // Update sidebar active state
+            const sidebarItems = document.querySelectorAll('.sidebar-item[data-section]');
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === sectionName) {
+                    item.classList.add('active');
+                }
+            });
+
+            console.log(`[Dashboard] Switched to section: ${sectionName}`);
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Stop permission polling
+                stopPermissionPolling();
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('currentUser');
+                window.location.href = '/user/login.html';
+            }
+        }
+
+        // ===== PRODUCT MANAGEMENT =====
+        let currentEditingProductId = null;
+        let productsList = [];
+        let translationTimeout = null;
+        let categoriesList = [];
+
+        async function fetchCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                if (!response.ok) throw new Error('Failed to fetch categories');
+                categoriesList = await response.json();
+                populateCategoryDropdown();
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        }
+
+        function populateCategoryDropdown() {
+            const categorySelect = document.getElementById('productCategory');
+            if (!categorySelect) return;
+            
+            // Keep the default option
+            const defaultOption = categorySelect.querySelector('option[value=""]');
+            categorySelect.innerHTML = '';
+            categorySelect.appendChild(defaultOption);
+            
+            // Add categories from API
+            categoriesList.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name_en || category.name || 'Unnamed';
+                categorySelect.appendChild(option);
+            });
+        }
+
+        // Load products when switching to products section
+        document.addEventListener('DOMContentLoaded', () => {
+            const addProductBtn = document.getElementById('addProductBtn');
+            if (addProductBtn) {
+                addProductBtn.addEventListener('click', openAddProductModal);
+            }
+
+            // Create modal HTML
+            createProductModal();
+            
+            // Load categories
+            fetchCategories();
+        });
+
+        function createProductModal() {
+            const modal = document.createElement('div');
+            modal.id = 'productModal';
+            modal.style.cssText = `
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--white);
+                    border-radius: 12px;
+                    max-width: 600px;
+                    width: 100%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    padding: 32px;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                ">
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 24px;
+                        padding-bottom: 24px;
+                        border-bottom: 1px solid var(--border);
+                    ">
+                        <h3 id="productModalTitle" style="margin: 0; font-size: 1.5rem; color: var(--dark);">Add New Product</h3>
+                        <button onclick="closeProductModal()" style="
+                            background: none;
+                            border: none;
+                            font-size: 2rem;
+                            cursor: pointer;
+                            color: var(--gray-500);
+                            padding: 0;
+                            width: 32px;
+                            height: 32px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">&times;</button>
+                    </div>
+
+                    <form id="productForm" onsubmit="submitProductForm(event)">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Product Name (English) *</label>
+                            <input type="text" id="productNameEn" placeholder="Enter product name in English" required style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                            ">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Product Name (French)</label>
+                            <input type="text" id="productNameFr" placeholder="Nom du produit en français" style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                            ">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Product Name (Portuguese)</label>
+                            <input type="text" id="productNamePt" placeholder="Nome do produto em português" style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                            ">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Category *</label>
+                            <select id="productCategory" required style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                                background-color: var(--white);
+                                cursor: pointer;
+                            ">
+                                <option value="">-- Select a Category --</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Price (€) *</label>
+                            <input type="number" id="productPrice" placeholder="0.00" step="0.01" required style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                            ">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Product Image</label>
+                            <input type="file" id="productImage" accept="image/*" style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                            ">
+                            <div id="imagePreview" style="margin-top: 10px;"></div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--dark); font-weight: 600;">Description</label>
+                            <textarea id="productDescription" placeholder="Enter product description" rows="4" style="
+                                width: 100%;
+                                padding: 10px;
+                                border: 1px solid var(--border);
+                                border-radius: 6px;
+                                font-size: 1rem;
+                                font-family: inherit;
+                            "></textarea>
+                        </div>
+
+                        <div id="productFormError" style="
+                            color: var(--danger);
+                            margin-bottom: 16px;
+                            padding: 12px;
+                            background: rgba(220, 53, 69, 0.1);
+                            border-radius: 6px;
+                            display: none;
+                        "></div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button type="submit" style="
+                                flex: 1;
+                                padding: 12px;
+                                background: var(--primary);
+                                color: var(--white);
+                                border: none;
+                                border-radius: 6px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                                Save Product
+                            </button>
+                            <button type="button" onclick="closeProductModal()" style="
+                                flex: 1;
+                                padding: 12px;
+                                background: var(--gray-200);
+                                color: var(--dark);
+                                border: none;
+                                border-radius: 6px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.background='var(--gray-300)'" onmouseout="this.style.background='var(--gray-200)'">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function openAddProductModal() {
+            currentEditingProductId = null;
+            const form = document.getElementById('productForm');
+            if (form) form.reset();
+            document.getElementById('productModalTitle').textContent = '✚ Add New Product';
+            document.getElementById('imagePreview').innerHTML = '';
+            
+            // Clear error message
+            const errorDiv = document.getElementById('productFormError');
+            if (errorDiv) errorDiv.style.display = 'none';
+            
+            const modal = document.getElementById('productModal');
+            if (modal) modal.style.display = 'flex';
+            
+            // Load categories
+            if (categoriesList.length === 0) {
+                fetchCategories();
+            } else {
+                populateCategoryDropdown();
+            }
+            
+            // Setup auto-translation
+            setupAutoTranslation();
+        }
+
+        function closeProductModal() {
+            const modal = document.getElementById('productModal');
+            if (modal) modal.style.display = 'none';
+            currentEditingProductId = null;
+        }
+
+        function openEditProductModal(product) {
+            currentEditingProductId = product.id;
+            document.getElementById('productNameEn').value = product.name_en || '';
+            document.getElementById('productNameFr').value = product.name_fr || '';
+            document.getElementById('productNamePt').value = product.name_pt || '';
+            document.getElementById('productCategory').value = product.category_id || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productDescription').value = product.description || '';
+            
+            document.getElementById('productModalTitle').textContent = '✏️ Edit Product';
+            
+            if (product.image) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${product.image}" style="max-width: 200px; max-height: 150px; border-radius: 6px;">`;
+            }
+            
+            const errorDiv = document.getElementById('productFormError');
+            if (errorDiv) errorDiv.style.display = 'none';
+            
+            const modal = document.getElementById('productModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        async function submitProductForm(event) {
+            event.preventDefault();
+
+            const nameEn = document.getElementById('productNameEn').value.trim();
+            const nameFr = document.getElementById('productNameFr').value.trim();
+            const namePt = document.getElementById('productNamePt').value.trim();
+            const category = document.getElementById('productCategory').value.trim();
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const description = document.getElementById('productDescription').value.trim();
+            const imageFile = document.getElementById('productImage').files[0];
+
+            // Validation
+            if (!nameEn || !category || !price) {
+                showProductError('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('name_en', nameEn);
+                formData.append('name_fr', nameFr || nameEn);
+                formData.append('name_pt', namePt || nameEn);
+                formData.append('category_id', category);
+                formData.append('price', price);
+                formData.append('description', description);
+                
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                const url = currentEditingProductId 
+                    ? `/api/products/${currentEditingProductId}` 
+                    : '/api/products';
+                
+                const method = currentEditingProductId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Failed to save product (${response.status})`);
+                }
+
+                const result = await response.json();
+                console.log('[Products] Product saved:', result);
+
+                // Reload products and close modal
+                loadProducts();
+                closeProductModal();
+                alert('Product saved successfully!');
+            } catch (err) {
+                console.error('[Products] Error saving product:', err);
+                showProductError(err.message);
+            }
+        }
+
+        function showProductError(message) {
+            const errorDiv = document.getElementById('productFormError');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const loadingState = document.getElementById('productsLoadingState');
+                const table = document.getElementById('productsTable');
+                const tbody = document.getElementById('productsTableBody');
+                const emptyState = document.getElementById('productsEmptyState');
+
+                if (loadingState) loadingState.style.display = 'block';
+                if (table) table.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'none';
+
+                const response = await fetch('/api/products', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load products (${response.status})`);
+                }
+
+                const data = await response.json();
+                productsList = Array.isArray(data) ? data : data.products || [];
+
+                if (loadingState) loadingState.style.display = 'none';
+
+                if (productsList.length === 0) {
+                    if (emptyState) emptyState.style.display = 'block';
+                    if (table) table.style.display = 'none';
+                    return;
+                }
+
+                if (emptyState) emptyState.style.display = 'none';
+                if (table) table.style.display = 'table';
+
+                tbody.innerHTML = productsList.map(product => `
+                    <tr style="border-bottom: 1px solid var(--border);" onmouseover="this.style.background='var(--light)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 12px; color: var(--dark); font-weight: 500;">${product.name_en || 'Unnamed'}</td>
+                        <td style="padding: 12px; color: var(--gray-500);">${product.category_name || 'N/A'}</td>
+                        <td style="padding: 12px; text-align: right; color: var(--dark); font-weight: 600;">€${parseFloat(product.price || 0).toFixed(2)}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            ${product.image ? `<img src="${product.image}" style="max-width: 40px; max-height: 40px; border-radius: 4px;">` : '–'}
+                        </td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button data-product-id="${product.id}" class="edit-product-btn" style="
+                                padding: 6px 12px;
+                                background: var(--info);
+                                color: var(--white);
+                                border: none;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 0.85rem;
+                                margin-right: 6px;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">✏️ Edit</button>
+                            <button onclick="deleteProduct('${product.id}')" style="
+                                padding: 6px 12px;
+                                background: var(--danger);
+                                color: var(--white);
+                                border: none;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 0.85rem;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Attach event listeners to edit buttons
+                document.querySelectorAll('.edit-product-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-product-id');
+                        const product = productsList.find(p => p.id === productId);
+                        if (product) {
+                            openEditProductModal(product);
+                        }
+                    });
+                });
+
+            } catch (err) {
+                console.error('[Products] Error loading products:', err);
+                const emptyState = document.getElementById('productsEmptyState');
+                if (emptyState) {
+                    emptyState.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; color: var(--danger);">
+                            <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
+                            <h3 style="margin: 0 0 8px 0; color: var(--dark);">Failed to Load Products</h3>
+                            <p style="margin: 0;">${err.message}</p>
+                        </div>
+                    `;
+                    emptyState.style.display = 'block';
+                }
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to delete product (${response.status})`);
+                }
+
+                loadProducts();
+                alert('Product deleted successfully!');
+            } catch (err) {
+                console.error('[Products] Error deleting product:', err);
+                alert('Failed to delete product: ' + err.message);
+            }
+        }
+
+        async function translateText(text, targetLang) {
+            if (!text || text.trim().length === 0) return '';
+            
+            try {
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`
+                );
+                const data = await response.json();
+                
+                if (data.responseStatus === 200 && data.responseData.translatedText) {
+                    return data.responseData.translatedText;
+                }
+                return '';
+            } catch (err) {
+                console.error(`Translation error for ${targetLang}:`, err);
+                return '';
+            }
+        }
+
+        async function autoTranslateProductName() {
+            const englishName = document.getElementById('productNameEn').value.trim();
+            
+            if (!englishName || englishName.length === 0) {
+                document.getElementById('productNameFr').value = '';
+                document.getElementById('productNamePt').value = '';
+                return;
+            }
+
+            console.log('🌐 Auto-translating:', englishName);
+            
+            // Show loading state
+            document.getElementById('productNameFr').style.opacity = '0.5';
+            document.getElementById('productNamePt').style.opacity = '0.5';
+            
+            try {
+                // Translate to French and Portuguese in parallel
+                const [frenchName, portugueseName] = await Promise.all([
+                    translateText(englishName, 'fr'),
+                    translateText(englishName, 'pt')
+                ]);
+
+                if (frenchName) {
+                    document.getElementById('productNameFr').value = frenchName;
+                    console.log('✏️ French translation:', frenchName);
+                }
+                
+                if (portugueseName) {
+                    document.getElementById('productNamePt').value = portugueseName;
+                    console.log('✏️ Portuguese translation:', portugueseName);
+                }
+            } catch (err) {
+                console.error('Auto-translation error:', err);
+            } finally {
+                // Remove loading state
+                document.getElementById('productNameFr').style.opacity = '1';
+                document.getElementById('productNamePt').style.opacity = '1';
+            }
+        }
+
+        function setupAutoTranslation() {
+            const productNameEn = document.getElementById('productNameEn');
+            if (productNameEn) {
+                productNameEn.addEventListener('input', function() {
+                    // Clear previous timeout
+                    if (translationTimeout) {
+                        clearTimeout(translationTimeout);
+                    }
+                    
+                    // Set new timeout - wait 500ms after user stops typing
+                    translationTimeout = setTimeout(() => {
+                        autoTranslateProductName();
+                    }, 500);
+                });
+            }
+        }
+
+        // Load products when switching to products section
+        const originalSwitchSection = window.switchSection;
+        window.switchSection = function(sectionName, event) {
+            originalSwitchSection(sectionName, event);
+            
+            if (sectionName === 'products') {
+                loadProducts();
+            }
+        };
+    </script>
+</body>
+</html>

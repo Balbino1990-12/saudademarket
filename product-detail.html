@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail - PortugalStore</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/css/style.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    .detail-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(60,60,90,0.12);
+      padding: 32px;
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .detail-image {
+      width: 320px;
+      height: 320px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #e0e0e0;
+      flex-shrink: 0;
+    }
+    .detail-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+    }
+    .detail-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d2d2d;
+    }
+    .detail-price {
+      font-size: 1.3rem;
+      color: #6e6ef6;
+      font-weight: 600;
+    }
+    .detail-description {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .detail-category {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .add-cart-btn {
+      padding: 14px 32px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(90deg, #a3a3ff 0%, #6e6ef6 100%);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 16px;
+    }
+    .add-cart-btn:hover {
+      background: linear-gradient(90deg, #6e6ef6 0%, #a3a3ff 100%);
+    }
+    .detail-message {
+      font-size: 1rem;
+      color: #2d2d2d;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="detail-container">
+    <img class="detail-image" id="productImage" src="public/images/default-product.png" alt="Product Image">
+    <div class="detail-info">
+      <div class="detail-title" id="productTitle">Loading...</div>
+      <div class="detail-price" id="productPrice"></div>
+      <div class="detail-category" id="productCategory"></div>
+      <div class="detail-description" id="productDescription"></div>
+      <button class="add-cart-btn" id="addCartBtn">Add to Cart</button>
+      <div class="detail-message" id="detailMessage"></div>
+    </div>
+  </div>
+  <script>
+    function getProductId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    async function loadProduct() {
+      const id = getProductId();
+      if (!id) {
+        document.getElementById('detailMessage').textContent = 'Product not found.';
+        return;
+      }
+      const res = await fetch('/api/products/' + id);
+      if (!res.ok) {
+        document.getElementById('detailMessage').textContent = 'Product not found.';
+        return;
+      }
+      const product = await res.json();
+      document.getElementById('productImage').src = product.image || 'public/images/default-product.png';
+      document.getElementById('productTitle').textContent = product.title || product.name_en || 'No title';
+      document.getElementById('productPrice').textContent = '€' + (product.price ? product.price.toFixed(2) : 'N/A');
+      document.getElementById('productCategory').textContent = product.category_name ? 'Category: ' + product.category_name : '';
+      document.getElementById('productDescription').textContent = product.description || '';
+    }
+
+    document.getElementById('addCartBtn').addEventListener('click', async () => {
+      const id = getProductId();
+      const token = localStorage.getItem('buyerToken');
+      if (!token) {
+        window.location.href = '/user/login.html';
+        return;
+      }
+      try {
+        const res = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ productId: id, quantity: 1 })
+        });
+        if (!res.ok) throw new Error('Add to cart failed');
+        document.getElementById('detailMessage').textContent = 'Added to cart!';
+      } catch (err) {
+        document.getElementById('detailMessage').textContent = 'Error adding to cart.';
+      }
+    });
+
+    loadProduct();
+  </script>
+</body>
+</html>

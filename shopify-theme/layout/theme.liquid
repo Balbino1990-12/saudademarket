@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ page_title }}</title>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnnXRj6kQ4IYKh8g0YJ3+BPG0j6XeImHhcFj+1a6sDA6O0zceI6dipEMIGsZjVH5Ox7pMgh7C28YdKtKEK2kg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ 'style.css' | asset_url }}">
+  {{ content_for_header }}
+</head>
+<body>
+  {% section 'header' %}
+
+  <main role="main">
+    {{ content_for_layout }}
+  </main>
+
+  {% section 'footer' %}
+
+  <script src="{{ 'script.js' | asset_url }}"></script>
+  {{ content_for_footer }}
+</body>
+</html>

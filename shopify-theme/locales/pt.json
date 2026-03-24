@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "home": "INÍCIO",
+    "products": "PRODUTOS",
+    "specialties": "ESPECIALIDADES",
+    "wine": "VINHOS & PORTO",
+    "grocery": "MERCEARIA",
+    "gifts": "CABAZES",
+    "about": "SOBRE NÓS",
+    "contact": "CONTACTOS"
+  },
+  "header": {
+    "search": "Pesquisar",
+    "account": "Minha conta",
+    "cart": "Carrinho"
+  },
+  "features": {
+    "authentic": "PRODUTOS AUTÊNTICOS DE PORTUGAL",
+    "delivery": "ENTREGA RÁPIDA EM FRANÇA",
+    "secure": "PAGAMENTO SEGURO",
+    "support": "ATENDIMENTO AO CLIENTE EM INGLÊS"
+  },
+  "specialties": {
+    "heading": "Nossas Especialidades Portuguesas"
+  },
+  "hero": {
+    "intro": "Descubra os",
+    "highlight": "Sabores de Portugal",
+    "sub": "Entregues em França",
+    "features": {
+      "authentic": "Produtos autênticos",
+      "delivery": "Entrega rápida",
+      "secure": "Pagamento seguro"
+    },
+    "cta": "CONHECER A LOJA →"
+  },
+  "nav": {
+    "home": "INÍCIO",
+    "products": "PRODUTOS",
+    "specialties": "ESPECIALIDADES",
+    "wine": "VINHOS & PORTO",
+    "grocery": "MERCEARIA",
+    "gifts": "CABAZES",
+    "about": "SOBRE NÓS",
+    "contact": "CONTACTOS"
+  },
+  "pages": {
+    "produits": {
+      "title": "Nossos Produtos",
+      "description": "Explore nossa seleção completa de produtos portugueses autênticos e deliciosos, especialmente importados para você."
+    },
+    "specialites": {
+      "title": "Nossas Especialidades Portuguesas",
+      "description": "Descubra as especialidades mais saborosas e autênticas de Portugal, selecionadas com cuidado para você."
+    },
+    "vins": {
+      "title": "Vinhos e Porto Portugueses",
+      "description": "Explore nossa seleção exclusiva de vinhos e Portos de qualidade superior, diretamente de Portugal."
+    },
+    "epicerie": {
+      "title": "Nossa Mercearia",
+      "description": "Encontre todos os produtos essenciais para cozinhar os pratos portugueses tradicionais autênticos."
+    },
+    "coffrets": {
+      "title": "Cabazes Gourmet",
+      "description": "Presenteie com os sabores de Portugal através dos nossos cabazes de presentes luxuosos e autênticos, perfeitos para todas as ocasiões."
+    },
+    "apropos": {
+      "title": "Sobre Nós",
+      "description": "PortugalStore.fr é sua fonte confiável de produtos portugueses autênticos e de qualidade, entregues diretamente em Portugal."
+    },
+    "contact": {
+      "title": "Entre em Contato",
+      "description": "Tem dúvidas? Gostaríamos de ouvir de você. Entre em contato conosco e responderemos o mais rápido possível."
+    },
+    "produtos": {
+      "title": "Nossos Produtos",
+      "description": "Explore nossa seleção completa de produtos portugueses autênticos e deliciosos, especialmente importados para você."
+    },
+    "especialidades": {
+      "title": "Nossas Especialidades Portuguesas",
+      "description": "Descubra as especialidades mais saborosas e autênticas de Portugal, selecionadas com cuidado para você."
+    },
+    "vinhos": {
+      "title": "Vinhos e Porto Portugueses",
+      "description": "Explore nossa seleção exclusiva de vinhos e Portos de qualidade superior, diretamente de Portugal."
+    },
+    "mercaria": {
+      "title": "Nossa Mercearia",
+      "description": "Encontre todos os produtos essenciais para cozinhar os pratos portugueses tradicionais autênticos."
+    },
+    "cabazes": {
+      "title": "Cabazes Gourmet",
+      "description": "Presenteie com os sabores de Portugal através dos nossos cabazes de presentes luxuosos e autênticos, perfeitos para todas as ocasiões."
+    },
+    "sobre": {
+      "title": "Sobre Nós",
+      "description": "PortugalStore.fr é sua fonte confiável de produtos portugueses autênticos e de qualidade, entregues diretamente em Portugal."
+    },
+    "contactos": {
+      "title": "Entre em Contato",
+      "description": "Tem dúvidas? Gostaríamos de ouvir de você. Entre em contato conosco e responderemos o mais rápido possível."
+    }
+  }
+}

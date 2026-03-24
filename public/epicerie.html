@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Épicerie - Portugalsstore.fr</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="/js/i18n.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <div class="logo-text">
+                    <h1>Portugalsstore.fr</h1>
+                    <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
+                </div>
+            </div>
+
+            <div class="search">
+                <input type="search" placeholder="Rechercher un produit..." aria-label="Rechercher" />
+            </div>
+
+            <div class="header-actions">
+                <button class="icon user" title="Compte">👤</button>
+                <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
+                <div class="language-selector">
+                    <button id="langBtn" class="lang-toggle">FR</button>
+                    <div class="lang-dropdown">
+                        <button data-lang="fr" class="lang-option active">FR</button>
+                        <button data-lang="pt" class="lang-option">PT</button>
+                        <button data-lang="en" class="lang-option">EN</button>
+                    </div>
+                </div>
+                <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
+            </div>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
+                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
+                <li><a href="epicerie.html" class="active" data-i18n="nav.grocery">ÉPICERIE</a></li>
+                <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
+                <li><a href="cart.html" data-i18n="nav.cart">PANIER</a></li>
+                <li><a href="apropos.html" data-i18n="nav.about">À PROPOS</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section style="padding: 40px 36px; text-align: center; min-height: 60vh;">
+            <h1 style="font-size: 2.4rem; margin-bottom: 20px; color: #111;">Notre Épicerie</h1>
+            <p style="font-size: 1.1rem; color: #666; max-width: 600px; margin: 0 auto;">
+                Trouvez tous les produits de base essentiels pour cuisiner les plats portugais
+                traditionnels authentiques.
+            </p>
+        </section>
+    </main>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>

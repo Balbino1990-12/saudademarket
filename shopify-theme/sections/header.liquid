@@ -1,0 +1,57 @@
+<header class="theme-header">
+  <div class="header-top">
+    <div class="logo">
+      <a href="/" style="display: flex; align-items: center; gap: 14px; text-decoration: none;">
+        <img src="{{ 'logo.jpg' | asset_url }}" alt="Shop logo" />
+        <div class="logo-text">
+          <h1>{{ shop.name }}</h1>
+          <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="search">
+      <span class="search-icon">🔍</span>
+      <input type="search" placeholder="Pesquisar um produto..." aria-label="Search" data-i18n="header.search">
+    </div>
+
+    <div class="header-actions">
+      <button class="icon user" title="Mon compte" aria-label="Account" data-i18n="header.account">
+        <i class="fa fa-user" aria-hidden="true"></i>
+      </button>
+      <a class="icon cart" href="/cart" title="Panier" aria-label="Cart" data-i18n="header.cart">
+        <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+        <span class="badge">{{ cart.item_count }}</span>
+      </a>
+      <div class="language-selector">
+        <button id="langBtn" class="lang-toggle" aria-label="Language">{{ request.locale.iso_code | upcase }}</button>
+        <div class="lang-dropdown">
+          <a data-lang="fr" class="lang-option" href="?locale=fr" data-i18n="header.language_fr">🇫🇷 FR</a>
+          <a data-lang="pt" class="lang-option" href="?locale=pt" data-i18n="header.language_pt">🇵🇹 PT</a>
+          <a data-lang="en" class="lang-option" href="?locale=en" data-i18n="header.language_en">🇬🇧 EN</a>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+
+  {% comment %} navigation links use handles configured in theme settings so store owner can name collections arbitrarily {% endcomment %}
+  {% assign prodHandle = settings.handle_products | default: 'all' %}
+  {% assign specHandle = settings.handle_specialties | default: 'specialities' %}
+  {% assign wineHandle = settings.handle_wine | default: 'wines' %}
+  {% assign grocHandle = settings.handle_grocery | default: 'grocery' %}
+  {% assign giftHandle = settings.handle_gifts | default: 'gifts' %}
+
+  <nav class="theme-nav">
+    <ul>
+      <li><a href="/" class="{% if request.path == '/' %}active{% endif %}" data-i18n="nav.home"><i class="fa fa-home"></i> HOME</a></li>
+      <li><a href="/collections/{{ prodHandle }}" class="{% if request.path contains prodHandle %}active{% endif %}" data-i18n="nav.products"><i class="fa fa-box-open"></i> PRODUCTS</a></li>
+      <li><a href="/collections/{{ specHandle }}" class="{% if request.path contains specHandle %}active{% endif %}" data-i18n="nav.specialties"><i class="fa fa-star"></i> SPECIALTIES</a></li>
+      <li><a href="/collections/{{ wineHandle }}" class="{% if request.path contains wineHandle %}active{% endif %}" data-i18n="nav.wine"><i class="fa fa-wine-glass-alt"></i> WINE & PORT</a></li>
+      <li><a href="/collections/{{ grocHandle }}" class="{% if request.path contains grocHandle %}active{% endif %}" data-i18n="nav.grocery"><i class="fa fa-shopping-cart"></i> GROCERY</a></li>
+      <li><a href="/collections/{{ giftHandle }}" class="{% if request.path contains giftHandle %}active{% endif %}" data-i18n="nav.gifts"><i class="fa fa-gift"></i> GIFT BOXES</a></li>
+      <li><a href="/pages/about" class="{% if request.path contains '/about' %}active{% endif %}" data-i18n="nav.about"><i class="fa fa-info-circle"></i> ABOUT US</a></li>
+      <li><a href="/pages/contact" class="{% if request.path contains '/contact' %}active{% endif %}" data-i18n="nav.contact"><i class="fa fa-envelope"></i> CONTACT</a></li>
+    </ul>
+  </nav>
+</header>

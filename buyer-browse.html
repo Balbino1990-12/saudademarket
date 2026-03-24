@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Products - PortugalStore</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/css/style.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    .products-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(60,60,90,0.12);
+      padding: 32px;
+    }
+    .products-header {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d2d2d;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .search-bar input {
+      width: 320px;
+      padding: 12px;
+      border-radius: 8px 0 0 8px;
+      border: 1px solid #e0e0e0;
+      font-size: 1rem;
+      background: #f9f9f9;
+      outline: none;
+    }
+    .search-bar button {
+      padding: 12px 24px;
+      border-radius: 0 8px 8px 0;
+      border: none;
+      background: linear-gradient(90deg, #a3a3ff 0%, #6e6ef6 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .search-bar button:hover {
+      background: linear-gradient(90deg, #6e6ef6 0%, #a3a3ff 100%);
+    }
+    .products-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+    }
+    .product-card {
+      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(60,60,90,0.08);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s;
+    }
+    .product-card:hover {
+      box-shadow: 0 8px 32px rgba(60,60,90,0.16);
+    }
+    .product-image {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      background: #e0e0e0;
+    }
+    .product-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #2d2d2d;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .product-price {
+      font-size: 1.1rem;
+      color: #6e6ef6;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .product-description {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .view-details-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(90deg, #a3a3ff 0%, #6e6ef6 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .view-details-btn:hover {
+      background: linear-gradient(90deg, #6e6ef6 0%, #a3a3ff 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="products-container">
+    <div class="products-header">Browse Products</div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search products...">
+      <button id="searchBtn">Search</button>
+    </div>
+    <div class="products-list" id="productsList"></div>
+  </div>
+  <script>
+    async function fetchProducts(query = '') {
+      const res = await fetch('/api/products?search=' + encodeURIComponent(query));
+      if (!res.ok) return [];
+      return await res.json();
+    }
+
+    function renderProducts(products) {
+      const list = document.getElementById('productsList');
+      list.innerHTML = '';
+      if (!products.length) {
+        list.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888;">No products found.</div>';
+        return;
+      }
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img class="product-image" src="${product.image || 'public/images/default-product.png'}" alt="${product.title}">
+          <div class="product-title">${product.title}</div>
+          <div class="product-price">€${product.price.toFixed(2)}</div>
+          <div class="product-description">${product.description || ''}</div>
+          <button class="view-details-btn" onclick="window.location.href='product-detail.html?id=${product._id}'">View Details</button>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    async function loadProducts() {
+      const query = document.getElementById('searchInput').value;
+      const products = await fetchProducts(query);
+      renderProducts(products);
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', loadProducts);
+    document.getElementById('searchInput').addEventListener('keyup', e => {
+      if (e.key === 'Enter') loadProducts();
+    });
+
+    // Initial load
+    loadProducts();
+  </script>
+</body>
+</html>

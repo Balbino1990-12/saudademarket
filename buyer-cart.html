@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart - PortugalStore</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/css/style.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0;
+    }
+    .cart-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(60,60,90,0.12);
+      padding: 32px;
+    }
+    .cart-header {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d2d2d;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .cart-list {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+    }
+    .cart-list th, .cart-list td {
+      padding: 16px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .cart-list th {
+      background: #f9f9f9;
+      font-weight: 700;
+      color: #444;
+    }
+    .cart-list td img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #e0e0e0;
+    }
+    .cart-actions button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(90deg, #a3a3ff 0%, #6e6ef6 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-right: 8px;
+    }
+    .cart-actions button:hover {
+      background: linear-gradient(90deg, #6e6ef6 0%, #a3a3ff 100%);
+    }
+    .cart-summary {
+      font-size: 1.2rem;
+      color: #2d2d2d;
+      font-weight: 600;
+      text-align: right;
+      margin-bottom: 16px;
+    }
+    .cart-message {
+      font-size: 1rem;
+      color: #2d2d2d;
+      text-align: center;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cart-container">
+    <div class="cart-header">My Cart</div>
+    <div class="cart-summary" id="cartSummary"></div>
+    <table class="cart-list" id="cartList">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="cart-message" id="cartMessage"></div>
+  </div>
+  <script>
+    async function fetchCart() {
+      const token = localStorage.getItem('buyerToken');
+      if (!token) {
+        window.location.href = '/user/login.html';
+        return [];
+      }
+      const res = await fetch('/api/cart', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    }
+
+    async function updateQuantity(productId, quantity) {
+      const token = localStorage.getItem('buyerToken');
+      if (!token) return;
+      const res = await fetch('/api/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ productId, quantity })
+      });
+      return res.ok;
+    }
+
+    async function removeItem(productId) {
+      const token = localStorage.getItem('buyerToken');
+      if (!token) return;
+      const res = await fetch('/api/cart', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ productId })
+      });
+      return res.ok;
+    }
+
+    function renderCart(cart) {
+      const tbody = document.querySelector('#cartList tbody');
+      tbody.innerHTML = '';
+      let total = 0;
+      if (!cart.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;">Cart is empty.</td></tr>';
+        document.getElementById('cartSummary').textContent = '';
+        return;
+      }
+      cart.forEach(item => {
+        const row = document.createElement('tr');
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        row.innerHTML = `
+          <td><img src="${item.image || 'public/images/default-product.png'}" alt="${item.title}"></td>
+          <td>${item.title || item.name_en}</td>
+          <td>€${item.price.toFixed(2)}</td>
+          <td>
+            <input type="number" min="1" value="${item.quantity}" style="width:60px;" onchange="updateCartQuantity('${item.productId}', this.value)">
+          </td>
+          <td>€${itemTotal.toFixed(2)}</td>
+          <td class="cart-actions">
+            <button onclick="removeCartItem('${item.productId}')">Remove</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+      document.getElementById('cartSummary').textContent = 'Total: €' + total.toFixed(2);
+    }
+
+    window.updateCartQuantity = async function(productId, quantity) {
+      const success = await updateQuantity(productId, parseInt(quantity));
+      if (!success) {
+        document.getElementById('cartMessage').textContent = 'Error updating quantity.';
+      } else {
+        document.getElementById('cartMessage').textContent = '';
+        loadCart();
+      }
+    }
+
+    window.removeCartItem = async function(productId) {
+      const success = await removeItem(productId);
+      if (!success) {
+        document.getElementById('cartMessage').textContent = 'Error removing item.';
+      } else {
+        document.getElementById('cartMessage').textContent = '';
+        loadCart();
+      }
+    }
+
+    async function loadCart() {
+      const cart = await fetchCart();
+      renderCart(cart);
+    }
+
+    loadCart();
+  </script>
+</body>
+</html>

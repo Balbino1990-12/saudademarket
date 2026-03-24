@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyer Profile - PortugalStore</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/css/style.css">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(60,60,90,0.12);
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .profile-header {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2d2d2d;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .dropdown-menu {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-menu button {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2d2d2d;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dropdown-menu button img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .dropdown-content a {
+      color: #2d2d2d;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown-menu:hover .dropdown-content {
+      display: block;
+    }
+    .dropdown-content .logout {
+      color: #e63946;
+      font-weight: 700;
+    }
+    .dropdown-content .logout:hover {
+      background-color: #ffe6e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <div class="profile-header">Buyer Profile</div>
+    <div class="dropdown-menu">
+      <button>
+        <img id="profileImage" src="public/images/default-avatar.png" alt="Profile Picture">
+        <span id="profileName">Balbino Pinto</span>
+      </button>
+      <div class="dropdown-content">
+        <a href="#">See all profiles</a>
+        <a href="#">Settings & privacy</a>
+        <a href="#">Help & support</a>
+        <a href="#">Display & accessibility</a>
+        <a href="#">Give feedback <span style="font-size: 0.8rem; color: #888;">CTRL B</span></a>
+        <a href="#" class="logout">Log out</a>
+      </div>
+    </div>
+    <form class="profile-form" id="buyerProfileForm">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" required>
+      <button type="submit">Update Profile</button>
+      <div class="profile-message" id="profileMessage"></div>
+    </form>
+  </div>
+  <script>
+    // Load profile data
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('buyerToken');
+      if (!token) {
+        window.location.href = '/user/login.html';
+        return;
+      }
+      try {
+        const res = await fetch('/api/buyer/profile', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        if (!res.ok) {
+          throw new Error('Failed to load profile');
+        }
+        const data = await res.json();
+        document.getElementById('name').value = data.name || '';
+        document.getElementById('email').value = data.email || '';
+        document.getElementById('address').value = data.address || '';
+        document.getElementById('profileImage').src = data.profileImage || 'public/images/default-avatar.png';
+        document.getElementById('profileName').textContent = data.name || 'User';
+      } catch (err) {
+        document.getElementById('profileMessage').textContent = 'Error loading profile.';
+      }
+    });
+
+    // Update profile
+    document.getElementById('buyerProfileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('buyerToken');
+      if (!token) {
+        window.location.href = '/user/login.html';
+        return;
+      }
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const address = document.getElementById('address').value;
+      try {
+        const res = await fetch('/api/buyer/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ name, email, address })
+        });
+        if (!res.ok) {
+          throw new Error('Update failed');
+        }
+        document.getElementById('profileMessage').textContent = 'Profile updated successfully!';
+      } catch (err) {
+        document.getElementById('profileMessage').textContent = 'Error updating profile.';
+      }
+    });
+
+    // Handle profile picture change
+    document.getElementById('profileImageInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('profileImage', file);
+      const token = localStorage.getItem('buyerToken');
+      try {
+        const res = await fetch('/api/buyer/profile/image', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          },
+          body: formData
+        });
+        if (!res.ok) {
+          throw new Error('Image upload failed');
+        }
+        const data = await res.json();
+        document.getElementById('profileImage').src = data.profileImage;
+      } catch (err) {
+        alert('Error uploading image.');
+      }
+    });
+  </script>
+</body>
+</html>

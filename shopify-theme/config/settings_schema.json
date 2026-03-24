@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Theme",
+    "settings": [
+      {"type":"image_picker","id":"logo","label":"Logo"}
+    ]
+  },
+  {
+    "name": "Collections",
+    "settings": [
+      {"type":"text","id":"handle_products","label":"Products collection handle","default":"all"},
+      {"type":"text","id":"handle_specialties","label":"Specialties collection handle","default":"specialities"},
+      {"type":"text","id":"handle_wine","label":"Wine collection handle","default":"wines"},
+      {"type":"text","id":"handle_grocery","label":"Grocery collection handle","default":"grocery"},
+      {"type":"text","id":"handle_gifts","label":"Gifts collection handle","default":"gifts"}
+    ]
+  }
+]
