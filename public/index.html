@@ -109,37 +109,6 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/script.js"></script>
-    <script src="/js/chat-widget.js"></script>
-
-    <!-- AI Chat Widget -->
-    <div id="aiChatLauncher" class="ai-chat-launcher" title="Chat with us">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
-    </div>
-
-    <div id="aiChatPanel" class="ai-chat-panel" aria-hidden="true">
-        <div class="ai-chat-header">
-            <h3>Support</h3>
-            <button id="aiChatClose" class="ai-chat-close" aria-label="Close chat">×</button>
-        </div>
-        <div id="aiChatMessages" class="ai-chat-messages"></div>
-        <form id="aiChatForm" class="ai-chat-form">
-            <input 
-                id="aiChatInput" 
-                class="ai-chat-input" 
-                type="text" 
-                placeholder="Type your message..." 
-                autocomplete="off"
-            />
-            <button id="aiChatSend" type="submit" class="ai-chat-send" aria-label="Send">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-            </button>
-        </form>
-    </div>
 
     <!-- Category Products Modal -->
     <div id="categoryModal" class="category-modal">
