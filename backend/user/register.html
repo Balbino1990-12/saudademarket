@@ -80,6 +80,12 @@
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
         }
 
+        input.error,
+        select.error {
+            border-color: #c53030;
+            box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.1);
+        }
+
         .password-group {
             position: relative;
         }
@@ -184,6 +190,19 @@
             border: 1px solid #9ae6b4;
         }
 
+        .error-message {
+            color: #c53030;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+            padding: 4px 0;
+        }
+
+        .error-message.show {
+            display: block !important;
+        }
+
         @media (max-width: 600px) {
             .register-section {
                 padding: 40px 16px;
@@ -231,15 +250,101 @@
             background-color: #4299e1;
             color: white;
         }
+
+        /* Social login styles */
+        .social-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 32px 0 24px;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .social-divider::before,
+        .social-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .social-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #2d3748;
+        }
+
+        .social-btn:hover {
+            border-color: #cbd5e0;
+            background: #f7fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn.google {
+            color: #1f2937;
+        }
+
+        .social-btn.google:hover {
+            border-color: #4285f4;
+            background: #f0f4ff;
+        }
+
+        .social-btn.facebook {
+            color: #1877f2;
+        }
+
+        .social-btn.facebook:hover {
+            border-color: #1877f2;
+            background: #f0f7ff;
+        }
+
+        .social-btn.apple {
+            color: #000;
+        }
+
+        .social-btn.apple:hover {
+            border-color: #000;
+            background: #f5f5f5;
+        }
+
+        .social-icon {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .social-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="header-top">
             <div class="logo">
-                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
                 <div class="logo-text">
-                    <h1>Portugalsstore.fr</h1>
+                    <h1>Saudade Market</h1>
                     <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
                 </div>
             </div>
@@ -266,7 +371,7 @@
         <nav>
             <ul>
                 <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
-                <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">All products</a></li>
                 <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
                 <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
                 <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
@@ -286,20 +391,23 @@
 
                 <div id="message" class="message"></div>
 
-                <form id="registerForm">
+                <form id="registerForm" novalidate method="POST">
+                    <input type="hidden" name="_csrf" id="csrfToken">
                     <div class="form-group">
                         <label for="name" data-i18n="register.name">Nom complet</label>
-                        <input type="text" id="name" name="name" required placeholder="Votre nom complet" data-i18n-placeholder="register.name_placeholder">
+                        <input type="text" id="name" name="name" placeholder="Votre nom complet" data-i18n-placeholder="register.name_placeholder">
+                        <span class="error-message" id="name-error">required</span>
                     </div>
 
                     <div class="form-group">
                         <label for="email" data-i18n="register.email">Adresse e-mail</label>
-                        <input type="email" id="email" name="email" required placeholder="votre@email.com" data-i18n-placeholder="register.email_placeholder">
+                        <input type="email" id="email" name="email" placeholder="votre@email.com" data-i18n-placeholder="register.email_placeholder">
+                        <span class="error-message" id="email-error">required</span>
                     </div>
 
                     <div class="form-group">
                         <label for="country" data-i18n="register.country">Pays</label>
-                        <select id="country" name="country" required>
+                        <select id="country" name="country">
                             <option value="" data-i18n="register.select_country">Sélectionnez votre pays</option>
                             <option value="FR">France</option>
                             <option value="PT">Portugal</option>
@@ -309,6 +417,7 @@
                             <option value="ES">Espagne</option>
                             <option value="IT">Italie</option>
                         </select>
+                        <span class="error-message" id="country-error">required</span>
                     </div>
 
                     <div class="form-group">
@@ -323,6 +432,7 @@
                             <select id="region" name="region">
                                 <option value="" data-i18n="register.select_region">Sélectionnez votre région</option>
                             </select>
+                            <span class="error-message" id="region-error">required</span>
                         </div>
 
                         <div class="form-group">
@@ -330,6 +440,7 @@
                             <select id="department" name="department">
                                 <option value="" data-i18n="register.select_department">Sélectionnez votre département</option>
                             </select>
+                            <span class="error-message" id="department-error">required</span>
                         </div>
 
                         <div class="form-group">
@@ -337,6 +448,7 @@
                             <select id="city" name="city">
                                 <option value="" data-i18n="register.select_city">Sélectionnez votre ville</option>
                             </select>
+                            <span class="error-message" id="city-error">required</span>
                         </div>
                     </div>
 
@@ -345,11 +457,13 @@
                         <div class="form-group">
                             <label for="address" data-i18n="register.address">Adresse</label>
                             <input type="text" id="address" name="address" placeholder="Votre adresse" data-i18n-placeholder="register.address_placeholder">
+                            <span class="error-message" id="address-error">required</span>
                         </div>
 
                         <div class="form-group">
                             <label for="cityManual" data-i18n="register.city">Ville</label>
                             <input type="text" id="cityManual" name="city" placeholder="Votre ville" data-i18n-placeholder="register.city_placeholder">
+                            <span class="error-message" id="cityManual-error">required</span>
                         </div>
 
                         <div class="form-group">
@@ -360,33 +474,53 @@
 
                     <div class="form-group">
                         <label for="postalCode" data-i18n="register.postal_code">Code postal</label>
-                        <input type="text" id="postalCode" name="postalCode" required placeholder="Votre code postal" data-i18n-placeholder="register.postal_code_placeholder">
+                        <input type="text" id="postalCode" name="postalCode" placeholder="Votre code postal" data-i18n-placeholder="register.postal_code_placeholder">
+                        <span class="error-message" id="postalCode-error">required</span>
                     </div>
 
                     <div class="form-group">
                         <label for="password" data-i18n="register.password">Mot de passe</label>
                         <div class="password-group">
-                            <input type="password" id="password" name="password" required placeholder="Minimum 8 caractères" data-i18n-placeholder="register.password_placeholder">
-                            <button type="button" class="password-toggle" id="togglePassword">👁️</button>
+                                <input type="password" id="password" name="password" placeholder="Minimum 8 caractères" data-i18n-placeholder="register.password_placeholder">
+                                <span class="error-message" id="password-error">required</span>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="confirmPassword" data-i18n="register.confirm_password">Confirmer le mot de passe</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Répétez votre mot de passe" data-i18n-placeholder="register.confirm_placeholder">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Répétez votre mot de passe" data-i18n-placeholder="register.confirm_placeholder">
+                        <span class="error-message" id="confirmPassword-error">required</span>
                     </div>
 
                     <div class="form-group">
                         <div class="terms-group">
-                            <input type="checkbox" id="terms" name="terms" required>
+                            <input type="checkbox" id="terms" name="terms">
                             <label for="terms" class="terms-text" data-i18n="register.terms">
                                 J'accepte les <a href="#" class="terms-link">Conditions générales d'utilisation</a> et la <a href="#" class="terms-link">Politique de confidentialité</a>
                             </label>
                         </div>
+                        <span class="error-message" id="terms-error">required</span>
                     </div>
 
-                    <button type="submit" class="register-btn" id="registerBtn" data-i18n="register.button">Créer mon compte</button>
+                    <button type="button" class="register-btn" id="registerBtn" data-i18n="register.button">Créer mon compte</button>
                 </form>
+
+                <div class="social-divider" data-i18n="register.or_signup">Ou s'inscrire avec</div>
+
+                <div class="social-buttons">
+                    <button class="social-btn google" id="googleSignupBtn" title="Sign up with Google">
+                        <span class="social-icon">🔵</span>
+                        <span data-i18n="register.google">Google</span>
+                    </button>
+                    <button class="social-btn facebook" id="facebookSignupBtn" title="Sign up with Facebook">
+                        <span class="social-icon">👥</span>
+                        <span data-i18n="register.facebook">Facebook</span>
+                    </button>
+                    <button class="social-btn apple" id="appleSignupBtn" title="Sign up with Apple">
+                        <span class="social-icon">🍎</span>
+                        <span data-i18n="register.apple">Apple</span>
+                    </button>
+                </div>
 
                 <div class="login-link" data-i18n="register.login_link">
                     Déjà un compte ? <a href="/user/login.html">Se connecter</a>
@@ -397,11 +531,39 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded - Register page initialized');
+            
+            // Check if user is already logged in
+            if (localStorage.getItem('userToken')) {
+                window.location.href = '/index.html';
+                return;
+            }
+
             const form = document.getElementById('registerForm');
             const messageEl = document.getElementById('message');
             const registerBtn = document.getElementById('registerBtn');
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
+
+            console.log('DOM elements:', { form: !!form, messageEl: !!messageEl, registerBtn: !!registerBtn, togglePassword: !!togglePassword, passwordInput: !!passwordInput });
+            
+            // Test error display
+            console.log('Testing error display...');
+            const testErrorEl = document.getElementById('name-error');
+            console.log('name-error element exists:', !!testErrorEl);
+            if (testErrorEl) {
+                console.log('name-error element content:', `"${testErrorEl.textContent}"`);
+                console.log('name-error display style:', testErrorEl.style.display);
+            }
+            
+            // Prevent form submission (in case form is submitted as GET)
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    console.log('Form submit event triggered - preventing default behavior');
+                    e.preventDefault();
+                    return false;
+                });
+            }
 
             // French administrative data
             const frenchData = {
@@ -700,14 +862,62 @@
             }
 
             // Password toggle
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.type === 'password' ? 'text' : 'password';
-                passwordInput.type = type;
-                this.textContent = type === 'password' ? '👁️' : '🙈';
-            });
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    this.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
 
             // Form validation
+            function clearErrors() {
+                console.log('Clearing all errors');
+                const errors = document.querySelectorAll('.error-message');
+                console.log('Found error messages:', errors.length);
+                errors.forEach(error => {
+                    error.classList.remove('show');
+                    error.textContent = '';
+                });
+                // Remove error class from inputs
+                const inputs = document.querySelectorAll('input, select');
+                inputs.forEach(input => input.classList.remove('error'));
+            }
+
+            function showError(fieldId, message) {
+                console.log(`Showing error for field: ${fieldId}, message: ${message}`);
+                const errorEl = document.getElementById(fieldId + '-error');
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('show');
+                    console.log(`Error element found and displayed for ${fieldId}`);
+                } else {
+                    console.log(`Error element NOT found for ${fieldId}`);
+                }
+                // Add error class to input
+                const inputEl = document.getElementById(fieldId);
+                if (inputEl) {
+                    inputEl.classList.add('error');
+                    console.log(`Error class added to input ${fieldId}`);
+                } else {
+                    console.log(`Input element NOT found for ${fieldId}`);
+                }
+            }
+
             function validateForm() {
+                console.log('=== Starting form validation ===');
+                console.error('🔍 FORM VALIDATION STARTED - Checking all required fields...');
+                clearErrors();
+
+                let errorsList = [];
+                let hasErrors = false;
+
+                // Force an error for testing
+                console.error('FORCED ERROR TEST: Adding test error for name field');
+                showError('name', 'required');
+                errorsList.push('Nom: required');
+                hasErrors = true;
+
                 const name = document.getElementById('name').value.trim();
                 const email = document.getElementById('email').value.trim();
                 const country = document.getElementById('country').value;
@@ -716,8 +926,81 @@
                 const confirmPassword = document.getElementById('confirmPassword').value;
                 const terms = document.getElementById('terms').checked;
 
-                if (!name || !email || !country || !postalCode || !password || !confirmPassword) {
-                    return 'Veuillez remplir tous les champs obligatoires.';
+                console.log('Field values:', { name, email, country, postalCode, password: password ? '***' : '', confirmPassword: confirmPassword ? '***' : '', terms });
+
+                if (!name) {
+                    showError('name', 'required');
+                    errorsList.push('Nom: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Name field is required');
+                }
+
+                if (!email) {
+                    showError('email', 'required');
+                    errorsList.push('Email: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Email field is required');
+                } else {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        showError('email', 'Veuillez entrer une adresse e-mail valide.');
+                        errorsList.push('Email: Veuillez entrer une adresse e-mail valide.');
+                        hasErrors = true;
+                        console.error('Validation Error: Invalid email format');
+                    }
+                }
+
+                if (!country) {
+                    showError('country', 'required');
+                    errorsList.push('Pays: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Country field is required');
+                }
+
+                if (!postalCode) {
+                    showError('postalCode', 'required');
+                    errorsList.push('Code postal: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Postal code field is required');
+                } else {
+                    const postalCodeRegex = /^[A-Z0-9\s\-]+$/i;
+                    if (!postalCodeRegex.test(postalCode) || postalCode.length < 3) {
+                        showError('postalCode', 'Veuillez entrer un code postal valide.');
+                        errorsList.push('Code postal: Veuillez entrer un code postal valide.');
+                        hasErrors = true;
+                        console.error('Validation Error: Invalid postal code format');
+                    }
+                }
+
+                if (!password) {
+                    showError('password', 'required');
+                    errorsList.push('Mot de passe: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Password field is required');
+                } else if (password.length < 8) {
+                    showError('password', 'Le mot de passe doit contenir au moins 8 caractères.');
+                    errorsList.push('Mot de passe: Le mot de passe doit contenir au moins 8 caractères.');
+                    hasErrors = true;
+                    console.error('Validation Error: Password must be at least 8 characters');
+                }
+
+                if (!confirmPassword) {
+                    showError('confirmPassword', 'required');
+                    errorsList.push('Confirmation: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Password confirmation is required');
+                } else if (password !== confirmPassword) {
+                    showError('confirmPassword', 'Les mots de passe ne correspondent pas.');
+                    errorsList.push('Confirmation: Les mots de passe ne correspondent pas.');
+                    hasErrors = true;
+                    console.error('Validation Error: Passwords do not match');
+                }
+
+                if (!terms) {
+                    showError('terms', 'required');
+                    errorsList.push('Conditions: required');
+                    hasErrors = true;
+                    console.error('Validation Error: Terms and conditions must be accepted');
                 }
 
                 // Validate address fields based on country
@@ -726,58 +1009,122 @@
                     const department = document.getElementById('department').value;
                     const city = document.getElementById('city').value;
 
-                    if (!region || !department || !city) {
-                        return 'Veuillez sélectionner votre région, département et ville.';
+                    if (!region) {
+                        showError('region', 'required');
+                        errorsList.push('Région: required');
+                        hasErrors = true;
+                        console.error('Validation Error: Region field is required for France');
                     }
-                } else {
+                    if (!department) {
+                        showError('department', 'required');
+                        errorsList.push('Département: required');
+                        hasErrors = true;
+                        console.error('Validation Error: Department field is required for France');
+                    }
+                    if (!city) {
+                        showError('city', 'required');
+                        errorsList.push('Ville: required');
+                        hasErrors = true;
+                        console.error('Validation Error: City field is required for France');
+                    }
+                } else if (country) { // Only check if country is selected
                     const address = document.getElementById('address').value.trim();
                     const city = document.getElementById('cityManual').value.trim();
 
-                    if (!address || !city) {
-                        return 'Veuillez saisir votre adresse et ville.';
+                    if (!address) {
+                        showError('address', 'required');
+                        errorsList.push('Adresse: required');
+                        hasErrors = true;
+                        console.error('Validation Error: Address field is required');
+                    }
+                    if (!city) {
+                        showError('cityManual', 'required');
+                        errorsList.push('Ville: required');
+                        hasErrors = true;
+                        console.error('Validation Error: City field is required');
                     }
                 }
 
-                if (password.length < 8) {
-                    return 'Le mot de passe doit contenir au moins 8 caractères.';
+                // If there are errors, also display them in the message container at the top
+                if (hasErrors && errorsList.length > 0) {
+                    messageEl.className = 'message error show';
+                    messageEl.innerHTML = '<strong>Erreurs:</strong><br>' + errorsList.join('<br>');
+                    console.log('Displaying errors:', errorsList);
+                    
+                    // Show errors in console as well
+                    console.error('=== FORM VALIDATION ERRORS ===');
+                    errorsList.forEach(error => console.error(error));
+                    console.error('=== END FORM VALIDATION ERRORS ===');
                 }
 
-                if (password !== confirmPassword) {
-                    return 'Les mots de passe ne correspondent pas.';
+                console.log('=== Form validation complete ===');
+                console.log('Has errors:', hasErrors);
+                console.log('Returning valid:', !hasErrors);
+                
+                // Check how many errors are visible
+                const visibleErrors = document.querySelectorAll('.error-message.show');
+                console.error(`Total visible errors: ${visibleErrors.length}`);
+                visibleErrors.forEach((el, idx) => {
+                    console.error(`  ${idx + 1}. ${el.id}: ${el.textContent}`);
+                });
+                
+                if (hasErrors) {
+                    console.error('❌ FORM VALIDATION FAILED - Form contains errors and cannot be submitted');
+                } else {
+                    console.error('✅ FORM VALIDATION PASSED - All fields are valid');
                 }
+                
+                return !hasErrors;
+            }
 
-                if (!terms) {
-                    return 'Veuillez accepter les conditions générales.';
+            async function loadCsrfToken() {
+                try {
+                    const response = await fetch('/csrf-token');
+                    if (!response.ok) {
+                        throw new Error('Unable to fetch CSRF token');
+                    }
+                    const data = await response.json();
+                    const tokenInput = document.getElementById('csrfToken');
+                    if (tokenInput) {
+                        tokenInput.value = data.csrfToken;
+                    }
+                } catch (error) {
+                    console.error('CSRF token load failed:', error);
                 }
-
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    return 'Veuillez entrer une adresse e-mail valide.';
-                }
-
-                // Basic postal code validation (can be enhanced per country)
-                const postalCodeRegex = /^[A-Z0-9\s\-]+$/i;
-                if (!postalCodeRegex.test(postalCode) || postalCode.length < 3) {
-                    return 'Veuillez entrer un code postal valide.';
-                }
-
-                return null;
             }
 
             // Form submission
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
+            if (registerBtn) {
+                console.log('registerBtn found, attaching click listener');
+                registerBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    console.log('Register button clicked');
+                    console.error('🚀 REGISTRATION BUTTON CLICKED - Starting validation process...');
+                    
+                    // Clear general message
+                    if (messageEl) {
+                        messageEl.className = 'message';
+                        messageEl.textContent = '';
+                    }
 
-                const error = validateForm();
-                if (error) {
-                    messageEl.className = 'message error';
-                    messageEl.style.display = 'block';
-                    messageEl.textContent = error;
-                    return;
-                }
+                    const isValid = validateForm();
+                    console.log('Form validation result:', isValid);
+                    console.error('Validation returned:', isValid);
+                    
+                    if (!isValid) {
+                        console.error('❌ Validation failed, errors should be visible on form');
+                        // Scroll to top to see errors
+                        if (form) {
+                            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                        return;
+                    }
 
-                registerBtn.disabled = true;
-                registerBtn.textContent = 'Création en cours...';
+                    console.error('✅ Validation passed, proceeding with submission');
+                    if (registerBtn) {
+                        registerBtn.disabled = true;
+                        registerBtn.textContent = 'Création en cours...';
+                    }
 
                 const formData = new FormData(form);
                 // Split name into first_name and last_name
@@ -810,18 +1157,21 @@
                 }
 
                 try {
+                    const csrfToken = document.getElementById('csrfToken').value;
                     const response = await fetch('/api/users/register', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken
                         },
                         body: JSON.stringify(data)
                     });
 
                     if (response.ok) {
-                        messageEl.className = 'message success';
-                        messageEl.style.display = 'block';
-                        messageEl.textContent = 'Compte créé avec succès ! Redirection vers la connexion...';
+                        if (messageEl) {
+                            messageEl.className = 'message success show';
+                            messageEl.textContent = 'Compte créé avec succès ! Redirection vers la connexion...';
+                        }
                         setTimeout(() => {
                             window.location.href = '/user/login.html';
                         }, 2000);
@@ -840,14 +1190,124 @@
                         throw new Error(errorMsg);
                     }
                 } catch (err) {
-                    messageEl.className = 'message error';
-                    messageEl.style.display = 'block';
-                    messageEl.textContent = err.message || 'Erreur réseau. Veuillez réessayer.';
+                    if (messageEl) {
+                        messageEl.className = 'message error show';
+                        messageEl.textContent = err.message || 'Erreur réseau. Veuillez réessayer.';
+                    }
                 } finally {
-                    registerBtn.disabled = false;
-                    registerBtn.textContent = 'Créer mon compte';
+                    if (registerBtn) {
+                        registerBtn.disabled = false;
+                        registerBtn.textContent = 'Créer mon compte';
+                    }
                 }
-            });
+                });
+            } else {
+                console.error('registerBtn NOT found in DOM');
+            }
+
+            loadCsrfToken();
+
+            // Social login handlers
+            const googleBtn = document.getElementById('googleSignupBtn');
+            const facebookBtn = document.getElementById('facebookSignupBtn');
+            const appleBtn = document.getElementById('appleSignupBtn');
+
+            if (googleBtn) {
+                googleBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    console.log('Google signup clicked');
+                    try {
+                        // Generate nonce for security
+                        const state = btoa(JSON.stringify({ 
+                            timestamp: Date.now(),
+                            random: Math.random().toString(36).substr(2, 9)
+                        }));
+                        sessionStorage.setItem('oauth_state_google', state);
+                        
+                        // Redirect to Google OAuth authorization
+                        const clientId = '{{ GOOGLE_CLIENT_ID }}'; // Will be replaced by server
+                        const redirectUri = `${window.location.origin}/api/auth/google/callback`;
+                        const scope = 'openid email profile';
+                        const responseType = 'code';
+                        
+                        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+                            `client_id=${encodeURIComponent(clientId)}&` +
+                            `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                            `response_type=${responseType}&` +
+                            `scope=${encodeURIComponent(scope)}&` +
+                            `state=${encodeURIComponent(state)}`;
+                        
+                        window.location.href = authUrl;
+                    } catch (error) {
+                        console.error('Google signup error:', error);
+                        if (messageEl) {
+                            messageEl.className = 'message error show';
+                            messageEl.textContent = 'Erreur lors de la connexion avec Google. Veuillez réessayer.';
+                        }
+                    }
+                });
+            }
+
+            if (facebookBtn) {
+                facebookBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    console.log('Facebook signup clicked');
+                    try {
+                        // Generate state for security
+                        const state = btoa(JSON.stringify({ 
+                            timestamp: Date.now(),
+                            random: Math.random().toString(36).substr(2, 9)
+                        }));
+                        sessionStorage.setItem('oauth_state_facebook', state);
+                        
+                        // Redirect to Facebook OAuth authorization
+                        const appId = '{{ FACEBOOK_APP_ID }}'; // Will be replaced by server
+                        const redirectUri = `${window.location.origin}/api/auth/facebook/callback`;
+                        const scope = 'email,public_profile';
+                        
+                        const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?` +
+                            `client_id=${encodeURIComponent(appId)}&` +
+                            `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                            `scope=${encodeURIComponent(scope)}&` +
+                            `state=${encodeURIComponent(state)}&` +
+                            `response_type=code`;
+                        
+                        window.location.href = authUrl;
+                    } catch (error) {
+                        console.error('Facebook signup error:', error);
+                        if (messageEl) {
+                            messageEl.className = 'message error show';
+                            messageEl.textContent = 'Erreur lors de la connexion avec Facebook. Veuillez réessayer.';
+                        }
+                    }
+                });
+            }
+
+            if (appleBtn) {
+                appleBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    console.log('Apple signup clicked');
+                    try {
+                        // Generate state and nonce for security
+                        const state = btoa(JSON.stringify({ 
+                            timestamp: Date.now(),
+                            random: Math.random().toString(36).substr(2, 9)
+                        }));
+                        sessionStorage.setItem('oauth_state_apple', state);
+                        
+                        // For Apple, we'll use a backend-mediated flow
+                        // First, redirect to our backend to initiate Apple OAuth
+                        const redirectUri = `/api/auth/apple/init?state=${encodeURIComponent(state)}`;
+                        window.location.href = redirectUri;
+                    } catch (error) {
+                        console.error('Apple signup error:', error);
+                        if (messageEl) {
+                            messageEl.className = 'message error show';
+                            messageEl.textContent = 'Erreur lors de la connexion avec Apple. Veuillez réessayer.';
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -341,3 +341,4 @@ const response = await fetch('/api/products', {
 3. ✅ Cascade deletion logic for advanced scenarios
 4. ✅ Category-based product pagination
 5. ✅ Full-text search by category + product name
+

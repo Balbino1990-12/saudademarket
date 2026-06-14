@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saudade Market Admin - Reports</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css">
+    <style>
+      html, body {
+        overflow: auto !important;
+      }
+      body {
+        min-height: 100%;
+      }
+      .content {
+        min-height: 100vh;
+      }
+      main {
+        min-height: calc(100vh - 6rem);
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="/js/i18n.js"></script>
+    <script src="admin-icons.js"></script>
+    <script src="sidebar.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div class="min-h-screen flex bg-slate-50">
+        <div id="sidebar" class="sidebar w-[260px] shrink-0"></div>
+
+        <div class="content ml-[260px] w-[calc(100%-260px)] flex flex-col">
+            <header class="border-b border-slate-200 bg-white px-6 py-5">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Reports</h1>
+                        <p class="mt-2 text-sm text-slate-600">Generate insightful business reports and export results for finance, operations, and management.</p>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6">
+                    <!-- Report Filters Section -->
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold text-slate-900">Report Filters</h2>
+                        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700">Start Date</span>
+                                <input id="startDate" type="date" class="mt-2 w-full rounded-[20px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20" />
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700">End Date</span>
+                                <input id="endDate" type="date" class="mt-2 w-full rounded-[20px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20" />
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700">Order Status</span>
+                                <select id="status" class="mt-2 w-full rounded-[20px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                                    <option value="">All</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700">Payment Status</span>
+                                <select id="paymentStatus" class="mt-2 w-full rounded-[20px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                                    <option value="">All</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="failed">Failed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700">Category ID</span>
+                                <input id="categoryId" type="number" min="1" placeholder="e.g. 2" class="mt-2 w-full rounded-[20px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20" />
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700">Seller ID</span>
+                                <input id="sellerId" type="number" min="1" placeholder="e.g. 5" class="mt-2 w-full rounded-[20px] border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20" />
+                            </label>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <button id="applyFiltersBtn" class="inline-flex items-center gap-2 rounded-[20px] bg-gradient-to-br from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">Apply Filters</button>
+                            <button id="clearFiltersBtn" class="inline-flex items-center justify-center rounded-[20px] border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Clear Filters</button>
+                            <button id="exportCsvBtn" class="inline-flex items-center gap-2 rounded-[20px] bg-gradient-to-br from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">Export CSV</button>
+                            <button id="exportExcelBtn" class="inline-flex items-center gap-2 rounded-[20px] bg-gradient-to-br from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">Export Excel</button>
+                            <button id="exportPdfBtn" class="inline-flex items-center gap-2 rounded-[20px] bg-gradient-to-br from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">Export PDF</button>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics Section -->
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-900">Key Report Metrics</h2>
+                                <p class="mt-2 text-sm text-slate-600">Revenue, trends and customer lifetime performance.</p>
+                            </div>
+                            <div class="flex gap-3 flex-wrap">
+                                <button id="scheduleReportBtn" class="inline-flex items-center gap-2 rounded-[20px] bg-gradient-to-br from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">Schedule Report</button>
+                            </div>
+                        </div>
+                        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Total Revenue</div>
+                                <div class="mt-3 text-3xl font-semibold text-slate-900" id="summaryRevenue">€0.00</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Total Orders</div>
+                                <div class="mt-3 text-3xl font-semibold text-slate-900" id="summaryOrders">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unique Customers</div>
+                                <div class="mt-3 text-3xl font-semibold text-slate-900" id="summaryCustomers">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Repeat Customers</div>
+                                <div class="mt-3 text-3xl font-semibold text-slate-900" id="summaryRepeatCustomers">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Trend Chart -->
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold text-slate-900">Revenue Trend</h2>
+                        <div class="mt-4" style="height: 320px;">
+                            <canvas id="revenueTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Revenue by Category Chart -->
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold text-slate-900">Revenue by Category</h2>
+                        <div class="mt-4" style="height: 320px;">
+                            <canvas id="revenueByCategoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Customers Table -->
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold text-slate-900">Top Customers</h2>
+                        <div class="mt-4 overflow-x-auto">
+                            <table class="w-full min-w-[500px] divide-y divide-slate-200 text-sm">
+                                <thead class="bg-slate-100">
+                                    <tr>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Customer</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Email</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Orders</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Lifetime Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customerTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+                    <!-- Orders Table -->
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold text-slate-900">Orders</h2>
+                        <div class="mt-4 overflow-x-auto">
+                            <table class="w-full min-w-[600px] divide-y divide-slate-200 text-sm">
+                                <thead class="bg-slate-100">
+                                    <tr>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Order</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Buyer</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Status</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Payment</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Total</th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="sidebar.js"></script>
+    <script src="reports.js"></script>
+</body>
+</html>

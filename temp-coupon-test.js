@@ -1,0 +1,1 @@
+const db = require("./src/config/database"); const Coupon = require("./src/models/Coupon"); (async()=>{ try{ await db.initDatabase(); const updated = await Coupon.update(3,{type:"free_shipping",value:0}); console.log("updated",updated); } catch(err){ console.error("ERR",err); console.error(err.stack);} })();

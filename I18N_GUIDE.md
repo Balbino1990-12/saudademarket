@@ -326,3 +326,4 @@ For issues or questions about the i18n system, check:
 - Browser console (F12) for error messages
 - `/public/js/i18n.js` for implementation details
 - `/public/translations.json` for available translation keys
+

@@ -22,3 +22,4 @@ console.log('\n📌 Navigation Keys:');
     console.log(`    FR: "${data.fr[key]}"`);
     console.log(`    PT: "${data.pt[key]}"`);
 });
+

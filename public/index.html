@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portugalsstore.fr - Épicerie Portugaise en Ligne</title>
+    <!--Put logo in the title '-->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>Saudade Market - Épicerie Portugaise en Ligne</title>
     <link rel="stylesheet" href="/css/style.css" />
     <script src="/js/i18n.js"></script>
 </head>
@@ -11,9 +13,9 @@
     <header>
         <div class="header-top">
             <div class="logo">
-                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
                 <div class="logo-text">
-                    <h1>Portugalsstore.fr</h1>
+                    <h1>Saudade Market</h1>
                     <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
                 </div>
             </div>
@@ -23,26 +25,10 @@
             </div>
 
             <div class="header-actions">
-                <button class="icon user" id="profileBtn" title="Compte">👤 <span id="buyerUsername" style="font-weight:600;margin-left:4px;"></span></button>
-                <div id="profileDropdown" class="profile-dropdown" style="display:none">
-                    <div class="profile-header">
-                        <div class="profile-avatar"></div>
-                        <div class="profile-info">
-                            <div class="profile-name" id="profileName">Nom d'utilisateur</div>
-                            <div class="profile-meta" id="profileMeta">-</div>
-                        </div>
-                    </div>
-                    <button class="profile-all-profiles">👤 See all profiles</button>
-                    <div class="profile-divider"></div>
-                    <div class="profile-menu">
-                        <button class="profile-menu-item">⚙️ Settings & privacy</button>
-                        <button class="profile-menu-item">❓ Help & support</button>
-                        <button class="profile-menu-item">🌙 Display & accessibility</button>
-                        <button class="profile-menu-item">💬 Give feedback <span style="font-size:0.8em;opacity:0.7;">CTRL B</span></button>
-                    </div>
-                    <div class="profile-divider"></div>
-                    <button class="profile-logout" id="profileLogout">🚪 Log out</button>
-                </div>
+                <button class="icon user" id="profileBtn" title="Compte">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="buyerUsername" style="font-weight:600;margin-left:6px;"></span>
+                </button>
                 <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
                 <div class="language-selector">
                     <button id="langBtn" class="lang-toggle">FR</button>
@@ -59,8 +45,8 @@
         <nav>
             <ul>
                 <li><a href="index.html" class="active" data-i18n="nav.home">ACCUEIL</a></li>
-                <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
-                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">All products</a></li>
+                <li id="specialties-menu-anchor"></li>
                 <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
                 <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
                 <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
@@ -69,146 +55,95 @@
                 <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
             </ul>
         </nav>
+        <div id="profileDropdown" class="profile-dropdown" aria-hidden="true" style="display:none;"></div>
     </header>
 
     <main>
+        <section class="mobile-category-strip" aria-label="Mobile Categories">
+            <div id="mobileCategoriesStrip" class="mobile-category-strip-container">
+                <a class="mobile-category-pill" href="/produits.html">Catégories</a>
+            </div>
+        </section>
+
         <section class="hero">
             <div class="text">
+                <div class="hero-tag">ÉPICERIE PORTUGAISE AUTHENTIQUE</div>
                 <h1>
                     <span data-i18n="hero.title">Découvrez les</span>
                     <span class="highlight" data-i18n="hero.highlight">Saveurs du Portugal</span>
                 </h1>
-                <p data-i18n="hero.subtitle">Livrées en France</p>
+                <p data-i18n="hero.subtitle">Livrées partout en France, directement chez vous.</p>
                 <div class="hero-features">
                     <span data-i18n="hero.feature1">Produits authentiques</span>
                     <span data-i18n="hero.feature2">Livraison rapide</span>
                     <span data-i18n="hero.feature3">Paiement sécurisé</span>
                 </div>
-                <button id="shopBtn" data-i18n="hero.cta">DÉCOUVRIR LA BOUTIQUE →</button>
-            </div>
-            <div class="image">
-                <img src="/images/hero.jpg" alt="Produits portugais" />
-            </div>
-        </section>
-
-        <!-- Recommendations Section -->
-        <section id="recommendationsContainer" style="padding: 60px 36px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-            <!-- Recommendations will be loaded here by JavaScript -->
-        </section>
-
-        <section class="categories" id="categories">
-            <h2 class="section-title" data-i18n="categories_title">Shop by Categories</h2>
-            <!-- categories will be injected by script.js -->
-        </section>
-
-        <!-- all products section -->
-        <section class="all-products-section">
-            <div class="container">
-                <h2 class="section-title" data-i18n="all_products_title">All Products</h2>
-                <div class="products-grid" id="productsGrid">
-                    <!-- Products will be injected by script.js -->
+                <div class="hero-button-row">
+                    <button id="shopBtn" class="primary-btn" data-i18n="hero.cta">DESCOBRIR A LOJA</button>
+                    <a href="contact.html" class="secondary-btn" data-i18n="hero.help">Besoin d'aide ?</a>
                 </div>
             </div>
         </section>
 
-        <!-- feature boxes section -->
-        <section class="features">
-            <div class="feature-box">
-                <div class="feature-icon">✓</div>
-                <h3 data-i18n="features.authentic">PRODUITS AUTHENTIQUES DU PORTUGAL</h3>
-            </div>
-            <div class="feature-box">
-                <div class="feature-icon">🚚</div>
-                <h3 data-i18n="features.shipping">LIVRAISON RAPIDE EN FRANCE</h3>
-            </div>
-            <div class="feature-box">
-                <div class="feature-icon">🔒</div>
-                <h3 data-i18n="features.secure">PAIEMENT SÉCURISÉ</h3>
-            </div>
-            <div class="feature-box">
-                <div class="feature-icon">💬</div>
-                <h3 data-i18n="features.support">SERVICE CLIENT EN FRANÇAIS</h3>
-            </div>
+        <section class="home-section" id="promotionsSection">
+            <h2 data-i18n="home.promotions">Promotions</h2>
+            <div id="promotionsProductsContainer" class="recommendations-container"></div>
         </section>
 
-        <!-- specialties section -->
-        <section class="specialties" id="specialties">
-            <h2 data-i18n="specialties">Nos Spécialités Portugaises</h2>
-            <div class="specialty-list">
-                <!-- specialties injected by script.js -->
-            </div>
+        <section class="home-section" id="categoriesSection">
+            <h2 data-i18n="home.categories">Catégories</h2>
+            <div id="categories" class="category-grid"></div>
+            <div id="categoriesPagination" class="category-pagination"></div>
         </section>
 
-        <!-- Recommendations Section -->
-        <section id="recommendationsContainer" style="padding: 60px 36px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-            <!-- Recommendations will be loaded here by JavaScript -->
+        <section class="home-section" id="popularSection">
+            <h2 data-i18n="home.popular">Produits populaires</h2>
+            <div id="popularProductsContainer" class="recommendations-container"></div>
         </section>
 
-        <!-- CTA footer section -->
-        <section class="cta-section">
-            <div class="cta-content">
-                <h2 data-i18n="cta_title">Apportez le Meilleur du Portugal chez Vous!</h2>
-                <div class="cta-features">
-                    <p>✓ <span data-i18n="cta_features">+ de 200 produits • Expédition rapide • Qualité garantie</span></p>
-                </div>
-            </div>
-            <button class="cta-btn" data-i18n="cta_button">COMMANDER MAINTENANT →</button>
-            <div class="cta-website" data-i18n="website">www.portugalsstore.fr</div>
+        <section class="home-section" id="specialtiesSection">
+            <h2 data-i18n="home.specialties">Spécialités</h2>
+            <div class="specialty-list" id="homeSpecialtyList"></div>
         </section>
     </main>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/script.js"></script>
+    <script src="/js/chat-widget.js"></script>
 
-    <script>
-    // Profile dropdown logic
-    document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.getElementById('profileBtn');
-        const dropdown = document.getElementById('profileDropdown');
-        const nameEl = document.getElementById('profileName');
-        const metaEl = document.getElementById('profileMeta');
-        const logoutBtn = document.getElementById('profileLogout');
-        // Fill profile info
-        try {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (user && user.username) {
-                nameEl.textContent = user.username;
-                document.getElementById('buyerUsername').textContent = user.username;
-                metaEl.textContent = user.email || '';
-            }
-        } catch {}
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function(e) {
-            if (!dropdown.contains(e.target) && e.target !== btn) {
-                dropdown.style.display = 'none';
-            }
-        });
-        logoutBtn.addEventListener('click', function() {
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('currentUser');
-            window.location.href = '/user/login.html';
-        });
-    });
-    </script>
+    <!-- AI Chat Widget -->
+    <div id="aiChatLauncher" class="ai-chat-launcher" title="Chat with us">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
 
-    <script>
-    // Show logged-in buyer username if available
-    document.addEventListener('DOMContentLoaded', function() {
-        try {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (user && user.username) {
-                document.getElementById('buyerUsername').textContent = user.username;
-            }
-        } catch {}
-    });
-    </script>
+    <div id="aiChatPanel" class="ai-chat-panel" aria-hidden="true">
+        <div class="ai-chat-header">
+            <h3>Support</h3>
+            <button id="aiChatClose" class="ai-chat-close" aria-label="Close chat">×</button>
+        </div>
+        <div id="aiChatMessages" class="ai-chat-messages"></div>
+        <form id="aiChatForm" class="ai-chat-form">
+            <input 
+                id="aiChatInput" 
+                class="ai-chat-input" 
+                type="text" 
+                placeholder="Type your message..." 
+                autocomplete="off"
+            />
+            <button id="aiChatSend" type="submit" class="ai-chat-send" aria-label="Send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
 
     <!-- Category Products Modal -->
     <div id="categoryModal" class="category-modal">
         <div class="category-modal-content">
-            <button class="category-modal-close" id="closeCategoryModalBtn">&times;</button>
             <h2 id="categoryModalTitle"></h2>
             <div class="category-products-grid" id="categoryProductsGrid">
                 <!-- Products for selected category will be injected here -->
@@ -219,13 +154,79 @@
     <!-- Specialty Products Modal -->
     <div id="specialtyModal" class="category-modal">
         <div class="category-modal-content">
-            <button class="category-modal-close" id="closeSpecialtyModalBtn">&times;</button>
             <h2 id="specialtyModalTitle"></h2>
             <div class="category-products-grid" id="specialtyProductsGrid">
                 <!-- Products for selected specialty will be injected here -->
             </div>
         </div>
     </div>
+
+    <!-- Cookie Consent Popup -->
+    <div id="cookieConsent" class="cookie-consent">
+        <div class="cookie-consent-content">
+            <h3 data-i18n="cookie.title">Utilisation des Cookies</h3>
+            <p data-i18n="cookie.message">Ce site utilise des cookies pour améliorer votre expérience. En continuant à naviguer, vous acceptez notre utilisation des cookies.</p>
+            <div class="cookie-buttons">
+                <button id="acceptCookies" data-i18n="cookie.accept">Accepter</button>
+                <button id="declineCookies" data-i18n="cookie.decline">Refuser</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-left">
+            <div class="footer-logo">
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
+                <span>Saudade Market</span>
+            </div>
+            <div class="footer-copy">
+                <p data-i18n="footer.description">Épicerie portugaise en ligne • Livraison en France</p>
+                <p class="footer-payment-note" data-i18n="footer.payment_note">Paiements sécurisés via Stripe — cartes Visa, Mastercard, Apple Pay et Google Pay acceptées.</p>
+            </div>
+        </div>
+        <div class="footer-payment">
+            <h4 data-i18n="footer.payment_title">Paiement sécurisé</h4>
+            <p data-i18n="footer.payment_description">Vos achats sont protégés par Stripe et 3D Secure pour une expérience simple et fiable.</p>
+            <div class="payment-logos">
+                <span class="payment-icon payment-icon-visa" role="img" aria-label="Visa" title="Visa" data-label="Visa"></span>
+                <span class="payment-icon payment-icon-mastercard" role="img" aria-label="Mastercard" title="Mastercard" data-label="Mastercard"></span>
+                <span class="payment-icon payment-icon-apple-pay" role="img" aria-label="Apple Pay" title="Apple Pay" data-label="Apple Pay"></span>
+                <span class="payment-icon payment-icon-google-pay" role="img" aria-label="Google Pay" title="Google Pay" data-label="Google Pay"></span>
+            </div>
+        </div>
+        <div class="footer-right">
+            <div class="footer-contact">
+                <span data-i18n="footer.contact_help">Besoin d'aide ?</span>
+                <a href="/contact.html" data-i18n="footer.contact_link">Contactez-nous</a>
+            </div>
+            <div class="footer-socials-wrapper">
+                <span data-i18n="footer.follow_us">Suivez-nous :</span>
+                <div class="footer-socials">
+                    <a class="footer-social-link" href="https://www.facebook.com/saudademarket" target="_blank" rel="noreferrer noopener" aria-label="Facebook">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M22 12c0-5.522-4.477-10-10-10S2 6.478 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.99H7.898V12h2.54V9.797c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.462h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.888h-2.33v6.99C18.343 21.128 22 16.991 22 12z"/>
+                        </svg>
+                    </a>
+                    <a class="footer-social-link" href="https://www.instagram.com/saudademarket" target="_blank" rel="noreferrer noopener" aria-label="Instagram">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.849.07 1.366.062 2.633.336 3.608 1.311.975.975 1.249 2.242 1.311 3.608.058 1.265.07 1.645.07 4.849s-.012 3.584-.07 4.849c-.062 1.366-.336 2.633-1.311 3.608-.975.975-2.242 1.249-3.608 1.311-1.265.058-1.645.07-4.849.07s-3.584-.012-4.849-.07c-1.366-.062-2.633-.336-3.608-1.311-.975-.975-1.249-2.242-1.311-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.849c.062-1.366.336-2.633 1.311-3.608.975-.975 2.242-1.249 3.608-1.311C8.416 2.175 8.796 2.163 12 2.163zm0 1.838c-3.17 0-3.548.012-4.797.069-1.164.053-1.797.24-2.22.401-.555.224-.95.492-1.37.912-.42.42-.688.815-.912 1.37-.161.423-.348 1.056-.401 2.22-.057 1.249-.069 1.627-.069 4.797s.012 3.548.069 4.797c.053 1.164.24 1.797.401 2.22.224.555.492.95.912 1.37.42.42.815.688 1.37.912.423.161 1.056.348 2.22.401 1.249.057 1.627.069 4.797.069s3.548-.012 4.797-.069c1.164-.053 1.797-.24 2.22-.401.555-.224.95-.492 1.37-.912.42-.42.688-.815.912-1.37.161-.423.348-1.056.401-2.22.057-1.249.069-1.627.069-4.797s-.012-3.548-.069-4.797c-.053-1.164-.24-1.797-.401-2.22-.224-.555-.492-.95-.912-1.37-.42-.42-.815-.688-1.37-.912-.423-.161-1.056-.348-2.22-.401-1.249-.057-1.627-.069-4.797-.069zm0 3.838a5 5 0 1 1 0 10.001A5 5 0 0 1 12 7.999zm0 1.838a3.162 3.162 0 1 0 0 6.324 3.162 3.162 0 0 0 0-6.324zm4.406-2.745a1.18 1.18 0 1 1-2.36 0 1.18 1.18 0 0 1 2.36 0z"/>
+                        </svg>
+                    </a>
+                    <a class="footer-social-link" href="https://wa.me/33123456789" target="_blank" rel="noreferrer noopener" aria-label="WhatsApp">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.868-2.03-.968-.273-.099-.472-.148-.672.149-.198.297-.768.968-.94 1.166-.173.198-.347.223-.644.075-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.173.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.672-1.612-.92-2.204-.242-.579-.487-.5-.672-.51l-.573-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.693.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.01-1.413.248-.694.248-1.289.173-1.413-.074-.124-.273-.198-.57-.347z"/>
+                            <path d="M12 2C6.477 2 2 6.478 2 12.001c0 2.122.7 4.085 1.893 5.663L2 22l4.513-1.186A9.953 9.953 0 0 0 12 22c5.523 0 10-4.478 10-9.999C22 6.478 17.523 2 12 2z" opacity="0.3"/>
+                        </svg>
+                    </a>
+                    <a class="footer-social-link" href="https://www.youtube.com/channel/UCxxxxxxxxxxxx" target="_blank" rel="noreferrer noopener" aria-label="YouTube">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M21.8 7.001s-.2-1.44-.81-2.078c-.776-.82-1.646-.823-2.045-.867C16.46 3.9 12 3.9 12 3.9h-.003s-4.459 0-6.95.156c-.398.044-1.268.046-2.044.867A3.516 3.516 0 0 0 2.2 7.001a36.117 36.117 0 0 0-.2 4.999c0 1.786.12 3.57.2 4.999.056.8.326 1.712 1.015 2.32.782.709 1.643.687 2.059.76 1.49.164 6.946.164 6.946.164s4.459 0 6.95-.157c.397-.045 1.267-.047 2.043-.867.61-.638.81-2.078.81-2.078s.2-1.44.2-2.879c0-1.439-.2-2.879-.2-2.879zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
-</html>
+

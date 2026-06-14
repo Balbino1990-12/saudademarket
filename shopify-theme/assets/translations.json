@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "home": {"fr": "ACCUEIL", "pt": "INÍCIO", "en": "HOME"},
+    "products": {"fr": "PRODUITS", "pt": "PRODUTOS", "en": "PRODUCTS"},
+    "specialties": {"fr": "SPÉCIALITÉS", "pt": "ESPECIALIDADES", "en": "SPECIALTIES"},
+    "wine": {"fr": "VIN & PORTO", "pt": "VINHOS & PORTO", "en": "WINE & PORT"},
+    "grocery": {"fr": "ÉPICERIE", "pt": "MERCEARIA", "en": "GROCERY"},
+    "gifts": {"fr": "COFFRETS", "pt": "CABAZES", "en": "GIFT BOXES"},
+    "about": {"fr": "À PROPOS", "pt": "SOBRE NÓS", "en": "ABOUT US"},
+    "contact": {"fr": "CONTACT", "pt": "CONTACTOS", "en": "CONTACT"},
+    "subtitle": {"fr": ">> Découvrir", "pt": ">> Conhecer", "en": ">> Discover"}
+  },
+  "header": {
+    "search": {"fr": "Rechercher un produit...", "pt": "Pesquisar um produto...", "en": "Search for a product..."},
+    "account": {"fr": "Mon compte", "pt": "Minha conta", "en": "Account"},
+    "cart": {"fr": "Panier", "pt": "Carrinho", "en": "Cart"}
+  },
+  "features": {
+    "authentic": {"fr": "PRODUITS AUTHENTIQUES DU PORTUGAL", "pt": "PRODUTOS AUTÊNTICOS DE PORTUGAL", "en": "Authentic products from Portugal"},
+    "delivery": {"fr": "LIVRAISON RAPIDE EN FRANCE", "pt": "ENTREGA RÁPIDA EM FRANÇA", "en": "Fast delivery to France"},
+    "secure": {"fr": "PAIEMENT SÉCURISÉ", "pt": "PAGAMENTO SEGURO", "en": "Secure payment"},
+    "support": {"fr": "SERVICE CLIENT EN FRANÇAIS", "pt": "ATENDIMENTO AO CLIENTE EM INGLÊS", "en": "Customer service in English"}
+  },
+  "specialties": {
+    "heading": {"fr": "Nos Spécialités Portugaises", "pt": "Nossas Especialidades Portuguesas", "en": "Our Portuguese Specialties"}
+  },
+  "pages": {
+    "produits": {
+      "title": {"fr": "Nos Produits", "pt": "Nossos Produtos", "en": "Our Products"},
+      "description": {"fr": "Explorez notre sélection complète de produits portugais authentiques et délicieux, spécialement importés pour vous.", "pt": "Explore nossa seleção completa de produtos portugueses autênticos e deliciosos, especialmente importados para você.", "en": "Explore our complete selection of authentic and delicious Portuguese products, specially imported for you."}
+    },
+    "specialites": {
+      "title": {"fr": "Nos Spécialités Portugaises", "pt": "Nossas Especialidades Portuguesas", "en": "Our Portuguese Specialties"},
+      "description": {"fr": "Découvrez les spécialités les plus savoureuses et authentiques du Portugal, sélectionnées avec soin pour vous.", "pt": "Descubra as especialidades mais saborosas e autênticas de Portugal, selecionadas com cuidado para você.", "en": "Discover the most delicious and authentic specialties from Portugal, carefully selected for you."}
+    },
+    "vins": {
+      "title": {"fr": "Vin & Porto Portugais", "pt": "Vinhos e Porto Portugueses", "en": "Portuguese Wine & Port"},
+      "description": {"fr": "Explorez notre sélection exclusive de vins et Portos de qualité supérieure, directement du Portugal.", "pt": "Explore nossa seleção exclusiva de vinhos e Portos de qualidade superior, diretamente de Portugal.", "en": "Explore our exclusive selection of premium wines and Ports, straight from Portugal."}
+    },
+    "epicerie": {
+      "title": {"fr": "Notre Épicerie", "pt": "Nossa Mercearia", "en": "Our Grocery"},
+      "description": {"fr": "Trouvez tous les produits de base essentiels pour cuisiner les plats portugais traditionnels authentiques.", "pt": "Encontre todos os produtos essenciais para cozinhar os pratos portugueses tradicionais autênticos.", "en": "Find all the essential ingredients for cooking authentic traditional Portuguese dishes."}
+    },
+    "coffrets": {
+      "title": {"fr": "Coffrets Gourmands", "pt": "Cabazes Gourmet", "en": "Gourmet Gift Baskets"},
+      "description": {"fr": "Offrez les saveurs du Portugal avec nos coffrets cadeaux luxueux et authentiques, parfaits pour tous les occasions.", "pt": "Presenteie com os sabores de Portugal através dos nossos cabazes de presentes luxuosos e autênticos, perfeitos para todas as ocasiões.", "en": "Give the flavors of Portugal with our luxurious and authentic gift baskets, perfect for any occasion."}
+    },
+    "apropos": {
+      "title": {"fr": "À Propos de Nous", "pt": "Sobre Nous", "en": "About Us"},
+      "description": {"fr": "Portugalsstore.fr est votre source de confiance pour les produits portugais authentiques et de qualité, livrés directement en France.", "pt": "PortugalStore.fr é sua fonte confiável de produtos portugueses autênticos e de qualidade, entregues diretamente em Portugal.", "en": "PortugalStore.fr is your trusted source for authentic and quality Portuguese products, delivered straight to your door."}
+    },
+    "contact": {
+      "title": {"fr": "Nous Contacter", "pt": "Entre em Contato", "en": "Contact Us"},
+      "description": {"fr": "Avez des questions ? Notre service client -+en français est prêt à vous aider. Contactez-nous pour tout renseignement sur nos produits.", "pt": "Tem dúvidas? Gostaríamos de ouvir de você. Entre em contato conosco e responderemos o mais rápido possível.", "en": "Have questions? Our customer service is ready to help you. Contact us for any information about our products."}
+    }
+  },
+  "profile": {
+    "all_profiles": {"fr": "Voir tous les profils", "en": "View all profiles", "pt": "Ver todos os perfis"},
+    "settings_privacy": {"fr": "Paramètres & confidentialité", "en": "Settings & privacy", "pt": "Configurações & privacidade"},
+    "orders_history": {"fr": "Historique des commandes", "en": "Order history", "pt": "Histórico de pedidos"},
+    "help_support": {"fr": "Aide & support", "en": "Help & support", "pt": "Ajuda & suporte"},
+    "display_accessibility": {"fr": "Affichage & accessibilité", "en": "Display & accessibility", "pt": "Exibição & acessibilidade"},
+    "feedback": {"fr": "Retour (CTRL B)", "en": "Feedback (CTRL B)", "pt": "Feedback (CTRL B)"},
+    "logout": {"fr": "Déconnexion", "en": "Logout", "pt": "Sair"}
+  }
+}

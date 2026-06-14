@@ -153,3 +153,4 @@ console.log('   - [roleForm] Submit event triggered');
 console.log('   - [saveRole] Found X permission checkboxes');
 console.log('   - [saveRole] Response status: 200');
 console.log('3. If you see errors, copy them and report');
+

@@ -20,7 +20,7 @@ class Admin {
         return null;
       }
 
-      // Check if user has admin role (using role_name from the users-roles relationship)
+      // Check if user has the exact Admin role
       if (user.role_name !== 'Admin') {
         console.warn(`[Admin.authenticate] User is not an admin. Current role: ${user.role_name || 'None'}`);
         return null;

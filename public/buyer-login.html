@@ -162,9 +162,9 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <img src="/images/logo.jpg" alt="Portugalsstore.fr" class="logo-img" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" class="logo-img" />
             </div>
-            <h1 class="card-title">Portugalsstore.fr</h1>
+            <h1 class="card-title">Saudade Market</h1>
             <p class="card-subtitle">Connectez-vous à votre compte acheteur</p>
             <div class="card-body">
                 <div class="message" id="message"></div>
@@ -227,14 +227,27 @@
                         return;
                     }
                     localStorage.setItem('userToken', token);
+                    // Keep backward-compatible value for buyer path
+                    localStorage.setItem('buyerToken', token);
                     if (data.user) {
                         localStorage.setItem('currentUser', JSON.stringify(data.user));
                     }
                     messageEl.className = 'message success show';
                     messageEl.textContent = 'Connexion réussie ! Redirection...';
-                    // Redirect based on user role
-                    const redirectUrl = data.user && data.user.role === 'seller' ? '/user/dashboard.html' : 'index.html';
-                    setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+
+                    // Determine redirect target from query param (product page etc.)
+                    const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/index.html';
+                    const userRole = (data.user?.role || data.user?.role_name || '').toString().trim().toLowerCase();
+
+                    // Seller dashboard is default for seller role only when no explicit redirect or redirect points to seller area
+                    const sellerPageRegex = /^\/user(\/.*)?\.html$/i;
+                    if (userRole === 'seller' && (!redirectUrl || sellerPageRegex.test(redirectUrl))) {
+                        setTimeout(() => { window.location.href = '/user/dashboard.html'; }, 1000);
+                        return;
+                    }
+
+                    // Otherwise keep destination (including product listing and cart flow) for better UX
+                    setTimeout(() => { window.location.href = redirectUrl; }, 1000);
                 } catch (err) {
                     messageEl.className = 'message error show';
                     messageEl.textContent = 'Erreur réseau. Veuillez réessayer.';
@@ -246,3 +259,4 @@
     </script>
 </body>
 </html>
+

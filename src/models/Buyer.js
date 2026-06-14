@@ -9,3 +9,4 @@ const BuyerSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Buyer', BuyerSchema);
+

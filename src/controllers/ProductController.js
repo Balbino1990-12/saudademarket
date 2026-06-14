@@ -26,6 +26,17 @@ class ProductController {
   static async list(req, res, next) {
     try {
       const search = req.query.search || '';
+      const rawLimit = req.query.limit;
+      const requestedLimit = parseInt(rawLimit, 10);
+      const limit = Number.isInteger(requestedLimit) && requestedLimit > 0
+        ? Math.min(requestedLimit, 10)
+        : null;
+
+      const categoryIdRaw = req.query.category_id || req.query.categoryId || req.query.category;
+      const categoryId = categoryIdRaw ? parseInt(categoryIdRaw, 10) : null;
+      if (categoryIdRaw && Number.isNaN(categoryId)) {
+        return res.status(400).json({ error: 'Invalid category_id parameter' });
+      }
 
       const currentUser = await ProductController.resolveCurrentUser(req);
       let products;
@@ -35,16 +46,23 @@ class ProductController {
       // Seller sees only own products
       if (currentUser && isSeller) {
         if (search) {
-          products = await Product.searchByUserId(currentUser.id, search);
+          products = await Product.searchByUserId(currentUser.id, search, limit);
         } else {
-          products = await Product.getByUserId(currentUser.id);
+          products = await Product.getByUserId(currentUser.id, limit);
+        }
+        if (categoryId) {
+          products = products.filter(p => Number(p.category_id) === categoryId);
         }
       } else {
-        // For admins and public listing, keep existing behavior
         if (search) {
-          products = await Product.search(search);
+          products = await Product.search(search, limit);
+          if (categoryId) {
+            products = products.filter(p => Number(p.category_id) === categoryId);
+          }
+        } else if (categoryId) {
+          products = await Product.getByCategoryId(categoryId);
         } else {
-          products = await Product.getAll();
+          products = await Product.getAll(limit);
         }
       }
 
@@ -56,12 +74,19 @@ class ProductController {
 
   static async getOne(req, res, next) {
     try {
-      const product = await Product.getById(req.params.id);
+      const identifier = String(req.params.id || '').trim();
+      let product;
+      if (/^\d+$/.test(identifier)) {
+        product = await Product.getById(identifier);
+      } else {
+        product = await Product.getBySlugOrName(identifier);
+      }
+
       if (!product) return res.status(404).json({ error: 'Product not found' });
 
       // Track product view for recommendations
       const userId = req.user?.id || req.session?.userId;
-      await RecommendationService.trackProductView(userId, req.params.id);
+      await RecommendationService.trackProductView(userId, product.id);
 
       res.json(product);
     } catch (err) {
@@ -235,7 +260,7 @@ class ProductController {
 
       res.status(201).json({ 
         success: true, 
-        product,
+        product: createdProduct,
         message: 'Product created successfully' 
       });
     } catch (err) {
@@ -469,12 +494,14 @@ class ProductController {
       }
 
       const requestedUserId = parseInt(userId, 10);
-      const currentUserRole = currentUser.role_name?.toString().trim().toLowerCase();
+      const currentUserRole = currentUser?.role_name?.toString().trim().toLowerCase();
 
-      if (currentUserRole !== 'admin' && currentUser.id !== requestedUserId) {
-        return res.status(403).json({ error: 'Forbidden' });
+      // Public / buyer can view any user's products
+      if (currentUserRole === 'seller' && currentUser.id !== requestedUserId) {
+        return res.status(403).json({ error: 'Forbidden: sellers can only view their own products' });
       }
 
+      // Admin can view any user products; buyer and anonymous can also see it
       const products = await Product.getByUserId(requestedUserId);
       res.json(products);
     } catch (err) {
@@ -497,3 +524,4 @@ class ProductController {
   }}
 
 module.exports = ProductController;
+

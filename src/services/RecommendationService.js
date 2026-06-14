@@ -298,6 +298,32 @@ class RecommendationService {
    * @param {number} limit - Maximum recommendations
    * @returns {Promise<Array>} Popular products
    */
+  static async getFeaturedRecommendations(limit = 5) {
+    try {
+      const sql = `
+        SELECT p.*, c.name_en as category_name, c.name_fr as category_name_fr, c.name_pt as category_name_pt,
+               c.icon as category_icon, u.username as user_username, u.email as user_email
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE p.is_featured = 1
+           OR (p.promo_price IS NOT NULL
+               AND p.promo_price > 0
+               AND p.promo_price < p.price
+               AND (p.promo_expires_at IS NULL OR p.promo_expires_at > NOW()))
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+      `;
+
+      const [rows] = await pool.query(sql, [limit]);
+      console.log(`[RecommendationService.getFeaturedRecommendations] Found ${rows.length} featured products`);
+      return rows || [];
+    } catch (error) {
+      console.error('[RecommendationService.getFeaturedRecommendations] Error:', error);
+      return [];
+    }
+  }
+
   static async getPopularRecommendations(excludeProductIds = [], limit = 5) {
     try {
       const managedRecommendations = await this.getManagedRecommendations(excludeProductIds, limit);
@@ -330,6 +356,28 @@ class RecommendationService {
       return [...managedRecommendations, ...rows];
     } catch (error) {
       console.error('[RecommendationService.getPopularRecommendations] Error:', error);
+      return [];
+    }
+  }
+
+  static async getFeaturedRecommendations(limit = 5) {
+    try {
+      const sql = `
+        SELECT p.*, c.name_en as category_name, c.name_fr as category_name_fr, c.name_pt as category_name_pt,
+               c.icon as category_icon, u.username as user_username, u.email as user_email
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE p.is_featured = 1
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+      `;
+
+      const [rows] = await pool.query(sql, [limit]);
+      console.log(`[RecommendationService.getFeaturedRecommendations] Found ${rows.length} featured products`);
+      return rows || [];
+    } catch (error) {
+      console.error('[RecommendationService.getFeaturedRecommendations] Error:', error);
       return [];
     }
   }
@@ -443,3 +491,4 @@ class RecommendationService {
 }
 
 module.exports = RecommendationService;
+

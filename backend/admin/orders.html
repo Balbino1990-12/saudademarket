@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saudade Market Admin - Orders</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css">
+    <style>
+      html, body {
+        overflow: auto !important;
+      }
+      body {
+        min-height: 100%;
+      }
+      .content {
+        min-height: 100vh;
+      }
+      main {
+        min-height: calc(100vh - 6rem);
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        padding: 1.5rem;
+      }
+      .modal.active {
+        display: flex;
+      }
+      .modal-content {
+        max-width: 760px;
+        width: min(100%, 760px);
+        max-height: 88vh;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 1.75rem;
+        box-shadow: 0 35px 80px rgba(15, 23, 42, 0.25);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        backdrop-filter: saturate(180%) blur(12px);
+        animation: modalEnter 220ms ease;
+      }
+      @keyframes modalEnter {
+        from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1.5rem 1.75rem;
+      }
+      .modal-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        letter-spacing: -0.02em;
+      }
+      .modal-close {
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: #fff;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+      }
+      .modal-close:hover {
+        background: #f8fafc;
+        color: #0f172a;
+        transform: scale(1.03);
+      }
+      .modal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.25rem;
+        padding: 1.75rem;
+      }
+      .modal-grid dt {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+      }
+      .modal-grid dd {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #0f172a;
+      }
+      .modal-content > .modal-grid + div {
+        padding: 0 1.75rem 1.75rem;
+      }
+    </style>
+    <script src="/js/i18n.js"></script>
+    <script src="admin-icons.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="/js/qrcode.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div class="min-h-screen flex bg-slate-50">
+        <div id="sidebar" class="sidebar w-[260px] shrink-0"></div>
+
+        <div class="content ml-[260px] w-[calc(100%-260px)] flex flex-col">
+            <header class="border-b border-slate-200 bg-white px-6 py-5">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-slate-900" data-i18n="orders.title">Orders</h1>
+                        <p class="mt-2 text-sm text-slate-600" data-i18n="orders.manage">Review and manage store orders in one place.</p>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div id="notificationBanner" class="hidden rounded-[32px] border px-5 py-4 text-sm mb-6"></div>
+
+                <div class="grid gap-4 xl:grid-cols-[1fr_260px]">
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-900" data-i18n="orders.summary_title">Orders overview</h2>
+                                <p class="mt-2 text-sm text-slate-500" data-i18n="orders.summary_description">Track sales, payments, and order status.</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 grid gap-4 sm:grid-cols-3">
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="orders.summary_total">Total Orders</div>
+                                <div id="summaryTotal" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="orders.summary_pending">Pending Payments</div>
+                                <div id="summaryPending" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="orders.summary_today">Today</div>
+                                <div id="summaryToday" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-900" data-i18n="orders.table_info">Order List</h3>
+                        <p class="mt-2 text-sm text-slate-500" data-i18n="orders.table_description">Search, filter and manage orders.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-[32px] border border-slate-200 bg-white shadow-sm overflow-hidden mt-6">
+                    <div class="grid gap-4 p-6 md:grid-cols-[1fr_auto] md:items-end">
+                        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(260px,1fr)_minmax(240px,280px)]">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700" data-i18n="orders.search_label">Search orders</span>
+                                <input id="searchInput" type="search" placeholder="Search by order, buyer, email" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700" data-i18n="orders.filter_label">Filter status</span>
+                                <select id="statusFilter" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                                    <option value="all" data-i18n="orders.filter_all">All statuses</option>
+                                    <option value="completed" data-i18n="orders.filter_completed">Completed</option>
+                                    <option value="pending" data-i18n="orders.filter_pending">Pending</option>
+                                    <option value="failed" data-i18n="orders.filter_failed">Failed</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table id="ordersTable" class="min-w-[1020px] w-full text-sm divide-y divide-slate-200">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.order">Order</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.buyer">Buyer</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.items">Items</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.total">Total</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.shipping">Shipping</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.payment_method">Payment</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.status">Status</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.date">Date</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="orders.column.actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersBody" class="divide-y divide-slate-200 bg-white">
+                                <!-- orders rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-6 py-4">
+                        <div id="ordersCountText" class="text-sm text-slate-500">Showing 0 of 0 orders</div>
+                        <div class="flex items-center gap-3 text-sm text-slate-600">
+                            <label for="ordersPerPageSelect" class="font-medium" data-i18n="orders.per_page_label">Rows per page</label>
+                            <select id="ordersPerPageSelect" class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="ordersPagination" class="flex flex-wrap justify-center gap-2 my-5 px-6"></div>
+                </div>
+
+                <div id="emptyState" class="hidden rounded-[32px] border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+                    <div class="text-4xl">📦</div>
+                    <h3 class="mt-4 text-xl font-semibold text-slate-900" data-i18n="orders.no_orders">No orders found.</h3>
+                    <p class="mt-2" data-i18n="orders.manage">Review and manage store orders in one place.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="orderModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="orders.details_title">Order details</h3>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            <dl class="modal-grid">
+                <div>
+                    <dt data-i18n="orders.order_number">Order</dt>
+                    <dd id="detailOrder"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.buyer">Buyer</dt>
+                    <dd id="detailBuyer"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.payment_method">Payment</dt>
+                    <dd id="detailPayment"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.status">Status</dt>
+                    <dd id="detailStatus"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.column.total">Total</dt>
+                    <dd id="detailTotal"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.column.date">Date</dt>
+                    <dd id="detailDate"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.shipping_method">Shipping Method</dt>
+                    <dd id="detailShippingMethod"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.shipping_cost">Shipping Cost</dt>
+                    <dd id="detailShippingCost"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.shipping_status">Shipping Status</dt>
+                    <dd id="detailShippingStatus"></dd>
+                </div>
+                <div>
+                    <dt data-i18n="orders.tracking_number">Tracking Number</dt>
+                    <dd id="detailTrackingNumber"></dd>
+                </div>
+            </dl>
+            <div>
+                <h4 data-i18n="orders.order_items">Order items</h4>
+                <table class="order-items-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="orders.column.product">Product</th>
+                            <th data-i18n="orders.column.qty">Qty</th>
+                            <th data-i18n="orders.column.price">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailItems"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="printReceipt" class="receipt-print-area" aria-hidden="true"></div>
+
+    <script>
+        let ordersData = [];
+        let ordersCurrentPage = 1;
+        let ordersPerPage = 10;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                console.log('Orders page init');
+                if (!checkAuth()) {
+                    console.warn('Orders page auth failed, redirecting to login');
+                    return;
+                }
+                console.log('Orders page auth ok');
+                initializeI18n();
+                setupFilters();
+                loadOrders();
+                setupModal();
+            } catch (error) {
+                console.error('Orders init failed:', error);
+                showNotification('An error occurred loading orders. Please refresh the page.', 'error');
+            }
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            return fetch(url, { ...defaultOptions, ...options });
+        }
+
+        async function loadOrders() {
+            try {
+                console.log('Orders load start');
+                const res = await authFetch('/api/admin/orders');
+                if (!res) {
+                    throw new Error('No response from authFetch');
+                }
+                if (!res.ok) {
+                    throw new Error('Failed to fetch orders: ' + res.status);
+                }
+                const response = await res.json();
+                const responseOrders = response?.data ?? response?.orders ?? response;
+                ordersData = Array.isArray(responseOrders) ? responseOrders : [];
+                console.log('Orders loaded:', ordersData.length, 'items');
+                renderOrdersTable();
+                renderSummary();
+            } catch (err) {
+                console.error('Failed to load orders:', err);
+                showNotification(window.translate ? window.translate('orders.load_error') : 'Failed to load orders.', 'error');
+            }
+        }
+
+        function renderOrdersTable() {
+            const tbody = document.getElementById('ordersBody');
+            const emptyState = document.getElementById('emptyState');
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = ordersData.filter(order => {
+                const paymentStatus = (order.payment_status || 'unknown').toLowerCase();
+                const orderSerial = formatOrderSerial(order).toLowerCase();
+                const buyerName = `${order.first_name || ''} ${order.last_name || ''}`.trim().toLowerCase();
+                const buyerEmail = (order.email || '').toLowerCase();
+                const searchText = `${orderSerial} ${buyerName} ${buyerEmail} ${paymentStatus}`;
+                const statusMatch = statusFilter === 'all' || paymentStatus === statusFilter;
+                const searchMatch = !search || searchText.includes(search);
+                return statusMatch && searchMatch;
+            });
+
+            tbody.innerHTML = '';
+            if (!filtered.length) {
+                emptyState.style.display = 'block';
+                updateOrdersSummary(0, 0, 0);
+                renderOrdersPagination(0);
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            const totalOrders = filtered.length;
+            const totalPages = Math.max(1, Math.ceil(totalOrders / ordersPerPage));
+            ordersCurrentPage = Math.min(Math.max(1, ordersCurrentPage), totalPages);
+            const startIndex = (ordersCurrentPage - 1) * ordersPerPage;
+            const pagedOrders = filtered.slice(startIndex, startIndex + ordersPerPage);
+            const endIndex = startIndex + pagedOrders.length;
+            updateOrdersSummary(totalOrders, startIndex, endIndex);
+
+            pagedOrders.forEach(order => {
+                const orderSerial = formatOrderSerial(order);
+                const buyer = order.first_name || order.last_name
+                    ? `${order.first_name || ''} ${order.last_name || ''}`.trim()
+                    : (order.username || order.email || 'Unknown');
+                const itemCount = Array.isArray(order.lineItems) && order.lineItems.length
+                    ? order.lineItems.length
+                    : (Array.isArray(order.items) ? order.items.length : 0);
+                const payment = order.payment_method || 'Unknown';
+                const status = (order.payment_status || 'unknown').toLowerCase();
+                const total = typeof order.total === 'number' ? order.total.toFixed(2) : order.total || '0.00';
+                const date = formatDate(order.created_at);
+                const shippingCost = typeof order.shipping_cost === 'number' ? order.shipping_cost.toFixed(2) : order.shipping_cost || '0.00';
+                const shippingMethod = order.shipping_method || 'Standard';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${orderSerial}</td>
+                    <td>${buyer}</td>
+                    <td>${itemCount}</td>
+                    <td>€${total}</td>
+                    <td>${shippingMethod} (€${shippingCost})</td>
+                    <td>${payment}</td>
+                    <td><span class="${getStatusBadgeClasses(status)}">${status}</span></td>
+                    <td>${date}</td>
+                    <td><div class="flex flex-wrap gap-2">${createActionButton(order.id, 'view', 'orders.action.view', 'btn-secondary')} ${createActionButton(order.id, 'print', 'orders.action.print', 'btn-primary')}</div></td>
+                `;
+                tbody.appendChild(row);
+            });
+            renderOrdersPagination(Math.ceil(filtered.length / ordersPerPage));
+        }
+
+        function formatTranslation(key, values = {}) {
+            const defaultTemplates = {
+                'orders.summary_count': 'Showing {start}-{end} of {total} orders',
+                'orders.summary_count_zero': 'Showing 0 of 0 orders'
+            };
+            const template = window.translate ? window.translate(key) : defaultTemplates[key];
+            const text = template && template !== key ? template : defaultTemplates[key] || key;
+            return text.replace(/\{(\w+)\}/g, (match, name) => {
+                return values[name] !== undefined ? values[name] : match;
+            });
+        }
+
+        function updateOrdersSummary(totalOrders, startIndex, endIndex) {
+            const countText = document.getElementById('ordersCountText');
+            if (!countText) return;
+            if (!totalOrders) {
+                countText.textContent = formatTranslation('orders.summary_count_zero', { total: 0 });
+                return;
+            }
+            countText.textContent = formatTranslation('orders.summary_count', {
+                start: startIndex + 1,
+                end: endIndex,
+                total: totalOrders
+            });
+        }
+
+        function renderOrdersPagination(totalPages) {
+            const paginationContainer = document.getElementById('ordersPagination');
+            if (!paginationContainer) return;
+
+            if (!totalPages || totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '<div class="flex flex-wrap justify-center gap-2">';
+
+            if (ordersCurrentPage > 1) {
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeOrdersPage(${ordersCurrentPage - 1})">&laquo; Previous</button>`;
+            }
+
+            const startPage = Math.max(1, ordersCurrentPage - 2);
+            const endPage = Math.min(totalPages, ordersCurrentPage + 2);
+
+            if (startPage > 1) {
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeOrdersPage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += '<span class="px-2 text-slate-500 text-sm">...</span>';
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === ordersCurrentPage ? ' bg-sky-600 text-white border-sky-600 font-semibold' : '';
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center${activeClass}" onclick="changeOrdersPage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += '<span class="px-2 text-slate-500 text-sm">...</span>';
+                }
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeOrdersPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            if (ordersCurrentPage < totalPages) {
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeOrdersPage(${ordersCurrentPage + 1})">Next &raquo;</button>`;
+            }
+
+            paginationHTML += '</div>';
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
+        function changeOrdersPage(page) {
+            ordersCurrentPage = page;
+            renderOrdersTable();
+        }
+
+        function openOrderReceipt(orderId) {
+            console.log('print action clicked, id:', orderId);
+            let order = ordersData.find(item => String(item.id) === String(orderId));
+            if (!order) {
+                order = ordersData.find(item => String(item.order_serial) === String(orderId));
+            }
+            if (!order) {
+                showNotification('Order not found for print: ' + orderId, 'error');
+                return;
+            }
+
+            const orderSerial = formatOrderSerial(order);
+            const buyer = order.first_name || order.last_name
+                ? `${order.first_name || ''} ${order.last_name || ''}`.trim()
+                : (order.username || order.email || 'Unknown');
+            const payment = order.payment_method || 'Unknown';
+            const status = order.payment_status || 'Unknown';
+            const items = Array.isArray(order.lineItems) && order.lineItems.length
+                ? order.lineItems
+                : (Array.isArray(order.items) ? order.items : []);
+            const formattedItems = items.map(item => {
+                const itemName = item.name_en || item.name_fr || item.name_pt || item.product_name || item.product_id || 'Product';
+                const quantity = item.quantity || item.qty || 0;
+                const price = typeof item.price === 'number' ? item.price.toFixed(2) : item.price || '0.00';
+                return `
+                    <tr>
+                        <td class="receipt-item-name">${itemName}</td>
+                        <td>${quantity}</td>
+                        <td>€${price}</td>
+                    </tr>`;
+            }).join('');
+
+            const subtotal = items.reduce((sum, item) => {
+                const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+                const qty = item.quantity || item.qty || 0;
+                return sum + (price * qty);
+            }, 0);
+            const total = typeof order.total === 'number' ? order.total : parseFloat(order.total) || subtotal;
+            const orderUrl = `${window.location.origin}/order-info.html?serial=${encodeURIComponent(orderSerial)}&layout=pos80`;
+            // If you have a dedicated print model page (order-info.html), open it in a new tab.
+            try {
+                // POS-8 paper width is 80mm (~3.15in). Use a popup width matching ~320px for typical 96dpi screens.
+                const popupWidth = 340;
+                const popupHeight = 700;
+                const left = Math.max(0, Math.round((screen.width - popupWidth) / 2));
+                const top = Math.max(0, Math.round((screen.height - popupHeight) / 2));
+                const features = `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${popupWidth},height=${popupHeight},top=${top},left=${left}`;
+                const win = window.open(orderUrl, `order_print_${orderSerial}`, features);
+                if (win) {
+                    win.focus();
+                    return;
+                }
+                // popup blocked or failed
+                console.warn('Popup blocked or failed, falling back to inline receipt');
+            } catch (e) {
+                console.warn('Failed to open print model page, falling back to inline receipt', e);
+            }
+
+                const noItemsText = window.translate ? window.translate('orders.no_items') : 'Aucun article disponible';
+            const receiptHtml = `
+                <style>
+                    @page { size: 80mm auto; margin: 2mm; }
+                    .receipt-card { width: 78mm; max-width: 78mm; font-family: sans-serif; }
+                    .receipt-items-table th, .receipt-items-table td { padding: 6px 4px; }
+                    @media print { body { -webkit-print-color-adjust: exact; } }
+                </style>
+                <div class="receipt-card">
+                    <div class="receipt-header">
+                        <img src="/images/Saudade_market.png" alt="Saudade Market" class="receipt-logo" onerror="this.style.display='none'" />
+                        <div class="receipt-company">Saudade Market</div>
+                    </div>
+                    <div class="receipt-title">REÇU DE COMMANDE</div>
+                    <div class="receipt-separator"></div>
+                    <div class="receipt-meta">
+                        <p>Date : ${formatDate(order.created_at)}</p>
+                        <p>Commande : ${orderSerial}</p>
+                        <p>Client : ${buyer}</p>
+                        <p>Adresse de livraison : ${order.address || 'Non renseignée'}</p>
+                        <p>Paiement : ${payment}</p>
+                    </div>
+                    <div class="receipt-separator"></div>
+                    <table class="receipt-items-table">
+                        <thead>
+                            <tr>
+                                <th>Article</th>
+                                <th>Qté</th>
+                                <th>Prix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${formattedItems || `<tr><td colspan="3">${noItemsText}</td></tr>`}
+                        </tbody>
+                    </table>
+                    <div class="receipt-separator"></div>
+                    <div class="receipt-summary">
+                        <div><span>Sous-total</span><strong>€${subtotal.toFixed(2)}</strong></div>
+                        <div><span>Total</span><strong>€${total.toFixed(2)}</strong></div>
+                    </div>
+                    <div class="receipt-thanks">MERCI</div>
+                    <div class="receipt-barcode">
+                        ${createQrCodeImage(orderUrl, 300)}
+                        <div class="receipt-barcode-hint">Scannez le QR pour afficher la commande</div>
+                        <div class="receipt-barcode-code">${orderSerial}</div>
+                    </div>
+                </div>
+            `;
+
+            const printArea = document.getElementById('printReceipt');
+            printArea.innerHTML = receiptHtml;
+
+            const qrImage = printArea.querySelector('.receipt-barcode img');
+            const doPrint = () => window.print();
+
+            if (qrImage) {
+                if (qrImage.complete && qrImage.naturalWidth !== 0) {
+                    doPrint();
+                } else {
+                    qrImage.addEventListener('load', doPrint, { once: true });
+                    qrImage.addEventListener('error', doPrint, { once: true });
+                    setTimeout(doPrint, 600);
+                }
+            } else {
+                window.requestAnimationFrame(doPrint);
+            }
+        }
+
+        function getStatusBadgeClasses(status) {
+            const base = 'inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ';
+            switch ((status || '').toLowerCase()) {
+                case 'completed': return `${base}bg-emerald-100 text-emerald-700`;
+                case 'shipped': return `${base}bg-sky-100 text-sky-700`;
+                case 'refunded': return `${base}bg-violet-100 text-violet-700`;
+                case 'exchange': return `${base}bg-indigo-100 text-indigo-700`;
+                case 'failed': return `${base}bg-rose-100 text-rose-700`;
+                case 'pending':
+                default:
+                    return `${base}bg-amber-100 text-amber-700`;
+            }
+        }
+
+        function createActionButton(id, action, translationKey, styleClass) {
+            let label = action;
+            if (window.translate && translationKey) {
+                label = window.translate(translationKey);
+            } else if (translationKey) {
+                // sensible defaults when translations are not loaded
+                if (translationKey === 'orders.action.view') label = 'View';
+                else if (translationKey === 'orders.action.print') label = 'Print';
+                else label = translationKey;
+            }
+            const base = 'inline-flex items-center rounded-2xl px-3 py-2 text-xs font-semibold transition';
+            const styleMap = {
+                'btn-primary': 'bg-sky-600 text-white hover:bg-sky-700 border border-transparent',
+                'btn-secondary': 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100',
+                'btn-danger': 'bg-rose-600 text-white hover:bg-rose-700 border border-transparent'
+            };
+            return `<button type="button" class="${base} ${styleMap[styleClass] || ''}" data-action="${action}" data-id="${id}">${label}</button>`;
+        }
+
+        function renderSummary() {
+            const total = ordersData.length;
+            const pending = ordersData.filter(o => (o.payment_status || 'unknown').toLowerCase() === 'pending').length;
+            const today = ordersData.filter(o => isToday(o.created_at)).length;
+            document.getElementById('summaryTotal').textContent = total;
+            document.getElementById('summaryPending').textContent = pending;
+            document.getElementById('summaryToday').textContent = today;
+        }
+
+        function isToday(value) {
+            const date = new Date(value);
+            const now = new Date();
+            return date.toDateString() === now.toDateString();
+        }
+
+        function formatDate(value) {
+            if (!value) return '-';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleDateString();
+        }
+
+        function formatOrderSerial(order) {
+            if (order && order.order_serial) {
+                return order.order_serial;
+            }
+            if (order && typeof order.id !== 'undefined' && order.id !== null) {
+                return String(order.id).padStart(6, '0');
+            }
+            return '000000';
+        }
+
+        function createQrCodeImage(value, size = 180) {
+            var uri = window.createQrCodeDataUri ? window.createQrCodeDataUri(value, size) : '';
+            return `<img src="${uri}" alt="QR code" />`;
+        }
+
+        function setupFilters() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const perPageSelect = document.getElementById('ordersPerPageSelect');
+            if (searchInput) searchInput.addEventListener('input', () => {
+                ordersCurrentPage = 1;
+                renderOrdersTable();
+            });
+            if (statusFilter) statusFilter.addEventListener('change', () => {
+                ordersCurrentPage = 1;
+                renderOrdersTable();
+            });
+            if (perPageSelect) perPageSelect.addEventListener('change', event => {
+                ordersPerPage = Number(event.target.value) || 10;
+                ordersCurrentPage = 1;
+                renderOrdersTable();
+            });
+        }
+
+        function setupModal() {
+            const modal = document.getElementById('orderModal');
+            const close = document.getElementById('modalClose');
+            close.addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', event => {
+                if (event.target === modal) modal.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('click', event => {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;
+            const orderId = button.dataset.id;
+            if (button.dataset.action === 'view') {
+                openOrderDetails(orderId);
+            }
+            if (button.dataset.action === 'print') {
+                openOrderReceipt(orderId);
+            }
+        });
+
+        function openOrderDetails(orderId) {
+            console.log('view action clicked, id:', orderId);
+            let order = ordersData.find(item => String(item.id) === String(orderId));
+            if (!order) {
+                order = ordersData.find(item => String(item.order_serial) === String(orderId));
+            }
+            if (!order) {
+                showNotification('Order not found: ' + orderId, 'error');
+                return;
+            }
+            document.getElementById('detailOrder').textContent = formatOrderSerial(order);
+            document.getElementById('detailBuyer').textContent = order.first_name || order.last_name ? `${order.first_name || ''} ${order.last_name || ''}`.trim() : (order.username || order.email || 'Unknown');
+            document.getElementById('detailPayment').textContent = order.payment_method || 'Unknown';
+            document.getElementById('detailStatus').textContent = order.payment_status || 'Unknown';
+            document.getElementById('detailTotal').textContent = `€${typeof order.total === 'number' ? order.total.toFixed(2) : order.total}`;
+            document.getElementById('detailDate').textContent = formatDate(order.created_at);
+            document.getElementById('detailShippingMethod').textContent = order.shipping_method || 'Standard';
+            document.getElementById('detailShippingCost').textContent = `€${typeof order.shipping_cost === 'number' ? order.shipping_cost.toFixed(2) : order.shipping_cost || '0.00'}`;
+            document.getElementById('detailShippingStatus').textContent = order.shipping_status || 'Not shipped';
+            document.getElementById('detailTrackingNumber').textContent = order.tracking_number || 'N/A';
+            const itemsBody = document.getElementById('detailItems');
+            itemsBody.innerHTML = '';
+            const items = Array.isArray(order.lineItems) && order.lineItems.length ? order.lineItems : (Array.isArray(order.items) ? order.items : []);
+            if (!items.length) {
+                const noItemsText = window.translate ? window.translate('orders.no_items') : 'No items available';
+                itemsBody.innerHTML = `<tr><td colspan="3">${noItemsText}</td></tr>`;
+            } else {
+                items.forEach(item => {
+                    const itemName = item.name_en || item.name_fr || item.name_pt || item.product_name || item.product_id || 'Product';
+                    const quantity = item.quantity || item.qty || 0;
+                    const price = typeof item.price === 'number' ? item.price.toFixed(2) : item.price || '0.00';
+                    itemsBody.innerHTML += `
+                        <tr>
+                            <td>${itemName}</td>
+                            <td>${quantity}</td>
+                            <td>€${price}</td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function showNotification(message, type = 'info') {
+            const banner = document.getElementById('notificationBanner');
+            banner.textContent = message;
+            banner.className = `notification-banner show ${type}`;
+            window.setTimeout(() => banner.classList.remove('show'), 4200);
+        }
+
+        function initializeI18n() {
+            const langBtn = document.getElementById('langBtn');
+            const langOptions = document.querySelectorAll('.lang-option');
+            langOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const lang = option.getAttribute('data-lang');
+                    if (!lang) return;
+                    document.querySelectorAll('.lang-option').forEach(el => el.classList.toggle('active', el.getAttribute('data-lang') === lang));
+                    if (window.setLanguage) window.setLanguage(lang);
+                    updateSidebarLabels(lang);
+                    applyTranslations();
+                });
+            });
+            const savedLang = localStorage.getItem('adminLang') || 'en';
+            if (window.setLanguage) window.setLanguage(savedLang);
+            updateSidebarLabels(savedLang);
+        }
+
+        function updateSidebarLabels(lang) {
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                const label = item.getAttribute(`data-label-${lang}`) || item.getAttribute('data-label-en') || '';
+                const textNode = item.querySelector('.sidebar-label');
+                if (textNode) textNode.textContent = label;
+            });
+        }
+
+        function applyTranslations() {
+            if (!window.translate) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const value = window.translate(key);
+                if (value) el.textContent = value;
+            });
+        }
+    </script>
+</body>
+</html>

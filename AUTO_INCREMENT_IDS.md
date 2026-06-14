@@ -175,3 +175,4 @@ When the application starts with an existing database:
 - [DATABASE_RELATIONSHIPS.md](DATABASE_RELATIONSHIPS.md) - Category-Product relationship documentation
 - [src/config/database.js](src/config/database.js) - Database initialization and migration
 - [src/models/](src/models/) - All model files with updated create methods
+

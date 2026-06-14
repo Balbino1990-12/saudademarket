@@ -1,0 +1,104 @@
+{
+  "anonymous-Iak78uw6gcBGigl_NmhWpjC250RR7tC6": {
+    "messages": [
+      {
+        "role": "user",
+        "text": "hi",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:06:23.243Z"
+      },
+      {
+        "role": "bot",
+        "text": "Je comprends! Vous pouvez me poser des questions sur notre service. Que voulez-vous savoir d'autre?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:06:23.246Z"
+      }
+    ],
+    "createdAt": "2026-06-02T07:06:23.243Z"
+  },
+  "anonymous--SizOfVj4401mbr0K8iOlA8XZB4eHkfl": {
+    "messages": [
+      {
+        "role": "user",
+        "text": "ola",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:06:25.879Z"
+      },
+      {
+        "role": "bot",
+        "text": "Bonjour! Bienvenue au support de Saudade Market. Comment puis-je vous aider?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:06:25.881Z"
+      }
+    ],
+    "createdAt": "2026-06-02T07:06:25.879Z"
+  },
+  "anonymous-hPqRUkdMLSlBZIPgS77vdEiahmyw3iHn": {
+    "messages": [
+      {
+        "role": "user",
+        "text": "tas biene?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:06:33.530Z"
+      },
+      {
+        "role": "bot",
+        "text": "Je comprends! Vous pouvez me poser des questions sur notre service. Que voulez-vous savoir d'autre?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:06:33.533Z"
+      }
+    ],
+    "createdAt": "2026-06-02T07:06:33.530Z"
+  },
+  "anonymous-rt8AGl3pSIEiXLLuuwJiUJ_ikqZHidRn": {
+    "messages": [
+      {
+        "role": "user",
+        "text": "hola",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:07:00.691Z"
+      },
+      {
+        "role": "bot",
+        "text": "Bonjour! Bienvenue au support de Saudade Market. Comment puis-je vous aider?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:07:00.693Z"
+      }
+    ],
+    "createdAt": "2026-06-02T07:07:00.691Z"
+  },
+  "anonymous-Se8DSOJWwEJwdyWeJVleiPMmO7SFdU63": {
+    "messages": [
+      {
+        "role": "user",
+        "text": "okay",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:07:04.492Z"
+      },
+      {
+        "role": "bot",
+        "text": "Je comprends! Vous pouvez me poser des questions sur notre service. Que voulez-vous savoir d'autre?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:07:04.494Z"
+      }
+    ],
+    "createdAt": "2026-06-02T07:07:04.492Z"
+  },
+  "anonymous-KxqvpGKFUNojLhErHWLF58oQzBVU32I2": {
+    "messages": [
+      {
+        "role": "user",
+        "text": "hi",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:08:33.582Z"
+      },
+      {
+        "role": "bot",
+        "text": "Je comprends! Vous pouvez me poser des questions sur notre service. Que voulez-vous savoir d'autre?",
+        "language": "fr",
+        "timestamp": "2026-06-02T07:08:33.586Z"
+      }
+    ],
+    "createdAt": "2026-06-02T07:08:33.582Z"
+  }
+}

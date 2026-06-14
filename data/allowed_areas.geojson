@@ -1,0 +1,65 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Area 1 - Valdahon / Morteau (approx)",
+        "approximate": true,
+        "notes": "Approximate bounding polygon based on the supplied map image. Refine with precise coordinates."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [6.30, 47.16],
+            [6.70, 47.16],
+            [6.70, 46.96],
+            [6.30, 46.96],
+            [6.30, 47.16]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Area 2 - La Chaux-de-Fonds (approx)",
+        "approximate": true,
+        "notes": "Approximate polygon covering La Chaux-de-Fonds region."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [6.70, 47.20],
+            [6.95, 47.20],
+            [6.95, 47.02],
+            [6.70, 47.02],
+            [6.70, 47.20]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Area 3 - Neuchâtel / Le Landeron (approx)",
+        "approximate": true,
+        "notes": "Approximate polygon covering Neuchâtel and lakeside area."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [6.95, 47.08],
+            [7.30, 47.08],
+            [7.30, 46.90],
+            [6.95, 46.90],
+            [6.95, 47.08]
+          ]
+        ]
+      }
+    }
+  ]
+}

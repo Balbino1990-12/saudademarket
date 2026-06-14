@@ -33,7 +33,8 @@ function checkPermission(requiredPermission) {
           manage_roles: true,
           view_activities: true,
           delete_activities: true,
-          system_settings: true
+          system_settings: true,
+          manage_comments: true
         };
 
         // Ensure req.user exists for downstream controllers (required for user_id mapping)
@@ -135,3 +136,4 @@ function checkPermission(requiredPermission) {
 }
 
 module.exports = { checkPermission };
+

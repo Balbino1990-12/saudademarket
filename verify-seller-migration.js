@@ -40,3 +40,4 @@ const mysql = require('mysql2/promise');
     process.exit(1);
   }
 })();
+

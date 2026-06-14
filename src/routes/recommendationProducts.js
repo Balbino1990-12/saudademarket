@@ -12,3 +12,4 @@ router.put('/:id', verifyAnySession, checkPermission('manage_products'), Recomme
 router.delete('/:id', verifyAnySession, checkPermission('manage_products'), RecommendationProductController.delete);
 
 module.exports = router;
+

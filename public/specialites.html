@@ -11,9 +11,9 @@
     <header>
         <div class="header-top">
             <div class="logo">
-                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
                 <div class="logo-text">
-                    <h1>Portugalsstore.fr</h1>
+                    <h1>Saudade Market</h1>
                     <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
                 </div>
             </div>
@@ -23,7 +23,6 @@
             </div>
 
             <div class="header-actions">
-                <button class="icon user" title="Compte">👤</button>
                 <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
                 <div class="language-selector">
                     <button id="langBtn" class="lang-toggle">FR</button>
@@ -33,6 +32,7 @@
                         <button data-lang="en" class="lang-option">EN</button>
                     </div>
                 </div>
+                <button class="icon user" id="profileBtn" title="Compte" style="display:flex; align-items:center; gap:6px;"></button>
                 <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
             </div>
         </div>
@@ -41,7 +41,7 @@
             <ul>
                 <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
                 <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
-                <li><a href="specialites.html" class="active" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li id="specialties-menu-anchor"></li>
                 <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
                 <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
                 <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
@@ -50,18 +50,18 @@
                 <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
             </ul>
         </nav>
+        <div id="profileDropdown" class="profile-dropdown" aria-hidden="true" style="display:none;"></div>
     </header>
 
     <main>
-        <section style="padding: 40px 36px; text-align: center; min-height: 60vh;">
-            <h1 style="font-size: 2.4rem; margin-bottom: 20px; color: #111;">Nos Spécialités Portugaises</h1>
-            <p style="font-size: 1.1rem; color: #666; max-width: 600px; margin: 0 auto;">
-                Découvrez les spécialités les plus savoureuses et authentiques du Portugal,
-                sélectionnées avec soin pour vous.
-            </p>
+        <section style="padding: 24px 36px;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 16px; color: #111;" id="specialtyPageTitle">Nos Spécialités Portugaises</h2>
+            <p id="specialtyPageDescription" style="font-size: 1rem; color: #666; margin-bottom: 24px;"></p>
+            <div id="specialtyProductsGrid" class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 16px;"></div>
         </section>
     </main>
 
     <script src="/js/script.js"></script>
 </body>
 </html>
+

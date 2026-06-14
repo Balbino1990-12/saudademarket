@@ -10,7 +10,7 @@ class Cart {
     try {
       const sql = `
         SELECT c.id, c.user_id, c.product_id, c.quantity, c.created_at, c.updated_at,
-               p.name_en, p.name_fr, p.name_pt, p.price, p.image, p.description,
+               p.name_en, p.name_fr, p.name_pt, p.price, p.promo_price, p.image, p.description,
                cat.name_en as category_name
         FROM cart c
         LEFT JOIN products p ON c.product_id = p.id
@@ -61,7 +61,7 @@ class Cart {
 
       // Return the updated cart item
       const [result] = await pool.query(
-        `SELECT c.*, p.name_en, p.name_fr, p.name_pt, p.price, p.image
+        `SELECT c.*, p.name_en, p.name_fr, p.name_pt, p.price, p.promo_price, p.image
          FROM cart c
          LEFT JOIN products p ON c.product_id = p.id
          WHERE c.user_id = ? AND c.product_id = ?`,
@@ -96,7 +96,7 @@ class Cart {
 
       // Return updated item
       const [result] = await pool.query(
-        `SELECT c.*, p.name_en, p.name_fr, p.name_pt, p.price, p.image
+        `SELECT c.*, p.name_en, p.name_fr, p.name_pt, p.price, p.promo_price, p.image
          FROM cart c
          LEFT JOIN products p ON c.product_id = p.id
          WHERE c.user_id = ? AND c.product_id = ?`,
@@ -137,9 +137,10 @@ class Cart {
    * @param {string} userId - User ID
    * @returns {Promise<number>} Number of items removed
    */
-  static async clearCart(userId) {
+  static async clearCart(userId, connection = null) {
     try {
-      const [result] = await pool.query('DELETE FROM cart WHERE user_id = ?', [userId]);
+      const queryTarget = connection || pool;
+      const [result] = await queryTarget.query('DELETE FROM cart WHERE user_id = ?', [userId]);
       console.log('[Cart.clearCart] Cleared cart for user', userId, '-', result.affectedRows, 'items removed');
       return result.affectedRows;
     } catch (err) {
@@ -156,7 +157,11 @@ class Cart {
   static async getCartSummary(userId) {
     try {
       const sql = `
-        SELECT COUNT(*) as itemCount, SUM(c.quantity * p.price) as totalPrice
+        SELECT COUNT(*) as itemCount,
+               SUM(c.quantity * CASE
+                 WHEN p.promo_price IS NOT NULL AND p.promo_price > 0 AND p.promo_price < p.price THEN p.promo_price
+                 ELSE p.price
+               END) as totalPrice
         FROM cart c
         LEFT JOIN products p ON c.product_id = p.id
         WHERE c.user_id = ?

@@ -123,3 +123,4 @@ async function insertSpecialties() {
 
 // Run
 insertSpecialties();
+

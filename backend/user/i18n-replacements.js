@@ -31,3 +31,4 @@ function applyTranslations() {
 
     console.log('[Dashboard] ✅ All translations applied');
 }
+

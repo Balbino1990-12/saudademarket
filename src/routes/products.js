@@ -15,3 +15,4 @@ router.put('/:id', verifyAnySession, checkPermission('manage_products'), upload.
 router.delete('/:id', verifyAnySession, checkPermission('manage_products'), ProductController.delete);
 
 module.exports = router;
+

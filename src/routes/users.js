@@ -1,16 +1,17 @@
 const express = require('express'); // Import the Express framework to create a router for handling user-related routes
 const router = express.Router(); // Create a new Express router to handle user-related routes
 const UserController = require('../controllers/UserController'); // Import the UserController to handle user-related operations such as listing users, getting user details, creating, updating, and deleting users. The UserController will contain the business logic for managing users in the system, including interactions with the database and any necessary validation or processing of user data.
-const { verifyAdminSession } = require('../middleware/authentication'); //
+const { verifyAdminSession, verifyUserSession } = require('../middleware/authentication'); //
 const { checkPermission } = require('../middleware/authorization');
+const { csrfProtection, registrationLimiter, validateRegistration } = require('../middleware/security'); // Import CSRF protection, rate limiter, and validation for registration
 
 
 /**
  * Public endpoints
  */
 
-// Buyer registration endpoint
-router.post('/register', UserController.register);
+// Buyer registration endpoint with CSRF protection, rate limiting, and validation
+router.post('/register', csrfProtection, registrationLimiter, validateRegistration, UserController.register);
 
 // Get all users
 router.get('/', UserController.list);
@@ -21,8 +22,11 @@ router.get('/:id', UserController.getOne);
 // Get user count
 router.get('/count', UserController.getCount);
 
+// User logout endpoint
+router.post('/logout', verifyUserSession, UserController.logout);
+
 /**
- * Protected endpoints - require authentication
+ * Admin-only endpoints
  */
 
 // Create a new user
@@ -35,3 +39,4 @@ router.put('/:id', verifyAdminSession, checkPermission('manage_users'), UserCont
 router.delete('/:id', verifyAdminSession, checkPermission('manage_users'), UserController.delete);
 
 module.exports = router;
+

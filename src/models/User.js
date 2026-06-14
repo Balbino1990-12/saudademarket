@@ -10,7 +10,7 @@ class User {
   static async getAll() {
     try {
       const [users] = await pool.query(`
-        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city, 
+        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city, u.last_login,
                u.role_id, r.name as role_name, r.description as role_description,
                u.active, u.created_at, u.updated_at
         FROM users u
@@ -19,6 +19,7 @@ class User {
       `);
       console.log('[User.getAll] Retrieved', users.length, 'users');
       return users;
+
     } catch (err) {
       console.error('[User.getAll] Error:', err);
       throw err;
@@ -33,7 +34,7 @@ class User {
   static async getById(id) {
     try {
       const [result] = await pool.query(`
-        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city,
+        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city, u.last_login,
                u.role_id, r.name as role_name, r.description as role_description,
                u.active, u.created_at, u.updated_at
         FROM users u
@@ -98,6 +99,27 @@ class User {
     try {
       console.log('[User.create] Creating user:', userData.username);
 
+      if (!userData.username || !String(userData.username).trim()) {
+        throw new Error('Username is required');
+      }
+      if (!userData.email || !String(userData.email).trim()) {
+        throw new Error('Email is required');
+      }
+      if (!userData.password || !String(userData.password).trim()) {
+        throw new Error('Password is required');
+      }
+
+      // Resolve role_id from the role name when provided
+      let roleId = userData.role_id || null;
+      if (!roleId && userData.role) {
+        const [roleRows] = await pool.query('SELECT id FROM roles WHERE LOWER(name) = LOWER(?)', [userData.role]);
+        roleId = roleRows[0]?.id || null;
+      }
+      if (!roleId) {
+        const [defaultRoleRows] = await pool.query('SELECT id FROM roles WHERE LOWER(name) = LOWER(?)', ['buyer']);
+        roleId = defaultRoleRows[0]?.id || null;
+      }
+
       // Check if username already exists
       const existingUser = await this.getByUsername(userData.username);
       if (existingUser) {
@@ -112,8 +134,11 @@ class User {
         }
       }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      // Hash password only when it is not already a bcrypt hash.
+      const isHashedPassword = typeof userData.password === 'string' && /^\$2[aby]\$/.test(userData.password);
+      const hashedPassword = isHashedPassword
+        ? userData.password
+        : await bcrypt.hash(userData.password, 10);
 
       const sql = `
         INSERT INTO users (username, email, password, first_name, last_name, phone_number, city, role_id, active)
@@ -128,7 +153,7 @@ class User {
         userData.last_name || '',
         userData.phone_number || null,
         userData.city || null,
-        userData.role_id || null,
+        roleId,
         userData.active !== undefined ? userData.active : true
       ]);
 
@@ -141,8 +166,11 @@ class User {
         console.error('[User.create] ❌ Failed to retrieve created user:', userData.username);
         throw new Error('User created but could not be retrieved from database');
       }
-      
-      return createdUser;
+
+      return {
+        ...createdUser,
+        role: (createdUser.role_name || userData.role || 'buyer').toLowerCase()
+      };
     } catch (err) {
       console.error('[User.create] ❌ Error creating user:', err);
       throw err;
@@ -309,7 +337,7 @@ class User {
   static async getByRoleId(roleId) {
     try {
       const [users] = await pool.query(`
-        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city,
+        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city, u.last_login,
                u.role_id, r.name as role_name, r.description as role_description,
                u.active, u.created_at, u.updated_at
         FROM users u
@@ -401,6 +429,48 @@ class User {
       throw err;
     }
   }
+
+  /**
+   * Get all buyers (users who can make purchases)
+   * Includes users with 'buyer' role or users with no specific role (default buyers)
+   * @returns {Promise<Array>} Array of buyer users with email addresses
+   */
+  static async getAllBuyers() {
+    try {
+      const [users] = await pool.query(`
+        SELECT u.id, u.username, u.email, u.first_name, u.last_name, u.phone_number, u.city, u.last_login,
+               u.role_id, r.name as role_name, r.description as role_description,
+               u.active, u.created_at, u.updated_at
+        FROM users u
+        LEFT JOIN roles r ON u.role_id = r.id
+        WHERE u.email IS NOT NULL 
+          AND u.email != ''
+          AND u.active = 1
+          AND r.name = 'Buyer'
+        ORDER BY u.created_at DESC
+      `);
+      console.log('[User.getAllBuyers] Retrieved', users.length, 'buyers');
+      return users;
+    } catch (err) {
+      console.error('[User.getAllBuyers] Error:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Set the user's last_login timestamp to NOW()
+   * @param {number|string} id - User ID
+   */
+  static async setLastLogin(id) {
+    try {
+      await pool.query('UPDATE users SET last_login = NOW() WHERE id = ?', [id]);
+      console.log('[User.setLastLogin] Updated last_login for user:', id);
+    } catch (err) {
+      console.error('[User.setLastLogin] Error updating last_login:', err);
+      throw err;
+    }
+  }
 }
 
 module.exports = User;
+

@@ -30,3 +30,4 @@ router.put('/:id', verifyAdminSession, checkPermission('manage_roles'), RoleCont
 router.delete('/:id', verifyAdminSession, checkPermission('manage_roles'), RoleController.delete);
 // Note: The getCount endpoint is intentionally left public to allow both admin and regular users to access role counts without authentication, as this information is often needed for analytics, dashboards, or frontend displays without requiring user login.
 module.exports = router;
+

@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login — PortugalStore</title>
+   <title>Saudade Market</title>
+  <link rel="stylesheet" href="dist/admin-tailwind.css">
   <style>
     * {
       margin: 0;
@@ -408,17 +409,19 @@
     <div class="card">
       <!-- Card Header -->
       <div class="card-header">
-        <img src="/images/logo.jpg" alt="PortugalStore Logo" class="logo-img">
+        <img src="/images/Saudade_market.png" alt="Saudade Market" class="logo-img">
       </div>
 
-      <h1 class="card-title">PortugalStore</h1>
+      <h1 class="card-title">Saudade Market</h1>
       <p class="card-subtitle" data-i18n="admin.adminPortal">Admin Portal</p>
 
       <!-- Card Body -->
       <div class="card-body">
         <div class="message" id="message"></div>
 
-        <form id="loginForm" onsubmit="handleLogin(event)">
+        <form id="loginForm" novalidate>
+          <input type="hidden" name="_csrf" id="csrfToken">
+          
           <div class="form-group">
             <label class="form-label" for="username" data-i18n="admin.loginUsername">Username</label>
             <input
@@ -426,7 +429,6 @@
               type="text"
               id="username"
               placeholder="Username"
-              required
               autofocus
             >
           </div>
@@ -438,7 +440,6 @@
               type="password"
               id="password"
               placeholder="Password"
-              required
             >
           </div>
 
@@ -448,11 +449,36 @@
     </div>
   </div>
 
-  <script src="/admin/i18n.js"></script>
+  <script src="/js/i18n.js"></script>
   <script>
-    if (localStorage.getItem('adminToken')) {
-      window.location.href = '/admin/products.html';
+    async function validateLocalAdminToken() {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return false;
+      try {
+        const resp = await fetch('/api/admin/validate', {
+          headers: { 'Authorization': `Bearer ${token}`, 'x-admin-token': token },
+          credentials: 'include'
+        });
+        if (resp.ok) return true;
+        return false;
+      } catch (e) {
+        return false;
+      }
     }
+
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get('next');
+      const hasToken = !!localStorage.getItem('adminToken');
+      if (!hasToken) return;
+      const valid = await validateLocalAdminToken();
+      if (valid) {
+        window.location.href = next || '/admin/products.html';
+      } else {
+        // Token invalid on server; remove local token and continue to login page
+        localStorage.removeItem('adminToken');
+      }
+    })();
 
     // Language Selector
     const langBtn = document.getElementById('langBtn');
@@ -505,12 +531,29 @@
       langBtn.classList.remove('active');
     });
 
+    async function loadCsrfToken() {
+      try {
+        const response = await fetch('/csrf-token');
+        if (!response.ok) {
+          throw new Error('Unable to fetch CSRF token');
+        }
+        const data = await response.json();
+        const tokenInput = document.getElementById('csrfToken');
+        if (tokenInput) {
+          tokenInput.value = data.csrfToken;
+        }
+      } catch (error) {
+        console.error('CSRF token load failed:', error);
+      }
+    }
+
     // Login Handler
     async function handleLogin(event) {
       event.preventDefault();
 
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
+      const csrfToken = document.getElementById('csrfToken').value;
       const messageEl = document.getElementById('message');
       const submitBtn = document.getElementById('submitBtn');
       const originalText = submitBtn.textContent;
@@ -531,7 +574,11 @@
 
         const resp = await fetch('/api/login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
           body: JSON.stringify({ username, password })
         });
 
@@ -571,12 +618,31 @@
         localStorage.setItem('adminToken', token);
         messageEl.className = 'message success show';
         messageEl.textContent = 'Login successful! Redirecting...';
-        
-        console.log('Token stored, redirecting to /admin/products.html');
 
-        setTimeout(() => {
-          window.location.href = '/admin/products.html';
-        }, 1000);
+        console.log('Token stored, validating server session before redirect...');
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get('next');
+
+        // Poll validate endpoint to ensure server-side session cookie is available
+        const validateServerSession = async (tries = 5, delay = 200) => {
+          for (let i = 0; i < tries; i++) {
+            try {
+              const r = await fetch('/api/admin/validate', { credentials: 'include' });
+              if (r.ok) return true;
+            } catch (e) {
+              // ignore and retry
+            }
+            await new Promise(res => setTimeout(res, delay));
+          }
+          return false;
+        };
+
+        (async () => {
+          const ok = await validateServerSession(6, 250);
+          if (!ok) console.warn('Server session validation failed after login, proceeding to redirect anyway');
+          // Use replace to avoid flicker/back-button history when redirecting after login
+          window.location.replace(next || '/admin/products.html');
+        })();
       } catch (e) {
         messageEl.className = 'message error show';
         messageEl.textContent = 'Connection error: ' + e.message;
@@ -585,6 +651,15 @@
         console.error('Login exception:', e);
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCsrfToken();
+      const loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+      }
+    });
   </script>
 </body>
 </html>
+

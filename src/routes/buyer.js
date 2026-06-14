@@ -10,3 +10,4 @@ router.get('/profile', verifyBuyerSession, BuyerController.getProfile);
 router.put('/profile', verifyBuyerSession, BuyerController.updateProfile);
 
 module.exports = router;
+

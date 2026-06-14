@@ -2,8 +2,24 @@ const express = require('express'); // Import the Express framework to create a 
 const router = express.Router(); // Create a new Express router to handle admin-related routes
 const AdminController = require('../controllers/AdminController'); // Import the AdminController to handle admin-related operations such as login and logout
 const ProductController = require('../controllers/ProductController'); // Import the ProductController to handle product-related operations for admin routes
+const CouponController = require('../controllers/CouponController'); // Import the CouponController to handle coupon-related operations for admin routes
+const OrderController = require('../controllers/OrderController'); // Import the OrderController to handle order-related operations for admin routes
+const ReportController = require('../controllers/ReportController'); // Import the ReportController to handle reporting and export endpoints
 const { verifyAdminSession } = require('../middleware/authentication'); // Middleware to verify that the user has an active admin session, ensuring that only authorized users can access protected admin routes
-const SessionManager = require('../services/SessionManager'); // Import the SessionManager to manage admin sessions, including creating, validating, and destroying sessions for admin users
+const { checkPermission } = require('../middleware/authorization');
+const path = require('path');
+const multer = require('multer');
+
+// Configure multer storage for admin uploads (public/uploads)
+const uploadsDir = path.join(__dirname, '../..', 'public', 'uploads');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const safeName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
+    cb(null, safeName);
+  }
+});
+const upload = multer({ storage });
 
 // Admin routes - mounted at /api/admin in app.js
 // Login routes - accessible to all users
@@ -13,69 +29,196 @@ router.post('/login', AdminController.login);  // Also mounted at /api/login for
 // This route allows admin users to log out by destroying their active session. It requires an active admin session to ensure that only authenticated admin users can log out, which helps maintain security and proper session management. The AdminController.logout method will handle the logic for destroying the session and invalidating the token.
 router.post('/logout', verifyAdminSession, AdminController.logout);
 // Token validation route - requires active admin session
-// This route allows admin users to validate their session token. It requires an active admin session to ensure that only authenticated admin users can access this endpoint. The route will return a success response if the token is valid, along with some session details for debugging purposes. This can be useful for frontend applications to check if the admin user is still authenticated and to retrieve session information without needing to log in again.
+// This route allows admin users to validate their session. It requires an active admin session to ensure that only authenticated admin users can access this endpoint.
 router.get('/validate', verifyAdminSession, (req, res) => {
-  // Token validation endpoint - returns 200 if token is valid
-  const session = SessionManager.get(req.adminToken);
-  res.json({  // Return session details for debugging purposes, but only include non-sensitive information to avoid exposing any security risks. This can help frontend developers understand the session state and debug authentication issues without compromising security.
-    success: true, // Indicate that the token is valid
-    message: 'Token is valid', // Provide a message confirming token validity
-    session: { // Include non-sensitive session details for debugging purposes
-      username: session?.username, // Include the username associated with the session, if available but do not include any sensitive information such as passwords or tokens
-      createdAt: session?.createdAt, // Include the session creation time for debugging purposes, but do not include the exact expiration time to avoid exposing potential security risks
-      activeSessions: SessionManager.getActiveCount() // Include the total number of active sessions for debugging purposes, but do not include any specific session identifiers to avoid exposing potential security risks
+  // Session validation endpoint - returns 200 if session is valid
+  res.json({
+    success: true,
+    message: 'Session is valid',
+    session: {
+      username: req.session.username,
+      role: req.session.role,
+      email: req.session.email
     }
   });
 });
 
-// Debug endpoint to check all active sessions (for troubleshooting)
-router.get('/debug/sessions', (req, res) => {
-  // This endpoint is intended for debugging purposes only and should not be exposed in production environments. It provides detailed information about all active sessions, which can be useful for troubleshooting authentication issues, monitoring session activity, and ensuring that session management is working correctly. However, it should be protected or removed in production to prevent potential security risks associated with exposing session information.
-  const token = req.headers.authorization?.split('Bearer ')[1];
-  // For debugging purposes, we will return all active sessions along with the current token's session details if available. This can help identify issues with session management and token validation during development and testing.
-  const session = token ? SessionManager.get(token) : null;
-  
-  // Return detailed session information for debugging purposes, but ensure that no sensitive information is included in the response to avoid security risks. This can help developers understand the current session state and identify any issues with session management.
+// Debug endpoint to check session status (for troubleshooting)
+router.get('/debug/sessions', verifyAdminSession, (req, res) => {
+  // This endpoint is intended for debugging purposes only and should not be exposed in production environments.
   res.json({
-    // Include a timestamp for when the debug information was , which can help correlate session activity with other logs and events during troubleshooting.
     timestamp: new Date().toISOString(),
-    // Include the total number of active sessions to provide insight into session activity and potential issues with session management, such as sessions not being properly destroyed or expired.
-    activeCount: SessionManager.getActiveCount(),
-    // Include the current token being validated for debugging purposes, but only include a truncated version of the token to avoid exposing sensitive information in the logs or responses.
-    currentToken: token ? token.substring(0, 15) + '...' : 'none provided',
-    // Include the session details for the current token being validated, if available, to provide insight into the session state and help identify any issues with token validation or session management. However, ensure that no sensitive information is included in the session details to avoid security risks.
-    currentSession: session ? { 
-      // Include the username associated with the session for debugging purposes, but do not include any sensitive information such as passwords or tokens to avoid security risks.
-      username: session.username, 
-      // Include the session creation time for debugging purposes, but do not include the exact expiration time to avoid exposing potential security risks. This can help developers understand when the session was created and identify any issues with session duration or expiration.
-      createdAt: new Date(session.createdAt).toISOString(), 
-      // Include the session expiration time for debugging purposes, but do not include the exact expiration time to avoid exposing potential security risks. This can help developers understand the session duration and identify any issues with session expiration or token validity.
-      valid: true, // Indicate that the session is valid for debugging purposes, but do not include any specific session identifiers or sensitive information to avoid security risks.
-      createdAt: new Date(session.createdAt).toISOString(), // Include the session expiration time for debugging purposes, but do not include the exact expiration time to avoid exposing potential security risks. This can help developers understand the session duration and identify any issues with session expiration or token validity.
-      expiresAt: new Date(session.expiresAt).toISOString() // Include the session expiration time for debugging purposes, but do not include the exact expiration time to avoid exposing potential security risks. This can help developers understand the session duration and identify any issues with session expiration or token validity.
-    } : null, // Include all active sessions for debugging purposes, but ensure that no sensitive information is included in the session details to avoid security risks. This can help developers understand the overall session activity and identify any issues with session management during development and testing.
-    allSessions: SessionManager.getAllSessions() // Include all active sessions for debugging purposes, but ensure that no sensitive information is included in the session details to avoid security risks. This can help developers understand the overall session activity and identify any issues with session management during development and testing.
+    currentSession: {
+      username: req.session.username,
+      role: req.session.role,
+      email: req.session.email,
+      isAdmin: req.session.isAdmin
+    },
+    message: 'Session debug information'
   });
 });
 
 // Simple status endpoint
-// This endpoint provides a simple status check for the admin API. It can be used by monitoring tools or frontend applications to verify that the admin API is operational and to retrieve some basic information about the server status, such as the current timestamp and the number of active sessions. This can help ensure that the admin API is functioning correctly and can provide insight into the server's health and activity.
 router.get('/status', (req, res) => {
-  // Return a simple status response with the current timestamp and the number of active sessions. This can be useful for monitoring the health of the admin API and ensuring that it is operational.
   res.json({
-    // Include a server status message to indicate that the admin API is operational, which can be useful for monitoring tools and frontend applications to quickly check the status of the API.
     serverStatus: 'OK',
-    // Include the current timestamp to provide a reference point for the status check.w This can help correlate the status check with other logs and events on the server for troubleshooting and monitoring purposes.
     timestamp: new Date().toISOString(),
-    // Include the number of active sessions to provide insight into the current session activity on the server, which can be useful for monitoring and troubleshooting session management issues.
-    activeSessions: SessionManager.getActiveCount(),
-    // Include a message confirming that the admin API is operational, which can be useful for monitoring tools and frontend applications to quickly check the status of the API and ensure that it is functioning correctly.
     message: 'Admin API is operational'
   });
 });
 
+// Dashboard statistics endpoint (requires admin session)
+// This endpoint retrieves aggregated statistics for the admin dashboard including total sales, orders, products, and customers
+router.get('/dashboard/stats', verifyAdminSession, AdminController.getDashboardStats);
+
+// Orders statistics endpoint (requires admin session)
+// This endpoint retrieves detailed orders statistics including orders by status, payment status, and trend data
+router.get('/orders/statistics', verifyAdminSession, AdminController.getOrdersStatistics);
+
+// Reports endpoints (requires admin session)
+router.get('/reports', verifyAdminSession, ReportController.getReports);
+router.get('/reports/export', verifyAdminSession, ReportController.exportReport);
+router.post('/reports/schedule', verifyAdminSession, ReportController.scheduleReport);
+router.get('/reports/schedules', verifyAdminSession, ReportController.listScheduledReports);
+
+// Consumers endpoint (requires admin session)
+// This endpoint retrieves all buyer accounts for the admin consumer page
+router.get('/consumers', verifyAdminSession, AdminController.getConsumers);
+
 // Example protected route to get all products (requires admin session)
 // This endpoint allows admin users to retrieve a list of all products in the system. It requires an active admin session to ensure that only authorized users can access this information, which helps maintain security and control over product data. The ProductController.list method will handle the logic for fetching and returning the product data, which can be used for managing products in the admin dashboard or for other administrative purposes.
 router.get('/products', verifyAdminSession, ProductController.list);
+router.get('/orders', verifyAdminSession, OrderController.listOrdersAdmin);
+
+// Coupon management routes (requires admin session)
+router.get('/coupons', verifyAdminSession, CouponController.getAllCoupons);
+router.get('/coupons/:id', verifyAdminSession, CouponController.getCouponById);
+router.post('/coupons', verifyAdminSession, CouponController.createCoupon);
+router.put('/coupons/:id', verifyAdminSession, CouponController.updateCoupon);
+router.delete('/coupons/:id', verifyAdminSession, CouponController.deleteCoupon);
+
+// Discount notification route (requires admin session)
+router.post('/send-discount-notification', verifyAdminSession, async (req, res) => {
+  try {
+    const { title, description, discountCode, discountPercent, validUntil, categories, targetEmails } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !discountCode || !discountPercent || !validUntil) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: title, description, discountCode, discountPercent, validUntil'
+      });
+    }
+
+    const EmailService = require('../services/EmailService');
+    const User = require('../models/User');
+
+    // Prepare discount data
+    const discount = {
+      title,
+      description,
+      discountCode,
+      discountPercent: parseFloat(discountPercent),
+      validUntil,
+      categories: categories || []
+    };
+
+    let recipients = [];
+    let results = { sent: 0, failed: 0, errors: [] };
+
+    if (targetEmails && Array.isArray(targetEmails)) {
+      // Send to specific emails
+      recipients = targetEmails;
+    } else {
+      // Send to all buyers (users with role 'buyer' or no specific role)
+      const buyers = await User.getAllBuyers();
+      recipients = buyers.map(buyer => buyer.email).filter(email => email);
+    }
+
+    console.log(`Sending discount notification to ${recipients.length} recipients...`);
+
+    // Send emails (with rate limiting to avoid overwhelming the SMTP server)
+    for (const email of recipients) {
+      try {
+        await EmailService.sendDiscountNotificationEmail(email, discount);
+        results.sent++;
+        console.log(`✅ Sent discount notification to: ${email}`);
+      } catch (error) {
+        results.failed++;
+        results.errors.push({ email, error: error.message });
+        console.error(`❌ Failed to send to ${email}:`, error.message);
+      }
+
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    res.json({
+      success: true,
+      message: `Discount notification sent to ${results.sent} recipients${results.failed > 0 ? `, ${results.failed} failed` : ''}`,
+      results
+    });
+
+  } catch (error) {
+    console.error('Error sending discount notifications:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send discount notifications',
+      error: error.message
+    });
+  }
+});
+
+// Analytics endpoints (requires admin session)
+router.get('/analytics/events', verifyAdminSession, async (req, res) => {
+  try {
+    const Analytics = require('../models/Analytics');
+    const filters = {
+      startDate: req.query.startDate ? new Date(req.query.startDate) : null,
+      endDate: req.query.endDate ? new Date(req.query.endDate) : null,
+      limit: req.query.limit ? parseInt(req.query.limit) : 100,
+      offset: req.query.offset ? parseInt(req.query.offset) : 0
+    };
+
+    // Get analytics events from database
+    const events = await Analytics.getEvents(filters);
+    const total = await Analytics.getEventsCount(filters);
+
+    res.json({
+      success: true,
+      data: events,
+      pagination: {
+        total,
+        limit: filters.limit,
+        offset: filters.offset,
+        hasMore: (filters.offset + filters.limit) < total
+      }
+    });
+  } catch (err) {
+    console.error('[AdminController.getAnalyticsEvents] Error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/analytics/summary', verifyAdminSession, async (req, res) => {
+  try {
+    const Analytics = require('../models/Analytics');
+    const startDate = req.query.startDate ? new Date(req.query.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const endDate = req.query.endDate ? new Date(req.query.endDate) : new Date();
+
+    const summary = await Analytics.getSummary({ startDate, endDate });
+    res.json({ success: true, data: summary });
+  } catch (err) {
+    console.error('[AdminController.getAnalyticsSummary] Error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// System settings (requires admin session + system_settings permission)
+router.get('/settings', verifyAdminSession, checkPermission('system_settings'), AdminController.getSettings);
+router.put('/settings', verifyAdminSession, checkPermission('system_settings'), AdminController.updateSettings);
+
+// Logo upload - saves file to public/uploads and updates system settings with `siteLogo` URL
+router.post('/settings/logo', verifyAdminSession, checkPermission('system_settings'), upload.single('logo'), AdminController.uploadLogo);
 
 module.exports = router;

@@ -15,6 +15,9 @@ router.get('/categories/all', SpecialtiesController.getCategories);
 // Get specialties by category
 router.get('/category/:category', SpecialtiesController.getByCategory);
 
+// Get products assigned to a specialty
+router.get('/:id/products', SpecialtiesController.getProducts);
+
 // Get specialty by ID
 router.get('/:id', SpecialtiesController.getById);
 
@@ -32,3 +35,4 @@ router.put('/:id', SpecialtiesController.update);
 router.delete('/:id', SpecialtiesController.delete);
 
 module.exports = router;
+

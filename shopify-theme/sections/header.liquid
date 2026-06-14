@@ -2,7 +2,7 @@
   <div class="header-top">
     <div class="logo">
       <a href="/" style="display: flex; align-items: center; gap: 14px; text-decoration: none;">
-        <img src="{{ 'logo.jpg' | asset_url }}" alt="Shop logo" />
+        <img src="{{ 'Saudade_market.png' | asset_url }}" alt="Shop logo" />
         <div class="logo-text">
           <h1>{{ shop.name }}</h1>
           <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
@@ -19,6 +19,7 @@
       <button class="icon user" title="Mon compte" aria-label="Account" data-i18n="header.account">
         <i class="fa fa-user" aria-hidden="true"></i>
       </button>
+      <span id="buyer-name" style="font-weight:600; margin-left:8px;"></span>
       <a class="icon cart" href="/cart" title="Panier" aria-label="Cart" data-i18n="header.cart">
         <i class="fa fa-shopping-bag" aria-hidden="true"></i>
         <span class="badge">{{ cart.item_count }}</span>
@@ -47,11 +48,10 @@
       <li><a href="/" class="{% if request.path == '/' %}active{% endif %}" data-i18n="nav.home"><i class="fa fa-home"></i> HOME</a></li>
       <li><a href="/collections/{{ prodHandle }}" class="{% if request.path contains prodHandle %}active{% endif %}" data-i18n="nav.products"><i class="fa fa-box-open"></i> PRODUCTS</a></li>
       <li><a href="/collections/{{ specHandle }}" class="{% if request.path contains specHandle %}active{% endif %}" data-i18n="nav.specialties"><i class="fa fa-star"></i> SPECIALTIES</a></li>
-      <li><a href="/collections/{{ wineHandle }}" class="{% if request.path contains wineHandle %}active{% endif %}" data-i18n="nav.wine"><i class="fa fa-wine-glass-alt"></i> WINE & PORT</a></li>
-      <li><a href="/collections/{{ grocHandle }}" class="{% if request.path contains grocHandle %}active{% endif %}" data-i18n="nav.grocery"><i class="fa fa-shopping-cart"></i> GROCERY</a></li>
-      <li><a href="/collections/{{ giftHandle }}" class="{% if request.path contains giftHandle %}active{% endif %}" data-i18n="nav.gifts"><i class="fa fa-gift"></i> GIFT BOXES</a></li>
+      <!-- Removed static collection links: wine, grocery, gifts -->
       <li><a href="/pages/about" class="{% if request.path contains '/about' %}active{% endif %}" data-i18n="nav.about"><i class="fa fa-info-circle"></i> ABOUT US</a></li>
       <li><a href="/pages/contact" class="{% if request.path contains '/contact' %}active{% endif %}" data-i18n="nav.contact"><i class="fa fa-envelope"></i> CONTACT</a></li>
     </ul>
   </nav>
 </header>
+

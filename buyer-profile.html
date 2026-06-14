@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buyer Profile - PortugalStore</title>
+   <title>Saudade Market</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="public/css/style.css">
   <style>
@@ -132,6 +132,7 @@
       try {
         const res = await fetch('/api/buyer/profile', {
           method: 'GET',
+          credentials: 'same-origin',
           headers: {
             'Authorization': 'Bearer ' + token
           }
@@ -164,6 +165,7 @@
       try {
         const res = await fetch('/api/buyer/profile', {
           method: 'PUT',
+          credentials: 'same-origin',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token
@@ -189,6 +191,7 @@
       try {
         const res = await fetch('/api/buyer/profile/image', {
           method: 'POST',
+          credentials: 'same-origin',
           headers: {
             'Authorization': 'Bearer ' + token
           },
@@ -206,3 +209,4 @@
   </script>
 </body>
 </html>
+

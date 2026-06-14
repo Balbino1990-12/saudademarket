@@ -7,7 +7,7 @@ class CartController {
    */
   static async getCart(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -35,7 +35,7 @@ class CartController {
    */
   static async addItem(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -61,12 +61,28 @@ class CartController {
         });
       }
 
+      // Check if product is in stock
+      if ((product.quantity || 0) <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Product is out of stock'
+        });
+      }
+
       // Validate quantity
       const qty = parseInt(quantity);
       if (isNaN(qty) || qty < 1) {
         return res.status(400).json({
           success: false,
           error: 'Quantity must be a positive number'
+        });
+      }
+
+      // Check if requested quantity is available
+      if (qty > (product.quantity || 0)) {
+        return res.status(400).json({
+          success: false,
+          error: `Only ${product.quantity} items available in stock`
         });
       }
 
@@ -77,7 +93,7 @@ class CartController {
         success: true,
         message: 'Item added to cart',
         data: {
-          item: cartItem,
+          items: cartItem ? [cartItem] : [],
           summary: summary
         }
       });
@@ -91,7 +107,7 @@ class CartController {
    */
   static async updateItem(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -99,7 +115,7 @@ class CartController {
         });
       }
 
-      const { productId } = req.params;
+      const productId = req.params.productId || req.body.productId;
       const { quantity } = req.body;
 
       if (!productId) {
@@ -116,6 +132,31 @@ class CartController {
           success: false,
           error: 'Quantity must be a non-negative number'
         });
+      }
+
+      // If updating to a positive quantity, check product stock
+      if (qty > 0) {
+        const product = await Product.getById(productId);
+        if (!product) {
+          return res.status(404).json({
+            success: false,
+            error: 'Product not found'
+          });
+        }
+
+        if ((product.quantity || 0) <= 0) {
+          return res.status(400).json({
+            success: false,
+            error: 'Product is out of stock'
+          });
+        }
+
+        if (qty > (product.quantity || 0)) {
+          return res.status(400).json({
+            success: false,
+            error: `Only ${product.quantity} items available in stock`
+          });
+        }
       }
 
       let cartItem = null;
@@ -146,7 +187,7 @@ class CartController {
    */
   static async removeItem(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -154,7 +195,7 @@ class CartController {
         });
       }
 
-      const { productId } = req.params;
+      const productId = req.params.productId || req.body.productId;
 
       if (!productId) {
         return res.status(400).json({
@@ -184,7 +225,7 @@ class CartController {
    */
   static async clearCart(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -212,7 +253,7 @@ class CartController {
    */
   static async getSummary(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -236,7 +277,7 @@ class CartController {
    */
   static async checkItem(req, res, next) {
     try {
-      const userId = req.user?.id || req.session?.userId;
+      const userId = req.user?.id || req.session?.userId || req.session?.buyerId;
       if (!userId) {
         return res.status(401).json({
           success: false,

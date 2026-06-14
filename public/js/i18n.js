@@ -40,12 +40,14 @@ const i18n = (() => {
      */
     async function loadTranslations() {
         try {
-            const response = await fetch('/translations.json');
+            const isAdmin = window.location.pathname.startsWith('/admin');
+            const translationsPath = isAdmin ? '/admin/translations.json' : '/translations.json';
+            const response = await fetch(translationsPath);
             if (response.ok) {
                 translations = await response.json();
-                console.log('[i18n] ✅ Loaded static translations');
+                console.log('[i18n] ✅ Loaded static translations from', translationsPath);
             } else {
-                console.warn('[i18n] Could not load translations:', response.status);
+                console.warn('[i18n] Could not load translations:', response.status, 'from', translationsPath);
             }
         } catch (err) {
             console.error('[i18n] Error loading translations:', err);
@@ -306,9 +308,17 @@ const i18n = (() => {
     };
 })();
 
+// Expose i18n helpers globally for pages that rely on window.translate/window.setLanguage/window.i18n
+if (typeof window !== 'undefined') {
+    window.i18n = i18n;
+    window.translate = i18n.t;
+    window.setLanguage = i18n.setLanguage;
+}
+
 // Auto-initialize on DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => i18n.init());
 } else {
     i18n.init();
 }
+

@@ -12,12 +12,15 @@ require('dotenv').config();
 
     console.log('🔧 Creating default user for orphaned products...\n');
     
-    // Create a default user with id 1 if it doesn't exist
+    // Create a default admin user with id 1 if it doesn't exist
     try {
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+
       await conn.query(`
         INSERT INTO users (id, username, email, password, first_name, last_name)
-        VALUES (1, 'admin', 'admin@store.fr', 'admin123', 'Admin', 'User')
-      `);
+        VALUES (1, 'admin', 'admin@store.fr', ?, 'Admin', 'User')
+      `, [hashedPassword]);
       console.log('✓ Created default admin user (id: 1)');
     } catch (err) {
       if (err.message.includes('Duplicate entry')) {
@@ -32,3 +35,4 @@ require('dotenv').config();
     console.error('❌ Error:', e.message);
   }
 })();
+

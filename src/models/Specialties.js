@@ -8,9 +8,15 @@ class Specialties {
   static async getAll() {
     try {
       const sql = `
-        SELECT * FROM specialties
-        WHERE active = true
-        ORDER BY created_at DESC
+        SELECT s.*, COALESCE(sp.assigned_count, 0) AS assigned_products_count
+        FROM specialties s
+        LEFT JOIN (
+          SELECT specialty_id, COUNT(*) AS assigned_count
+          FROM specialty_products
+          GROUP BY specialty_id
+        ) sp ON sp.specialty_id = s.id
+        WHERE s.active = true
+        ORDER BY s.created_at DESC
       `;
       const [rows] = await pool.query(sql);
       console.log('[Specialties.getAll] Retrieved', rows.length, 'specialties');
@@ -34,10 +40,70 @@ class Specialties {
       `;
       const [rows] = await pool.query(sql, [id]);
       const specialty = rows.length > 0 ? rows[0] : null;
-      console.log('[Specialties.getById] Retrieved specialty:', specialty?.name_en || 'Not found');
+      if (!specialty) {
+        console.log('[Specialties.getById] Specialty not found for ID:', id);
+        return null;
+      }
+
+      const [productRows] = await pool.query(
+        `SELECT product_id FROM specialty_products WHERE specialty_id = ?`,
+        [id]
+      );
+      specialty.assigned_product_ids = productRows.map(row => row.product_id);
+      console.log('[Specialties.getById] Retrieved specialty:', specialty.name_en);
       return specialty;
     } catch (err) {
       console.error('[Specialties.getById] Error:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Get products assigned to a specialty
+   * @param {number} id - Specialty ID
+   * @returns {Promise<Array>} Array of product objects
+   */
+  static async getProducts(id) {
+    try {
+      const sql = `
+        SELECT p.*
+        FROM products p
+        INNER JOIN specialty_products sp ON sp.product_id = p.id
+        WHERE sp.specialty_id = ?
+        ORDER BY p.name_en ASC
+      `;
+      const [rows] = await pool.query(sql, [id]);
+      console.log('[Specialties.getProducts] Retrieved', rows.length, 'products for specialty ID:', id);
+      return rows;
+    } catch (err) {
+      console.error('[Specialties.getProducts] Error:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Assign products to a specialty
+   * @param {number} id - Specialty ID
+   * @param {Array<number>} productIds - Product IDs to assign
+   * @returns {Promise<void>}
+   */
+  static async setProductAssignments(id, productIds) {
+    try {
+      await pool.query(`DELETE FROM specialty_products WHERE specialty_id = ?`, [id]);
+
+      const sanitizedIds = Array.isArray(productIds)
+        ? [...new Set(productIds.map(pid => parseInt(pid, 10)).filter(pid => !Number.isNaN(pid)))]
+        : [];
+
+      if (sanitizedIds.length === 0) {
+        return;
+      }
+
+      const values = sanitizedIds.map(productId => [id, productId]);
+      await pool.query(`INSERT INTO specialty_products (specialty_id, product_id) VALUES ?`, [values]);
+      console.log('[Specialties.setProductAssignments] Assigned', sanitizedIds.length, 'products to specialty ID:', id);
+    } catch (err) {
+      console.error('[Specialties.setProductAssignments] Error:', err);
       throw err;
     }
   }
@@ -176,3 +242,4 @@ class Specialties {
 }
 
 module.exports = Specialties;
+

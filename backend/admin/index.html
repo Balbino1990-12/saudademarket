@@ -1,9 +1,10 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard "” PortugalStore</title>
+    <title>Saudade Market Admin</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css">
     <style>
         * {
             margin: 0;
@@ -49,7 +50,6 @@
             flex-direction: column;
         }
 
-        /* Header */
         .header {
             background: var(--white);
             border-bottom: 1px solid var(--gray-200);
@@ -66,1189 +66,1055 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 20px;
         }
 
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 12px;
-            cursor: pointer;
+            gap: 14px;
             text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .logo-section:hover {
-            transform: translateY(-2px);
+            color: inherit;
         }
 
         .logo-section img {
-            height: 40px;
+            height: 42px;
+            width: auto;
             object-fit: contain;
         }
 
         .logo-text h1 {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
             margin: 0;
         }
 
         .logo-text p {
-            font-size: 0.65rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--gray-600);
-            letter-spacing: 1px;
             margin: 0;
-        }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--secondary);
-            display: none;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 16px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
             gap: 12px;
-            padding: 8px 16px;
-            border-radius: 10px;
-            background: var(--gray-100);
-            transition: all 0.3s ease;
         }
 
-        .user-info:hover {
-            background: var(--gray-200);
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .user-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--gray-600);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
+        .lang-btn,
         .logout-btn {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, var(--danger), #c71a1a);
-            color: var(--white);
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.3);
-        }
-
-        .logout-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Language Selector */
-        .language-selector {
-            position: relative;
-            display: flex;
-            align-items: center;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 10px 16px;
+            transition: all 0.2s ease;
         }
 
         .lang-btn {
             background: var(--gray-200);
-            border: 1px solid var(--gray-300);
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
             color: var(--dark);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .lang-btn:hover {
             background: var(--gray-300);
-            border-color: var(--gray-400);
         }
 
-        .lang-btn::after {
-            content: '▼';
-            font-size: 0.6rem;
-            transition: transform 0.3s ease;
+        .logout-btn {
+            background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
+            color: var(--white);
         }
 
-        .lang-btn.active::after {
-            transform: rotate(180deg);
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.25);
         }
 
-        .lang-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            box-shadow: var(--shadow-md);
-            min-width: 120px;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            margin-top: 4px;
-            z-index: 1000;
-        }
-
-        .lang-dropdown.active {
-            max-height: 200px;
-        }
-
-        .lang-option {
-            display: block;
-            width: 100%;
-            padding: 10px 16px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            text-align: left;
-            font-size: 0.95rem;
-            color: var(--dark);
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .lang-option:hover {
-            background: var(--gray-100);
-        }
-
-        .lang-option.active {
-            background: linear-gradient(135deg, rgba(196, 30, 30, 0.1) 0%, transparent 100%);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: transparent;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        /* Main Layout */
         .container {
             display: flex;
             flex: 1;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-            color: var(--white);
-            padding: 20px 0;
-            overflow-y: auto;
-            transition: all 0.3s ease;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .sidebar-section {
-            margin-bottom: 24px;
-        }
-
-        .sidebar-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: rgba(255, 255, 255, 0.5);
-            padding: 0 20px;
-            margin-bottom: 12px;
-        }
-
-        .sidebar-item {
-            display: flex !important;
-            align-items: center !important;
-            gap: 12px;
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 3px solid transparent;
-            font-size: 0.95rem;
-            font-weight: 500;
-            position: relative;
-            flex-wrap: wrap !important;
+            min-height: 0;
+            min-width: 0;
             width: 100%;
+            overflow-x: hidden;
         }
 
-        .sidebar-label-fr {
-            flex: 0 1 auto;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-label-en {
-            flex: 0 1 auto;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-label-pt {
-            flex: 0 1 auto;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--white);
-            border-left-color: var(--primary);
-        }
-
-        .sidebar-item.active {
-            background: linear-gradient(90deg, rgba(196, 30, 30, 0.2) 0%, transparent 100%);
-            color: var(--white);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .sidebar-item.active::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: 2px 0 0 2px;
-        }
-
-        .sidebar-icon {
-            font-size: 1.6rem !important;
-            width: auto !important;
-            height: auto !important;
-            display: inline !important;
-            margin-right: 8px !important;
-            color: #ffffff !important;
-            background-color: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
-            line-height: 1 !important;
-            vertical-align: -0.125em !important;
-            text-shadow: none !important;
-        }
-
-        /* Main Content */
-        .main-content {
+        .main-content,
+        .content {
             flex: 1;
+            width: 100%;
+            min-width: 0;
+            min-height: 0;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: visible;
+            margin-left: 260px;
+            padding: 20px;
         }
 
-        .content-header {
+
+        .dashboard-header {
             padding: 24px;
             background: var(--white);
             border-bottom: 1px solid var(--gray-200);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .dashboard-header .header-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .eyebrow {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         .content-header h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
             color: var(--dark);
-            margin-bottom: 8px;
+            margin: 0;
         }
 
-        .content-header p {
+        .search-container {
+            flex: 1;
+            max-width: 420px;
+            min-width: 240px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 52px 14px 18px;
+            border: 1px solid var(--gray-300);
+            border-radius: 14px;
             font-size: 0.95rem;
+            background: var(--white);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(196, 30, 30, 0.08);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            cursor: pointer;
             color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 12px 24px rgba(196, 30, 30, 0.18);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--dark);
+            border: 1px solid var(--gray-200);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+            transform: translateY(-1px);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            width: 100%;
+            margin-bottom: 32px;
+            min-width: 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(180deg, #ffffff 0%, #f7f8fb 100%);
+            border: 1px solid var(--gray-200);
+            border-radius: 22px;
+            padding: 40px 28px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            min-height: 180px;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(196, 30, 30, 0.12);
+            color: var(--primary);
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-label {
+            margin: 0 0 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--gray-500);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .card-value {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .table-panel {
+            margin-top: 26px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .section-title h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .section-title p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 0.95rem;
         }
 
         .content-body {
             flex: 1;
+            min-width: 0;
+            width: 100%;
+            padding: 0 24px 24px 0;
             overflow-y: auto;
-            padding: 24px;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Dashboard Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .card {
+        .content-panel {
+            width: 100%;
+            max-width: none;
             background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
+            border-radius: 28px;
             border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            padding: 28px 28px 28px 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .dashboard-top-cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            border-radius: 24px;
+            padding: 24px 24px 20px;
+            color: #fff;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             position: relative;
             overflow: hidden;
         }
 
-        .card::before {
+        .summary-card::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            right: -16px;
+            top: -16px;
+            width: 80px;
+            height: 80px;
+            opacity: 0.18;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card-icon {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--gray-600);
+        .summary-card h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .card-value {
-            font-size: 2rem;
+        .summary-value {
+            margin: 16px 0 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .summary-note {
+            margin: 0;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .summary-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .summary-green { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); }
+        .summary-yellow { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .summary-red { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); }
+        .summary-purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .summary-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+
+        .dashboard-main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .chart-card,
+        .map-card,
+        .chat-card,
+        .insight-card {
+            background: var(--white);
+            border-radius: 24px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+        }
+
+        .chart-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+        }
+
+        .chart-header,
+        .map-header,
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3,
+        .map-header h3,
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
             font-weight: 800;
             color: var(--dark);
-            margin-bottom: 12px;
         }
 
-        .card-info {
-            font-size: 0.8rem;
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chart-actions button {
+            border: 1px solid var(--gray-200);
+            border-radius: 999px;
+            background: var(--gray-100);
+            color: var(--dark);
+            padding: 8px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chart-actions button.active,
+        .chart-actions button:hover {
+            border-color: rgba(79, 70, 229, 0.35);
+            background: rgba(79, 70, 229, 0.08);
+            color: #312e81;
+        }
+
+        .chart-legend {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+
+        .legend-item span {
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            border-radius: 999px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+
+        .legend-item.revenue span {
+            background: #4338ca;
+        }
+
+        .legend-item.orders span {
+            background: #10b981;
+        }
+
+        .sales-chart {
+            position: relative;
+            flex: 1;
+            background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+            border-radius: 24px;
+            padding: 20px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 320px;
+        }
+
+        .sales-chart-grid {
+            position: absolute;
+            inset: 20px;
+            background-image: linear-gradient(to top, rgba(255,255,255,0.5) 1px, transparent 1px),
+                              linear-gradient(to right, rgba(255,255,255,0.45) 1px, transparent 1px);
+            background-size: 100% 40px, 40px 100%;
+            pointer-events: none;
+        }
+
+        .sales-chart canvas {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .sales-chart-footer {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: auto;
+        }
+
+        .sales-metric {
+            background: rgba(255,255,255,0.85);
+            border-radius: 18px;
+            padding: 14px 16px;
+            color: var(--dark);
+        }
+
+        .sales-metric p {
+            margin: 0;
+            font-size: 0.85rem;
             color: var(--gray-500);
         }
 
-        .card-info.positive {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .card-info.negative {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 32px;
-        }
-
-        .quick-actions h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
+        .sales-metric strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 1.1rem;
+            font-weight: 800;
             color: var(--dark);
-            margin-bottom: 16px;
         }
 
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-        }
-
-        .action-btn {
-            padding: 12px 16px;
-            background: var(--white);
-            border: 2px solid var(--gray-300);
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            color: var(--dark);
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            font-size: 0.8rem;
-        }
-
-        .action-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: linear-gradient(135deg, rgba(196, 30, 30, 0.04) 0%, transparent 100%);
-            transform: translateY(-2px);
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-color: var(--primary);
-            color: var(--white);
-        }
-
-        .action-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(196, 30, 30, 0.3);
-        }
-
-        /* Recent Activity */
-        .recent-activity {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .recent-activity h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 16px;
-        }
-
-        .activity-list {
-            list-style: none;
-        }
-
-        .activity-item {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--gray-200);
+        .map-card {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
+            flex-direction: column;
+            min-height: 420px;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: #fff;
+            padding: 24px;
         }
 
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-item:hover {
-            padding-left: 8px;
-            background: var(--gray-100);
-            border-radius: 8px;
-            padding: 16px 8px;
-        }
-
-        .activity-icon {
-            font-size: 1.5rem;
-            min-width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: var(--gray-100);
+        .map-placeholder {
+            background: rgba(255,255,255,0.16);
+            border-radius: 24px;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: rgba(255,255,255,0.92);
+            font-size: 0.95rem;
+            margin: 16px 0;
+            min-height: 280px;
+            width: 100%;
         }
 
-        .activity-content {
-            flex: 1;
+        #franceMap {
+            min-height: 280px;
+            width: 100%;
+        }
+
+        .leaflet-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+        }
+
+        .map-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .map-stat {
+            background: rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .map-stat span {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.92);
+        }
+
+        .map-stat strong {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .chat-card {
+            margin-top: 24px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .chat-message {
+            background: var(--gray-100);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .chat-sender,
+        .chat-details {
+            margin: 0;
+        }
+
+        .chat-sender {
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .chat-text {
+            color: var(--gray-700);
+            margin: 0;
+        }
+
+        .chat-time {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
+        .chart-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .chart-footer .summary-card {
+            padding: 18px 20px;
+            min-height: 110px;
+        }
+
+        .summary-small {
+            background: linear-gradient(135deg, rgba(39, 70, 255, 0.1) 0%, rgba(59, 130, 246, 0.18) 100%);
+            color: var(--dark);
+        }
+
+        .summary-small h4 {
+            color: var(--gray-700);
+        }
+
+        .summary-small .summary-value {
+            color: var(--dark);
+        }
+
+
+        .table-panel {
+            margin-top: 24px;
+        }
+
+        .table-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        th {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tbody tr:hover {
+            background: var(--gray-100);
+        }
+
+        .product-category,
+        .product-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+            min-width: 70px;
+        }
+
+        .product-category {
+            background: var(--info);
+        }
+
+        .product-status {
+            background: var(--success);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+            border-radius: 8px;
+        }
+
+        .btn-edit {
+            background: var(--info);
+            color: var(--white);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        td img {
+            max-width: 60px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-label {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--success);
+            color: var(--white);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .status-label.inactive {
+            background: #6c757d;
+        }
+
+        .activity-section {
+            margin-top: 32px;
+            padding: 28px;
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
         }
 
         .activity-title {
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 800;
             color: var(--dark);
-            font-size: 0.95rem;
+            margin-bottom: 24px;
         }
 
-        .activity-time {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-top: 4px;
+        .timeline {
+            position: relative;
+            padding-left: 0;
+            overflow: visible;
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            padding-left: 40px;
+            min-width: 0;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-light);
-        }
-
-        ::-webkit-scrollbar-thumb {
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 36px;
+            height: 24px;
+            width: 2px;
             background: var(--gray-300);
-            border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-400);
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: 3px solid var(--white);
+            box-shadow: 0 2px 8px rgba(196, 30, 30, 0.2);
         }
 
-        /* Responsive */
+        .timeline-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .timeline-text,
+        .timeline-detail {
+            font-size: 0.95rem;
+            color: var(--gray-700);
+            margin-bottom: 2px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .timeline-detail {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+
         @media (max-width: 900px) {
-            .sidebar {
-                width: 240px;
-            }
-
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 16px;
-            }
-
-            .content-body {
-                padding: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 12px 16px;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .header-title {
-                display: block;
-                flex: 1;
-                margin-left: 12px;
-                font-size: 1rem;
-            }
-
-            .header-right {
-                gap: 8px;
-            }
-
-            .user-info {
-                display: none;
-            }
-
             .container {
-                position: relative;
-            }
-
-            .sidebar {
-                position: absolute;
-                left: 0;
-                top: 0;
-                height: 100%;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                z-index: 99;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .content-header h2 {
-                font-size: 1.4rem;
-            }
-
-            .content-body {
-                padding: 12px;
-            }
-        }
-
-        @media (max-width: 520px) {
-            .header {
-                gap: 8px;
-            }
-
-            .logo-section {
-                gap: 8px;
-            }
-
-            .logo-section img {
-                height: 32px;
-            }
-
-            .logo-text h1 {
-                font-size: 1rem;
-            }
-
-            .logo-text p {
-                display: none;
-            }
-
-            .header-title {
-                font-size: 0.9rem;
-                margin-left: 8px;
-            }
-
-            .logout-btn {
-                padding: 6px 12px;
-                font-size: 0.7rem;
+                flex-direction: column;
             }
 
             .sidebar {
                 width: 100%;
-            }
-
-            .card {
-                padding: 16px;
-            }
-
-            .card-value {
-                font-size: 1.6rem;
-            }
-
-            .actions-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-header h2 {
-                font-size: 1.2rem;
+                height: auto;
             }
 
             .content-header {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header, .content-header {
                 padding: 16px;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+
+            .search-input {
+                padding: 10px 44px 10px 14px;
+            }
+
+            .btn,
+            .lang-btn,
+            .logout-btn {
+                padding: 10px 14px;
+                font-size: 0.88rem;
             }
         }
     </style>
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
     <script src="/js/i18n.js"></script>
+    <script src="admin-icons.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="vendor/leaflet/leaflet.js"></script>
+    <script src="dashboard.js"></script>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <a href="index.html" class="logo-section">
-                <img src="/images/logo.jpg" alt="PortugalStore Logo">
-                <div class="logo-text">
-                    <h1>Admin</h1>
-                    <p>DASHBOARD</p>
-                </div>
-            </a>
-            <div class="header-title" id="pageTitle" data-i18n="dashboard">Dashboard</div>
-        </div>
-
-        <div class="header-right">
-            <div class="language-selector" id="langSelector">
-                <button class="lang-btn" id="langBtn">EN</button>
-                <div class="lang-dropdown" id="langDropdown">
-                    <button class="lang-option active" data-lang="en">English</button>
-                    <button class="lang-option" data-lang="fr">Français</button>
-                    <button class="lang-option" data-lang="pt">Português</button>
-                </div>
-            </div>
-            <div class="user-info" id="userInfo">
-                <div class="user-avatar" id="userAvatar">A</div>
-                <div class="user-details">
-                    <div class="user-name" id="userName">Admin</div>
-                    <div class="user-role" data-i18n="administrator">Administrator</div>
-                </div>
-            </div>
-            <button class="logout-btn" id="logoutBtn" data-i18n="logout">Logout</button>
-        </div>
-    </div>
-
-    <!-- Main Layout -->
     <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-title">MENU</div>
-                <a href="index.html" class="sidebar-item" data-section="dashboard" data-label-fr="Tableau de bord" data-label-en="Dashboard" data-label-pt="Painel">
-                    <span class="sidebar-icon">📊</span>
-                    <span class="sidebar-label">Dashboard</span>
-                </a>
-                <a href="products.html" class="sidebar-item" data-section="products" data-label-fr="Produits" data-label-en="Products" data-label-pt="Produtos">
-                    <span class="sidebar-icon">📦</span>
-                    <span class="sidebar-label">Products</span>
-                </a>
-                <a href="categories.html" class="sidebar-item" data-section="categories" data-label-fr="Catégories" data-label-en="Categories" data-label-pt="Categorias">
-                    <span class="sidebar-icon">📂</span>
-                    <span class="sidebar-label">Categories</span>
-                </a>
-                <a href="users.html" class="sidebar-item" data-section="users" data-label-fr="Utilisateurs" data-label-en="Users" data-label-pt="Utilizadores">
-                    <span class="sidebar-icon">👥</span>
-                    <span class="sidebar-label">Users</span>
-                </a>
-                <a href="roles.html" class="sidebar-item" data-section="roles" data-label-fr="Rôles" data-label-en="Roles" data-label-pt="Funções">
-                    <span class="sidebar-icon">⚙️</span>
-                    <span class="sidebar-label">Roles</span>
-                </a>
-                <a href="specialties.html" class="sidebar-item" data-section="specialties" data-label-fr="Nos Spécialités Portugaises" data-label-en="Specialties" data-label-pt="Especialidades">
-                    <span class="sidebar-icon">🫒</span>
-                    <span class="sidebar-label">Specialties</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="orders" data-label-fr="Commandes" data-label-en="Orders" data-label-pt="Encomendas">
-                    <span class="sidebar-icon">📋</span>
-                    <span class="sidebar-label">Orders</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="customers" data-label-fr="Clients" data-label-en="Customers" data-label-pt="Clientes">
-                    <span class="sidebar-icon">👤</span>
-                    <span class="sidebar-label">Customers</span>
-                </a>
-            </div>
+        <div class="sidebar" id="sidebar"></div>
 
-            <div class="sidebar-section">
-                <div class="sidebar-title">PARAMÈTRES</div>
-                <a href="#" class="sidebar-item" data-section="analytics" data-label-fr="Analyse" data-label-en="Analytics" data-label-pt="Análise">
-                    <span class="sidebar-icon">📈</span>
-                    <span class="sidebar-label">Analytics</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="settings" data-label-fr="Paramètres" data-label-en="Settings" data-label-pt="Configurações">
-                    <span class="sidebar-icon">⚙️</span>
-                    <span class="sidebar-label">Settings</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="languages" data-label-fr="Langues" data-label-en="Languages" data-label-pt="Línguas">
-                    <span class="sidebar-icon">🌐</span>
-                    <span class="sidebar-label">Languages</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-header">
-                <h2 data-i18n="dashboard">Dashboard</h2>
-                <p data-i18n="welcome_message">Welcome back! Here's an overview of your store performance.</p>
+        <div class="content">
+            <div class="dashboard-header">
+                <div class="header-title-group">
+                    <p class="eyebrow">Admin Dashboard</p>
+                    <h2>Saudade Market Overview</h2>
+                </div>
+                <div class="header-actions">
+                    <button class="btn lang-btn">PT ?</button>
+                    <button class="btn logout-btn" id="logoutBtn">SAIR</button>
+                </div>
             </div>
 
             <div class="content-body">
-                <!-- Dashboard Cards -->
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <div class="card-icon">📊Š</div>
-                        <div class="card-title" data-i18n="total_sales">Total Sales</div>
-                        <div class="card-value">€14,250</div>
-                        <div class="card-info positive" data-i18n="sales_growth">â†‘ 12% from last month</div>
+                <div class="content-panel">
+                    <div class="dashboard-top-cards">
+                        <article class="summary-card summary-blue">
+                            <div>
+                                <h4>New Orders</h4>
+                                <p class="summary-value" id="newOrdersValue">150</p>
+                            </div>
+                            <p class="summary-note">More info ↗</p>
+                        </article>
+                        <article class="summary-card summary-green">
+                            <div>
+                                <h4>Bounce Rate</h4>
+                                <p class="summary-value" id="bounceRateValue">53%</p>
+                            </div>
+                            <p class="summary-note">More info ↗</p>
+                        </article>
+                        <article class="summary-card summary-yellow">
+                            <div>
+                                <h4>User Registrations</h4>
+                                <p class="summary-value" id="userRegistrationsValue">44</p>
+                            </div>
+                            <p class="summary-note">More info ↗</p>
+                        </article>
+                        <article class="summary-card summary-red">
+                            <div>
+                                <h4>Unique Visitors</h4>
+                                <p class="summary-value" id="uniqueVisitorsValue">65</p>
+                            </div>
+                            <p class="summary-note">More info ↗</p>
+                        </article>
+                        <article class="summary-card summary-purple">
+                            <div>
+                                <h4>Total Expenses</h4>
+                                <p class="summary-value" id="totalExpensesValue">€0.00</p>
+                            </div>
+                            <p class="summary-note">More info ↗</p>
+                        </article>
+                        <article class="summary-card summary-orange">
+                            <div>
+                                <h4>Net Profit</h4>
+                                <p class="summary-value" id="profitValue">€0.00</p>
+                            </div>
+                            <p class="summary-note">More info ↗</p>
+                        </article>
                     </div>
 
-                    <div class="card">
-                        <div class="card-icon">📦</div>
-                        <div class="card-title" data-i18n="products">Products</div>
-                        <div class="card-value">128</div>
-                        <div class="card-info" data-i18n="active_products">Active products</div>
-                    </div>
+                    <div class="dashboard-main-grid">
+                        <section class="chart-card">
+                            <div class="chart-header">
+                                <div>
+                                    <h3>Revenue Overview</h3>
+                                    <p style="margin: 0; color: var(--gray-600);">Revenue performance over the last six months</p>
+                                </div>
+                                <div class="chart-actions">
+                                    <button class="active" data-range="7D">7D</button>
+                                    <button data-range="30D">30D</button>
+                                    <button data-range="90D">90D</button>
+                                    <button data-range="1Y">1Y</button>
+                                </div>
+                            </div>
+                            <div class="chart-legend">
+                                <span class="legend-item revenue"><span></span>Revenue</span>
+                                <span class="legend-item orders"><span></span>Orders</span>
+                            </div>
+                            <div class="sales-chart">
+                                <div class="sales-chart-grid"></div>
+                                <canvas id="revenueOverviewChart"></canvas>
+                            </div>
+                            <div class="sales-chart-footer">
+                                <div class="sales-metric">
+                                    <p>Total Revenue</p>
+                                    <strong>€89.4K</strong>
+                                </div>
+                                <div class="sales-metric">
+                                    <p>Monthly Growth</p>
+                                    <strong>+12.3%</strong>
+                                </div>
+                                <div class="sales-metric">
+                                    <p>New Customers</p>
+                                    <strong>128</strong>
+                                </div>
+                            </div>
+                        </section>
 
-                    <div class="card">
-                        <div class="card-icon">🥫</div>
-                        <div class="card-title" data-i18n="orders">Orders</div>
-                        <div class="card-value">47</div>
-                        <div class="card-info positive" data-i18n="order_increase">â†‘ 8% increase</div>
-                    </div>
+                        <section>
+                            <article class="map-card">
+                                <div class="map-header">
+                                    <h3>France Sales Map</h3>
+                                    <button style="border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; background: rgba(255,255,255,0.16); color: #fff; padding: 8px 14px;">France</button>
+                                </div>
+                                <div id="franceMap" class="map-placeholder"></div>
+                                <div class="map-stats">
+                                    <div class="map-stat"><span>Visitors</span><strong>8.9K</strong></div>
+                                    <div class="map-stat"><span>Online</span><strong>1.2K</strong></div>
+                                    <div class="map-stat"><span>Sales</span><strong>2.4K</strong></div>
+                                </div>
+                            </article>
 
-                    <div class="card">
-                        <div class="card-icon">📊¥</div>
-                        <div class="card-title" data-i18n="customers">Customers</div>
-                        <div class="card-value">324</div>
-                        <div class="card-info positive" data-i18n="new_customers">â†‘ 5 new today</div>
+                            <article class="activity-card">
+                                <div class="activity-header">
+                                    <h3>Activity Timeline</h3>
+                                    <span style="color: var(--gray-500); font-size: 0.95rem;">Today</span>
+                                </div>
+                                <div id="activityTimeline" class="timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-content">
+                                            <p class="timeline-time">Loading...</p>
+                                            <p class="timeline-text">Fetching latest activities from the server.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </section>
                     </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h3 data-i18n="quick_actions">Quick Actions</h3>
-                    <div class="actions-grid">
-                        <a href="products.html" class="action-btn primary" data-i18n="add_product">Add Product</a>
-                        <button class="action-btn" onclick="alert('Orders feature coming soon')" data-i18n="view_orders">View Orders</button>
-                        <button class="action-btn" onclick="alert('Customers feature coming soon')" data-i18n="manage_customers">Manage Customers</button>
-                        <button class="action-btn" onclick="alert('Reports feature coming soon')" data-i18n="generate_report">Generate Report</button>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="recent-activity">
-                    <h3 data-i18n="recent_activity">Recent Activity</h3>
-                    <ul class="activity-list" id="activityList">
-                        <li class="activity-item" style="text-align: center; color: var(--gray-600);">Loading activities...</li>
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Global translation variables
-        let translations = {};
-        let currentLanguage = 'en';
-
-        // Load translations from JSON file
-        async function loadTranslations() {
-            try {
-                const response = await fetch('/admin/translations.json');
-                translations = await response.json();
-                // Load saved language or use default
-                const savedLanguage = localStorage.getItem('adminLanguage') || localStorage.getItem('selectedLanguage') || 'en';
-                currentLanguage = savedLanguage;
-                localStorage.setItem('adminLanguage', currentLanguage);
-                localStorage.setItem('selectedLanguage', currentLanguage);
-                updateLanguageUI(currentLanguage);
-                if (window.i18n && typeof window.i18n.setLanguage === 'function') {
-                    window.i18n.setLanguage(currentLanguage);
-                }
-                applyTranslations();
-            } catch (err) {
-                console.error('Error loading translations:', err);
-            }
-        }
-
-        // Get translated string
-        function t(key) {
-            return translations[currentLanguage]?.[key] || translations['en']?.[key] || key;
-        }
-
-        // Apply translations to all elements with data-i18n attribute
-        function applyTranslations() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    el.placeholder = t(key);
-                } else {
-                    el.textContent = t(key);
-                }
-            });
-        }
-
-        // Initialize language selector
-        function initLanguageSelector() {
-            const langBtn = document.getElementById('langBtn');
-            const langDropdown = document.getElementById('langDropdown');
-            const langOptions = document.querySelectorAll('.lang-option');
-
-            if (!langBtn || !langDropdown) return;
-
-            // Toggle dropdown
-            langBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown.classList.toggle('active');
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.language-selector')) {
-                    langDropdown.classList.remove('active');
-                }
-            });
-
-            // Handle language selection
-            langOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const lang = option.getAttribute('data-lang');
-                    if (lang) {
-                        currentLanguage = lang;
-                        localStorage.setItem('adminLanguage', lang);
-                        localStorage.setItem('selectedLanguage', lang);
-                        updateLanguageUI(lang);
-                        if (window.i18n && typeof window.i18n.setLanguage === 'function') {
-                            window.i18n.setLanguage(lang);
-                        }
-                        applyTranslations();
-                        loadActivities(); // Reload activities in new language
-                        langDropdown.classList.remove('active');
-                    }
-                });
-            });
-        }
-
-        // Update language button display and active state
-                function updateLanguageUI(lang) {
-            const langBtn = document.getElementById('langBtn');
-            const langMap = { en: 'EN', fr: 'FR', pt: 'PT' };
-            if (langBtn) {
-                langBtn.textContent = langMap[lang] || 'EN';
-            }
-            document.querySelectorAll('.lang-option').forEach(opt => {
-                opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
-            });
-
-            // Fix sidebar labels - ensure only ONE label per item showing correct language
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                // Remove ALL existing labels first
-                item.querySelectorAll('.sidebar-label').forEach(label => {
-                    label.remove();
-                });
-                
-                // Get the correct translation from data attributes
-                const labelText = item.getAttribute(`data-label-${lang}`) || 
-                                 item.getAttribute('data-label-en') || '';
-                
-                // Create ONE new clean label with the correct language text
-                const newLabel = document.createElement('span');
-                newLabel.className = 'sidebar-label';
-                newLabel.textContent = labelText;
-                
-                // Insert after the icon
-                const icon = item.querySelector('.sidebar-icon');
-                if (icon) {
-                    icon.insertAdjacentElement('afterend', newLabel);
-                } else {
-                    item.appendChild(newLabel);
-                }
-            });
-
-            window.dispatchEvent(new CustomEvent('adminLanguageChanged', { detail: { lang } }));
-        }
-
-        // Check authentication
-        function checkAuth() {
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                window.location.href = 'login.html';
-                return false;
-            }
-            return true;
-        }
-
-        // Initialize dashboard
-        function initDashboard() {
-            if (!checkAuth()) return;
-
-            // Initialize language selector and translations
-            initLanguageSelector();
-
-            // Load and display activities
-            loadActivities();
-
-            // Refresh activities every 30 seconds
-            setInterval(loadActivities, 30000);
-
-            // Set user info
-            const username = localStorage.getItem('adminUsername') || 'Admin';
-            document.getElementById('userName').textContent = username;
-            document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
-
-            // Mobile menu toggle
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
-
-            // Close sidebar on item click (mobile)
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
-                    }
-                    updateActiveNav(item);
-                });
-            });
-
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('adminUsername');
-                window.location.href = 'login.html';
-            });
-
-            // Update page title based on current section
-            updatePageTitle();
-            // ensure current sidebar active indicator is correct after page bootstrap
-            setActiveSidebarItem();
-        }
-
-        function setActiveSidebarItem() {
-            const filename = window.location.pathname.split('/').pop() || 'index.html';
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-
-            sidebarItems.forEach(item => {
-                const href = item.getAttribute('href') || '';
-                const section = item.getAttribute('data-section') || '';
-                const itemFilename = href.split('?')[0];
-                
-                // Match by actual filename or index.html as default
-                const isActive = itemFilename === filename || 
-                                (filename === '' && itemFilename === 'index.html') ||
-                                (filename === 'index.html' && itemFilename === 'index.html') ||
-                                (section === 'dashboard' && filename === 'index.html');
-                
-                if (isActive) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-
-        function updatePageTitle() {
-            const currentPage = window.location.pathname;
-            const pageTitle = document.getElementById('pageTitle');
-            const contentHeader = document.querySelector('.content-header h2');
-            const contentSubtitle = document.querySelector('.content-header p');
-
-            if (currentPage.includes('products')) {
-                pageTitle.textContent = t('products');
-                contentHeader.textContent = t('products');
-                contentSubtitle.textContent = t('manage_products');
-            } else {
-                pageTitle.textContent = t('dashboard');
-            }
-        }
-
-        // Format date to readable format
-        function formatActivityTime(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins}m ago`;
-            if (diffHours < 24) return `${diffHours}h ago`;
-            if (diffDays < 7) return `${diffDays}d ago`;
-            
-            return date.toLocaleDateString();
-        }
-
-        // Get icon and color based on activity type
-        function getActivityIcon(type) {
-            switch (type) {
-                case 'product_added':
-                    return { icon: '📦', color: 'var(--success)' };
-                case 'product_updated':
-                    return { icon: '✏', color: 'var(--info)' };
-                case 'product_deleted':
-                    return { icon: '🗑️', color: 'var(--danger)' };
-                case 'order_completed':
-                    return { icon: '🥫', color: 'var(--primary)' };
-                case 'customer_registered':
-                    return { icon: '📊¥', color: 'var(--warning)' };
-                default:
-                    return { icon: '📋', color: 'var(--gray-500)' };
-            }
-        }
-
-        // Load and display activities
-        async function loadActivities() {
-            try {
-                console.log('[Activities] Fetching recent activities in language:', currentLanguage);
-                const response = await fetch(`/api/activities?limit=10&lang=${currentLanguage}`);
-                
-                console.log('[Activities] Response status:', response.status);
-                console.log('[Activities] Response:', response);
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('[Activities] Server error:', errorData);
-                    throw new Error(errorData.error || `Server error: ${response.status}`);
-                }
-                
-                const activities = await response.json();
-                console.log('[Activities] Loaded activities:', activities);
-                
-                const activityList = document.getElementById('activityList');
-                
-                if (!activities || activities.length === 0) {
-                    console.log('[Activities] No activities found');
-                    activityList.innerHTML = '<li class="activity-item" style="text-align: center; color: var(--gray-600);">No recent activities</li>';
-                    return;
-                }
-
-                activityList.innerHTML = activities.map(activity => {
-                    const { icon } = getActivityIcon(activity.type);
-                    const time = formatActivityTime(activity.created_at);
-                    
-                    return `
-                        <li class="activity-item">
-                            <div class="activity-icon" style="font-size: 1.5rem;">${icon}</div>
-                            <div class="activity-content">
-                                <div class="activity-title">${activity.message}</div>
-                                <div class="activity-time">${time}</div>
-                            </div>
-                        </li>
-                    `;
-                }).join('');
-                console.log('[Activities] ✏… Activities loaded successfully');
-            } catch (err) {
-                console.error('[Activities] âŒ Error loading activities:', err);
-                console.error('[Activities] Full error object:', err);
-                const activityList = document.getElementById('activityList');
-                activityList.innerHTML = `<li class="activity-item" style="text-align: center; color: var(--danger);">Error: ${err.message}</li>`;
-            }
-        }
-
-        function updateActiveNav(selectedItem) {
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            sidebarItems.forEach(item => item.classList.remove('active'));
-            selectedItem.classList.add('active');
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadTranslations();
-            initDashboard();
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUsername');
+            window.location.href = 'login.html';
         });
 
-        // Handle window resize for responsive behavior
-        window.addEventListener('resize', () => {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('active');
-            }
-        });
+        if (typeof loadActivityTimeline === 'function') {
+            loadActivityTimeline();
+        }
+
+        if (typeof loadRevenueOverviewData === 'function') {
+            loadRevenueOverviewData();
+        }
     </script>
 </body>
 </html>
-

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Browse Products - PortugalStore</title>
+   <title>Saudade Market</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="public/css/style.css">
   <style>
@@ -25,7 +25,7 @@
       font-size: 2rem;
       font-weight: 700;
       color: #2d2d2d;
-      margin-bottom: 24px;
+      margin-bottom: 40px;
       text-align: center;
     }
     .search-bar {
@@ -141,14 +141,19 @@
         return;
       }
       products.forEach(product => {
+        const productName = product.name_en || product.name_fr || product.name_pt || product.title || 'Product';
+        const productPrice = Number(product.price) || 0;
+        const productId = product.id || product._id || '';
+        const productUrl = product.slug ? '/products/' + encodeURIComponent(product.slug) : '/product-detail.html?id=' + productId;
+
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <img class="product-image" src="${product.image || 'public/images/default-product.png'}" alt="${product.title}">
-          <div class="product-title">${product.title}</div>
-          <div class="product-price">€${product.price.toFixed(2)}</div>
+          <img class="product-image" src="${product.image || 'public/images/default-product.png'}" alt="${productName}">
+          <div class="product-title">${productName}</div>
+          <div class="product-price">€${productPrice.toFixed(2)}</div>
           <div class="product-description">${product.description || ''}</div>
-          <button class="view-details-btn" onclick="window.location.href='product-detail.html?id=${product._id}'">View Details</button>
+          <button class="view-details-btn" onclick="window.location.href='${productUrl}'">View Details</button>
         `;
         list.appendChild(card);
       });
@@ -170,3 +175,4 @@
   </script>
 </body>
 </html>
+

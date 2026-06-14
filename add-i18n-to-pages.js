@@ -127,3 +127,4 @@ console.log('1. Add data-i18n attributes to translatable elements');
 console.log('2. Add translation keys to /public/translations.json');
 console.log('3. Test language switching on your pages');
 console.log('\nSee I18N_GUIDE.md for detailed documentation');
+

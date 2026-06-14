@@ -15,11 +15,11 @@ class CategoryController {
   }
 
   /**
-   * Get single category by ID
+   * Get single category by ID or slug
    */
   static async getOne(req, res, next) {
     try {
-      const category = await Category.getById(req.params.id);
+      const category = await Category.getBySlugOrId(req.params.id);
       if (!category) return res.status(404).json({ error: 'Category not found' });
       res.json(category);
     } catch (err) {
@@ -33,6 +33,12 @@ class CategoryController {
   static async create(req, res, next) {
     try {
       const categoryData = req.body;
+      if (req.file) {
+        categoryData.icon = `/images/${req.file.filename}`;
+      }
+      if (categoryData.active !== undefined) {
+        categoryData.active = categoryData.active === 'true' || categoryData.active === true;
+      }
 
       // Validate required fields
       if (!categoryData.name_en) {
@@ -40,6 +46,26 @@ class CategoryController {
           success: false,
           error: 'Missing required field: name_en'
         });
+      }
+
+      // Validate parent category if provided
+      if (categoryData.parent_id) {
+        categoryData.parent_id = Number(categoryData.parent_id);
+        if (Number.isNaN(categoryData.parent_id)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid parent_id'
+          });
+        }
+        const parentCategory = await Category.getById(categoryData.parent_id);
+        if (!parentCategory) {
+          return res.status(400).json({
+            success: false,
+            error: 'Parent category not found'
+          });
+        }
+      } else {
+        categoryData.parent_id = null;
       }
 
       // Check if category already exists
@@ -88,6 +114,12 @@ class CategoryController {
     try {
       const id = req.params.id;
       const categoryData = req.body;
+      if (req.file) {
+        categoryData.icon = `/images/${req.file.filename}`;
+      }
+      if (categoryData.active !== undefined) {
+        categoryData.active = categoryData.active === 'true' || categoryData.active === true;
+      }
 
       // Check if category exists
       const existing = await Category.getById(id);
@@ -104,6 +136,32 @@ class CategoryController {
           success: false,
           error: 'Missing required field: name_en'
         });
+      }
+
+      // Validate parent category if provided
+      if (categoryData.parent_id) {
+        categoryData.parent_id = Number(categoryData.parent_id);
+        if (Number.isNaN(categoryData.parent_id)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid parent_id'
+          });
+        }
+        if (categoryData.parent_id === Number(id)) {
+          return res.status(400).json({
+            success: false,
+            error: 'Category cannot be its own parent'
+          });
+        }
+        const parentCategory = await Category.getById(categoryData.parent_id);
+        if (!parentCategory) {
+          return res.status(400).json({
+            success: false,
+            error: 'Parent category not found'
+          });
+        }
+      } else {
+        categoryData.parent_id = null;
       }
 
       // Update category
@@ -149,6 +207,16 @@ class CategoryController {
         return res.status(404).json({
           success: false,
           error: 'Category not found'
+        });
+      }
+
+      // Check if category has child categories
+      const childCount = await Category.getChildrenCount(id);
+      if (childCount > 0) {
+        return res.status(409).json({
+          success: false,
+          error: `Cannot delete category with ${childCount} child category(ies). Please reassign or delete child categories first.`,
+          child_count: childCount
         });
       }
 
@@ -216,11 +284,11 @@ class CategoryController {
   }
 
   /**
-   * Get category with its products
+   * Get category with its products (supports both ID and slug)
    */
   static async getWithProducts(req, res, next) {
     try {
-      const category = await Category.getWithProducts(req.params.id);
+      const category = await Category.getWithProductsBySlugOrId(req.params.id);
       if (!category) {
         return res.status(404).json({ error: 'Category not found' });
       }
@@ -232,3 +300,4 @@ class CategoryController {
 }
 
 module.exports = CategoryController;
+

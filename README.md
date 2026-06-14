@@ -7,9 +7,12 @@ This repository contains a mockup of the PortugalStore website, featuring a simp
 ```bash
 npm install           # install dependencies (express, nodemon, dotenv, etc.)
 npm run dev           # start development server
+npm run dev:tailwind  # run Tailwind CLI watch for admin CSS while developing
 ```
 
 Browse `http://localhost:3000` to see the storefront. `produits.html` will display products fetched from either a local `products.json` file or, if configured, from Shopify.
+
+Admin pages are styled from `backend/admin/dist/admin-tailwind.css`, which is compiled from `backend/admin/admin-tailwind.css` using the Tailwind CLI.
 
 ## Shopify Integration
 
@@ -60,3 +63,4 @@ Store these tokens in `.env` or your environment before running `npm run dev`.
 - Add user management and persistent carts in a server‑side session.
 
 This skeleton is meant as a starting point for a full e‑commerce prototype; feel free to extend it.
+

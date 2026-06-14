@@ -61,3 +61,4 @@ The application will connect to MySQL using your credentials and be fully functi
 ## Notes
 - For production, consider using a migrations framework (e.g. knex, sequelize) and store passwords securely (hashing).
 - The `admin-credentials.json` file remains for convenience but is only used to seed the database once.
+

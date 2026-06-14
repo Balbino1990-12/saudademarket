@@ -1,1312 +1,407 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products Management – PortugalStore Admin</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #c41e1e;
-            --primary-dark: #8a1515;
-            --secondary: #2c3e50;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
-            --light: #f8f9fa;
-            --dark: #1a1a1a;
-            --white: #ffffff;
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
-            --gray-300: #dee2e6;
-            --gray-400: #ced4da;
-            --gray-500: #adb5bd;
-            --gray-600: #6c757d;
-            --gray-700: #495057;
-            --bg-light: #f5f6f8;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
-        }
-
-        html, body {
-            height: 100%;
-            width: 100%;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--dark);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        .header {
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .logo-section:hover {
-            transform: translateY(-2px);
-        }
-
-        .logo-section img {
-            height: 40px;
-            object-fit: contain;
-        }
-
-        .logo-text h1 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0;
-        }
-
-        .logo-text p {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: var(--gray-600);
-            letter-spacing: 1px;
-            margin: 0;
-        }
-
-        .header-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--secondary);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .logout-btn {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, var(--danger), #c71a1a);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(220, 53, 69, 0.3);
-        }
-
-        .logout-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Language Selector */
-        .language-selector {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .lang-btn {
-            padding: 8px 12px;
-            background-color: var(--gray-200);
-            border: 1px solid var(--gray-300);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            position: relative;
-        }
-
-        .lang-btn::after {
-            content: '▼';
-            font-size: 0.6rem;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .lang-btn:hover {
-            background-color: var(--gray-300);
-            border-color: var(--gray-400);
-        }
-
-        .lang-btn.active::after {
-            transform: rotate(180deg);
-        }
-
-        .lang-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: var(--white);
-            border: 1px solid var(--gray-300);
-            border-radius: 6px;
-            margin-top: 4px;
-            overflow: hidden;
-            max-height: 0;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-            min-width: 120px;
-        }
-
-        .lang-dropdown.active {
-            max-height: 200px;
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .lang-option {
-            display: block;
-            width: 100%;
-            padding: 10px 16px;
-            background: none;
-            border: none;
-            text-align: left;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--dark);
-            font-weight: 500;
-        }
-
-        .lang-option:hover {
-            background-color: var(--gray-100);
-        }
-
-        .lang-option.active {
-            background: linear-gradient(135deg, rgba(196, 30, 30, 0.1) 0%, rgba(196, 30, 30, 0.05) 100%);
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: transparent;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        /* Main Layout */
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-            color: var(--white);
-            padding: 20px 0;
-            overflow-y: auto;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .sidebar-section {
-            margin-bottom: 24px;
-        }
-
-        .sidebar-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: rgba(255, 255, 255, 0.5);
-            padding: 0 20px;
-            margin-bottom: 12px;
-        }
-
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 3px solid transparent;
-            font-size: 0.95rem;
-            font-weight: 500;
-            width: 100%;
-            flex-wrap: wrap;
-        }
-
-        .sidebar-label-fr {
-            flex: 0 1 auto;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-label-en {
-            flex: 0 1 auto;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-label-pt {
-            flex: 0 1 auto;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--white);
-            border-left-color: var(--primary);
-        }
-
-        .sidebar-item.active {
-            background: linear-gradient(90deg, rgba(196, 30, 30, 0.2) 0%, transparent 100%);
-            color: var(--white);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .sidebar-icon {
-            font-size: 1.2rem;
-            min-width: 24px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .content-header {
-            padding: 24px;
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .content-header h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--dark);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(196, 30, 30, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(196, 30, 30, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: var(--gray-200);
-            color: var(--dark);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray-300);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        .btn-secondary:active {
-            transform: translateY(0);
-        }
-
-        .btn-delete-confirm {
-            background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
-            color: var(--white);
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        }
-
-        .btn-delete-confirm:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
-        }
-
-        .btn-delete-confirm:active {
-            transform: translateY(-1px);
-        }
-
-        .content-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-        }
-
-        /* Products Table */
-        .table-container {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
-            border-bottom: 2px solid var(--gray-300);
-        }
-
-        th {
-            padding: 16px;
-            text-align: left;
-            font-weight: 700;
-            color: var(--dark);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid var(--gray-200);
-            color: var(--gray-700);
-        }
-
-        tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        tbody tr:hover {
-            background: var(--gray-100);
-        }
-
-        .product-name {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .product-category {
-            display: inline-block;
-            padding: 4px 12px;
-            background: var(--info);
-            color: var(--white);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .product-price {
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 1rem;
-        }
-
-        .product-status {
-            display: inline-block;
-            padding: 4px 12px;
-            background: var(--success);
-            color: var(--white);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        td img {
-            max-width: 60px;
-            max-height: 60px;
-            border-radius: 4px;
-            object-fit: cover;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            font-weight: 600;
-        }
-
-        .btn-edit {
-            background: var(--info);
-            color: var(--white);
-        }
-
-        .btn-edit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
-        }
-
-        .btn-delete {
-            background: var(--danger);
-            color: var(--white);
-        }
-
-        .btn-delete:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(4px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                backdrop-filter: blur(0px);
-            }
-            to {
-                opacity: 1;
-                backdrop-filter: blur(4px);
-            }
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--white);
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 0;
-            animation: slideUp 0.4s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 32px 32px 24px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
-            border-bottom: 2px solid var(--gray-200);
-            border-radius: 16px 16px 0 0;
-        }
-
-        .modal-header h3 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--dark);
-            margin: 0;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .modal-close {
-            background: var(--gray-200);
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: var(--gray-600);
-            transition: all 0.2s ease;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .modal-close:hover {
-            background: var(--danger);
-            color: var(--white);
-            transform: rotate(90deg);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.95rem;
-        }
-
-        .form-group label::before {
-            content: attr(data-icon);
-            font-size: 1.1rem;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--gray-300);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            background: var(--white);
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: var(--gray-500);
-        }
-
-        input:hover, textarea:hover, select:hover {
-            border-color: var(--gray-400);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(196, 30, 30, 0.1);
-            background: linear-gradient(135deg, #fff 0%, rgba(196, 30, 30, 0.02) 100%);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 110px;
-        }
-
-        /* Form Sections */
-        .form-section {
-            padding: 24px 32px;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .form-section:last-of-type {
-            border-bottom: none;
-        }
-
-        .form-section-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            color: var(--dark);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--gray-200);
-            color: var(--primary);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        .form-row.two-columns {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .image-upload-wrapper {
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-
-        #productImage {
-            flex: 1;
-            padding: 20px;
-            border: 2px dashed var(--primary);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, rgba(196, 30, 30, 0.02) 0%, rgba(196, 30, 30, 0.05) 100%);
-        }
-
-        #productImage:hover {
-            border-color: var(--primary-dark);
-            background-color: rgba(196, 30, 30, 0.08);
-            box-shadow: 0 4px 12px rgba(196, 30, 30, 0.1);
-        }
-
-        #productImage:focus {
-            outline: none;
-            border-color: var(--primary-dark);
-            box-shadow: 0 0 0 4px rgba(196, 30, 30, 0.1);
-        }
-
-        .image-preview {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid var(--gray-300);
-            background-color: var(--gray-100);
-            flex-shrink: 0;
-        }
-
-        .image-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .btn-remove-image {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            background: rgba(220, 53, 69, 0.95);
-            color: var(--white);
-            border: none;
-            border-radius: 6px;
-            width: 32px;
-            height: 32px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-        }
-
-        .btn-remove-image:hover {
-            background: rgba(220, 53, 69, 1);
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            padding: 24px 32px;
-            background: var(--gray-100);
-            border-radius: 0 0 16px 16px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-600);
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-        }
-
-        .empty-state h3 {
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-light);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--gray-300);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-400);
-        }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .sidebar {
-                width: 240px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 12px 16px;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .header-title {
-                display: block;
-                flex: 1;
-                margin-left: 12px;
-                font-size: 1rem;
-            }
-
-            .container {
-                position: relative;
-            }
-
-            .sidebar {
-                position: absolute;
-                left: 0;
-                top: 0;
-                height: 100%;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                z-index: 99;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .content-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-
-            .content-header h2 {
-                font-size: 1.4rem;
-            }
-
-            .header-actions {
-                width: 100%;
-            }
-
-            .header-actions .btn {
-                flex: 1;
-            }
-
-            table {
-                font-size: 0.85rem;
-            }
-
-            th, td {
-                padding: 12px 8px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn-sm {
-                width: 100%;
-            }
-
-            /* Modal responsiveness for tablets */
-            .modal-content {
-                max-width: 100%;
-                border-radius: 16px;
-            }
-
-            .form-row.two-columns {
-                grid-template-columns: 1fr;
-            }
-
-            .form-actions {
-                flex-direction: column-reverse;
-            }
-
-            .form-actions .btn {
-                width: 100%;
-            }
-
-            .image-upload-wrapper {
-                flex-direction: column;
-            }
-
-            .image-preview {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 520px) {
-            .header {
-                gap: 8px;
-            }
-
-            .logo-section {
-                gap: 8px;
-            }
-
-            .logo-section img {
-                height: 32px;
-            }
-
-            .logo-text h1 {
-                font-size: 1rem;
-            }
-
-            .logo-text p {
-                display: none;
-            }
-
-            .sidebar {
-                width: 100%;
-            }
-
-            .content-body {
-                padding: 12px;
-            }
-
-            .content-header {
-                padding: 16px;
-            }
-
-            .content-header h2 {
-                font-size: 1.2rem;
-            }
-
-            th, td {
-                padding: 8px 4px;
-                font-size: 0.75rem;
-            }
-
-            .action-buttons {
-                gap: 4px;
-            }
-
-            .btn-sm {
-                padding: 4px 8px;
-                font-size: 0.7rem;
-            }
-
-            /* Mobile modal styles */
-            .modal {
-                padding: 0;
-            }
-
-            .modal-content {
-                max-width: 100%;
-                max-height: 100vh;
-                border-radius: 16px 16px 0 0;
-            }
-
-            .modal-header {
-                padding: 20px 20px 16px;
-            }
-
-            .modal-header h3 {
-                font-size: 1.1rem;
-            }
-
-            .form-section {
-                padding: 16px 20px;
-            }
-
-            .form-section-title {
-                font-size: 0.85rem;
-            }
-
-            .form-group label {
-                font-size: 0.9rem;
-            }
-
-            input, textarea, select {
-                padding: 10px 12px;
-                font-size: 16px;
-            }
-
-            .form-actions {
-                padding: 16px 20px;
-            }
-
-            .btn {
-                padding: 11px 16px;
-                font-size: 0.85rem;
-            }
-        }
-    </style>
+     <title>Saudade Market Admin</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css">
     <script src="/js/i18n.js"></script>
+    <script src="admin-icons.js"></script>
+    <script src="sidebar.js"></script>
+    <style>
+      body {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto 1fr !important;
+      }
+      #adminHeader {
+        margin-left: 260px !important;
+        width: calc(100% - 260px) !important;
+        grid-row: 1;
+      }
+      body > .min-h-screen.flex {
+        grid-row: 2;
+      }
+      .lang-selector {
+        position: relative;
+      }
+      .lang-dropdown {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+        display: none;
+        flex-direction: column;
+        min-width: 11rem;
+        overflow: hidden;
+        z-index: 1000;
+      }
+      .lang-dropdown.active {
+        display: flex;
+      }
+      .lang-option {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 0.85rem 1rem;
+        text-align: left;
+        cursor: pointer;
+        color: #0f172a;
+        font-size: 0.95rem;
+      }
+      .lang-option:hover {
+        background: #f8fafc;
+      }
+      .lang-option.active {
+        background: #0284c7;
+        color: white;
+      }
+    </style>
 </head>
-<body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <a href="index.html" class="logo-section">
-                <img src="/images/logo.jpg" alt="PortugalStore Logo">
-                <div class="logo-text">
-                    <h1>Admin</h1>
-                    <p>PRODUCTS</p>
-                </div>
-            </a>
-            <div class="header-title" data-i18n="products">Products Management</div>
-        </div>
-
-        <div class="header-right">
-            <div class="language-selector" id="langSelector">
-                <button class="lang-btn" id="langBtn">EN</button>
-                <div class="lang-dropdown" id="langDropdown">
-                    <button class="lang-option active" data-lang="en">English</button>
-                    <button class="lang-option" data-lang="fr">Français</button>
-                    <button class="lang-option" data-lang="pt">Português</button>
-                </div>
-            </div>
-            <button class="logout-btn" id="logoutBtn" data-i18n="logout">Logout</button>
-        </div>
-    </div>
-
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans">
     <!-- Main Layout -->
-    <div class="container">
+    <div class="min-h-screen flex">
         <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-title">MENU</div>
-                <a href="index.html" class="sidebar-item" data-section="dashboard" data-label-fr="Tableau de bord" data-label-en="Dashboard" data-label-pt="Painel">
-                    <span class="sidebar-icon">📊</span>
-                    <span class="sidebar-label">Dashboard</span>
-                </a>
-                <a href="products.html" class="sidebar-item" data-section="products" data-label-fr="Produits" data-label-en="Products" data-label-pt="Produtos">
-                    <span class="sidebar-icon">📦</span>
-                    <span class="sidebar-label">Products</span>
-                </a>
-                <a href="categories.html" class="sidebar-item" data-section="categories" data-label-fr="Catégories" data-label-en="Categories" data-label-pt="Categorias">
-                    <span class="sidebar-icon">📂</span>
-                    <span class="sidebar-label">Categories</span>
-                </a>
-                <a href="users.html" class="sidebar-item" data-section="users" data-label-fr="Utilisateurs" data-label-en="Users" data-label-pt="Utilizadores">
-                    <span class="sidebar-icon">👥</span>
-                    <span class="sidebar-label">Users</span>
-                </a>
-                <a href="roles.html" class="sidebar-item" data-section="roles" data-label-fr="Rôles" data-label-en="Roles" data-label-pt="Funções">
-                    <span class="sidebar-icon">⚙️</span>
-                    <span class="sidebar-label">Roles</span>
-                </a>
-                <a href="specialties.html" class="sidebar-item" data-section="specialties" data-label-fr="Nos Spécialités Portugaises" data-label-en="Specialties" data-label-pt="Especialidades">
-                    <span class="sidebar-icon">🫒</span>
-                    <span class="sidebar-label">Specialties</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="orders" data-label-fr="Commandes" data-label-en="Orders" data-label-pt="Encomendas">
-                    <span class="sidebar-icon">📋</span>
-                    <span class="sidebar-label">Orders</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="customers" data-label-fr="Clients" data-label-en="Customers" data-label-pt="Clientes">
-                    <span class="sidebar-icon">👤</span>
-                    <span class="sidebar-label">Customers</span>
-                </a>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-title">PARAMÈTRES</div>
-                <a href="#" class="sidebar-item" data-section="analytics" data-label-fr="Analyse" data-label-en="Analytics" data-label-pt="Análise">
-                    <span class="sidebar-icon">📈</span>
-                    <span class="sidebar-label">Analytics</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="settings" data-label-fr="Paramètres" data-label-en="Settings" data-label-pt="Configurações">
-                    <span class="sidebar-icon">⚙️</span>
-                    <span class="sidebar-label">Settings</span>
-                </a>
-                <a href="#" class="sidebar-item" data-section="languages" data-label-fr="Langues" data-label-en="Languages" data-label-pt="Línguas">
-                    <span class="sidebar-icon">🌐</span>
-                    <span class="sidebar-label">Languages</span>
-                </a>
-            </div>
-        </div>
+        <div class="sidebar w-[260px] shrink-0 bg-slate-950 text-white overflow-y-auto shadow-lg" id="sidebar"></div>
 
         <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-header">
-                <h2 data-i18n="products">Products</h2>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="addProductBtn" data-i18n="add_product">+ Add Product</button>
-                    <button class="btn btn-secondary" id="refreshBtn" data-i18n="refresh">Refresh</button>
+        <div class="content ml-[260px] w-[calc(100%-260px)] grid grid-rows-[auto_1fr] gap-6">
+            <header class="border-b border-slate-200 bg-white px-6 py-5">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 data-i18n="products" class="text-3xl font-bold tracking-tight text-slate-900">Products</h1>
+                        <p class="mt-2 text-sm text-slate-600">Browse, search, and manage store products.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-br from-sky-600 to-sky-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700" id="addProductBtn" data-i18n="add_product">+ Add Product</button>
+                    </div>
                 </div>
-            </div>
+            </header>
 
-            <div class="content-body">
-                <!-- Products Table -->
-                <div class="table-container">
-                    <table id="productsTable">
-                        <thead>
-                            <tr>
-                                <th data-i18n="product_name">Product Name</th>
-                                <th data-i18n="category">Category</th>
-                                <th data-i18n="price">Price</th>
-                                <th>Image</th>
-                                <th data-i18n="status">Status</th>
-                                <th data-i18n="actions">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsBody">
-                            <!-- Products will be loaded here -->
-                        </tbody>
-                    </table>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="rounded-[32px] border border-slate-200 bg-white shadow-sm overflow-hidden">
+                    <div class="border-b border-slate-200 px-6 py-6">
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-900">Product List</h2>
+                                <p class="mt-2 text-sm text-slate-500">Search, sort, and manage your store products.</p>
+                            </div>
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                <div class="w-full sm:w-[420px]">
+                                    <div class="relative min-w-0">
+                                        <input type="text" id="productSearch" placeholder="Search products..." class="min-w-0 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 pr-12 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                                        <button id="searchBtn" class="absolute right-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200" type="button" aria-label="Search products">
+                                            🔍
+                                        </button>
+                                        <button id="clearSearchBtn" class="absolute right-12 inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:text-rose-600 hover:bg-red-100 hidden text-xl font-bold" type="button" aria-label="Clear search">
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <button class="inline-flex items-center justify-center rounded-2xl bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-200" id="refreshBtn" data-i18n="refresh">Refresh</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto p-6">
+                        <div class="rounded-[32px] border border-slate-100 bg-white shadow-sm overflow-hidden">
+                            <table id="productsTable" class="min-w-[900px] w-full text-sm divide-y divide-slate-200">
+                                <thead class="bg-slate-100 text-slate-700">
+                                    <tr>
+                                        <th class="sortable px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 cursor-pointer" data-sort="no"><span>No.</span><span class="sort-indicator text-xs text-slate-500 ml-1"></span></th>
+                                        <th class="sortable px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 cursor-pointer" data-sort="product_name"><span data-i18n="product_name">Product Name</span><span class="sort-indicator text-xs text-slate-500 ml-1"></span></th>
+                                        <th class="sortable px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 cursor-pointer" data-sort="category"><span data-i18n="category">Category</span><span class="sort-indicator text-xs text-slate-500 ml-1"></span></th>
+                                        <th class="sortable px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 cursor-pointer" data-sort="price"><span data-i18n="price">Price (€)</span><span class="sort-indicator text-xs text-slate-500 ml-1"></span></th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700">Image</th>
+                                        <th class="sortable px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 cursor-pointer" data-sort="status"><span data-i18n="status">Status</span><span class="sort-indicator text-xs text-slate-500 ml-1"></span></th>
+                                        <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-700" data-i18n="actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsBody" class="divide-y divide-slate-200">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Products Pagination -->
+                <div id="productsPagination" class="flex flex-wrap justify-center gap-2 my-5"></div>
 
                 <!-- Empty State -->
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <div class="empty-state-icon">📦</div>
-                    <h3 data-i18n="no_products">No Products Found</h3>
-                    <p data-i18n="start_by_adding">Start by adding your first product to your store.</p>
+                <div id="emptyState" class="text-center py-16 text-slate-600 hidden">
+                    <div class="text-5xl mb-4">📭</div>
+                    <h3 data-i18n="no_products" class="text-xl font-bold mb-2 text-slate-900">No Products Found</h3>
+                    <p data-i18n="start_by_adding" class="text-sm text-slate-600">Start by adding your first product to your store.</p>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 
     <!-- Add/Edit Product Modal -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">✏️ Add Product</h3>
-                <button class="modal-close" onclick="closeProductModal()">×</button>
+    <div id="productModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4">
+        <div class="relative w-full max-w-3xl max-h-[85vh] overflow-hidden rounded-[32px] bg-white shadow-2xl ring-1 ring-slate-200">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                <h3 id="modalTitle" class="text-xl font-semibold text-slate-900">✏️ Add Product</h3>
+                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" onclick="closeProductModal()" aria-label="Close modal">×</button>
             </div>
-
-            <form id="productForm">
-                <!-- Product Names Section -->
-                <div class="form-section">
-                    <div class="form-section-title">🌐 Product Names</div>
-                    
-                    <div class="form-group">
-                        <label for="productNameEn" data-icon="🇬🇧">Product Name (English)</label>
-                        <input type="text" id="productNameEn" placeholder="Enter product name in English" required>
+            <form id="productForm" class="space-y-6 p-6 overflow-y-auto max-h-[76vh]">
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                    <h4 class="text-lg font-semibold text-slate-900 mb-4">📝 Product Names</h4>
+                    <div class="mb-4">
+                        <label for="productNameEn" class="block text-sm font-semibold text-slate-700 mb-2">Product Name (English)</label>
+                        <input type="text" id="productNameEn" placeholder="Enter product name in English" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
                     </div>
-
-                    <div class="form-group">
-                        <label for="productNameFr" data-icon="🇫🇷">Nom du Produit (Français)</label>
-                        <input type="text" id="productNameFr" placeholder="Entrez le nom du produit en Français" required>
+                    <div class="mb-4">
+                        <label for="productNameFr" class="block text-sm font-semibold text-slate-700 mb-2">Nom du Produit (Français)</label>
+                        <input type="text" id="productNameFr" placeholder="Entrez le nom du produit en Français" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
                     </div>
-
-                    <div class="form-group">
-                        <label for="productNamePt" data-icon="🇵🇹">Nome do Produto (Português)</label>
-                        <input type="text" id="productNamePt" placeholder="Digite o nome do produto em Português" required>
+                    <div class="mb-4">
+                        <label for="productNamePt" class="block text-sm font-semibold text-slate-700 mb-2">Nome do Produto (Português)</label>
+                        <input type="text" id="productNamePt" placeholder="Digite o nome do produto em Português" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
                     </div>
                 </div>
-
-                <!-- Details Section -->
-                <div class="form-section">
-                    <div class="form-section-title">📋 Product Details</div>
-                    
-                    <div class="form-row two-columns">
-                        <div class="form-group">
-                            <label for="productCategory" data-i18n="category_label" data-icon="📂">Category</label>
-                            <select id="productCategory" required>
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                    <h4 class="text-lg font-semibold text-slate-900 mb-4">📋 Product Details</h4>
+                    <div class="grid gap-4 lg:grid-cols-3">
+                        <div class="mb-4">
+                            <label for="productCategory" data-i18n="category_label" data-icon="📁" class="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                            <select id="productCategory" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
                                 <option value="" data-i18n="select_category">Select Category</option>
                             </select>
                         </div>
-
-                        <div class="form-group">
-                            <label for="productPrice" data-i18n="price_label" data-icon="💰">Price (€)</label>
-                            <input type="number" id="productPrice" step="0.01" placeholder="0.00" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="productDescription" data-icon="⚙️" data-i18n="description">Description</label>
-                        <textarea id="productDescription" placeholder="Product description"></textarea>
-                    </div>
-                </div>
-
-                <!-- Image Section -->
-                <div class="form-section">
-                    <div class="form-section-title">🖼️ Product Image</div>
-                    
-                    <div class="form-group">
-                        <div class="image-upload-wrapper">
-                            <input type="file" id="productImage" accept="image/*">
-                            <div class="image-preview" id="imagePreview" style="display: none;">
-                                <img id="previewImg" src="" alt="Preview">
-                                <button type="button" class="btn-remove-image" onclick="removeImagePreview()">&times;</button>
+                        <div class="mb-4">
+                            <label for="productPrice" data-i18n="price_label" data-icon="💵" class="block text-sm font-semibold text-slate-700 mb-2">Price (€)</label>
+                            <div class="relative">
+                                <input type="text" id="productPrice" placeholder="0.00" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 pr-12 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                                <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">€</span>
                             </div>
                         </div>
-                        <small style="color: var(--gray-600); display: block; margin-top: 8px;">ℹ️ Supported formats: JPEG, PNG, GIF, WebP (Max 5MB)</small>
+                        <div class="mb-4">
+                            <label for="productQuantity" data-i18n="quantity_label" data-icon="📋" class="block text-sm font-semibold text-slate-700 mb-2">Quantity</label>
+                            <input type="number" id="productQuantity" min="0" step="1" value="0" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="productDescription" data-icon="📋" data-i18n="description" class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                        <textarea id="productDescription" placeholder="Product description" class="h-28 w-full resize-none rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20"></textarea>
                     </div>
                 </div>
-
-                <!-- Form Actions -->
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()" data-i18n="cancel">
-                        ✕ Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        💾 Save Product
-                    </button>
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                    <h4 class="text-lg font-semibold text-slate-900 mb-4">🎯 Promotion</h4>
+                    <div class="grid gap-4 lg:grid-cols-2">
+                        <div class="mb-4">
+                            <label for="productIsFeatured" class="block text-sm font-semibold text-slate-700 mb-2">Featured</label>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="productIsFeatured" class="h-5 w-5 rounded border-slate-300 text-sky-600 focus:ring-sky-500">
+                                <span class="text-sm text-slate-700">Mark as featured</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="productPromoPrice" class="block text-sm font-semibold text-slate-700 mb-2">Promo Price (€)</label>
+                            <div class="relative">
+                                <input type="text" id="productPromoPrice" placeholder="0.00" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 pr-12 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                                <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">€</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid gap-4 lg:grid-cols-2">
+                        <div class="mb-4">
+                            <label for="productPromoLabel" class="block text-sm font-semibold text-slate-700 mb-2">Promo Label</label>
+                            <input type="text" id="productPromoLabel" placeholder="E.g. Special Offer" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                        </div>
+                        <div class="mb-4">
+                            <label for="productPromoExpiresAt" class="block text-sm font-semibold text-slate-700 mb-2">Promo End Date</label>
+                            <input type="date" id="productPromoExpiresAt" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+                        </div>
+                    </div>
                 </div>
-            </form>
-        </div>
-    </div>
+                <div class="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+                    <h4 class="text-lg font-semibold text-slate-900 mb-4">🖼️ Product Image</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <input type="file" id="productImage" accept="image/*" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800">
+                        </div>
+                        <div class="hidden relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-4" id="imagePreview">
+                            <img id="previewImg" src="" alt="Preview" class="h-48 w-full rounded-2xl object-cover">
+                            <button type="button" class="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-white transition hover:bg-slate-800" onclick="removeImagePreview()">&times;</button>
+                        </div>
+                        <small class="block text-xs text-slate-500">ℹ️ Supported formats: JPEG, PNG, GIF, WebP (Max 5MB)</small>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
+                    <button type="button" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" onclick="closeProductModal()" data-i18n="cancel">? Cancel</button>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600-dark">💾 Save Product</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🗑️ Delete Product</h3>
-                <button class="modal-close" onclick="closeDeleteModal()">×</button>
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4">
+        <div class="relative w-full max-w-md max-h-[65vh] overflow-hidden rounded-[32px] bg-white shadow-2xl ring-1 ring-slate-200">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                <h3 class="text-xl font-semibold text-slate-900">🗑️ Delete Product</h3>
+                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" onclick="closeDeleteModal()" aria-label="Close modal">×</button>
             </div>
-
-            <div class="form-section" style="border-bottom: none;">
-                <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 0;">
-                    <div style="font-size: 2.5rem;">⚠️</div>
+            <div class="p-6 overflow-y-auto max-h-[56vh]">
+                <div class="flex items-start gap-4">
+                    <div class="text-4xl">⚠️</div>
                     <div>
-                        <p id="deleteMessage" style="margin: 0; color: var(--gray-700); font-size: 0.95rem; line-height: 1.6;">
+                        <p id="deleteMessage" class="text-sm leading-6 text-slate-700">
                             Are you sure you want to delete this product? This action cannot be undone.
                         </p>
                     </div>
                 </div>
             </div>
+            <div class="mt-4 flex flex-col gap-3 border-t border-slate-200 p-6 sm:flex-row sm:justify-end">
+                <button type="button" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" onclick="closeDeleteModal()" data-i18n="cancel">? Cancel</button>
+                <button id="deleteConfirmBtn" type="button" class="inline-flex items-center justify-center rounded-2xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-600/90" onclick="confirmDelete()">🗑️ Delete</button>
+            </div>
+        </div>
+    </div>
 
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()" data-i18n="cancel">
-                    ✕ Cancel
-                </button>
-                <button type="button" class="btn btn-delete-confirm" onclick="confirmDelete()">
-                    🗑️ Delete
-                </button>
+    <!-- View Product Details Modal -->
+    <div id="viewProductModal" class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4">
+        <div class="relative w-full max-w-3xl h-[85vh] overflow-hidden rounded-[32px] bg-white shadow-2xl ring-1 ring-slate-200 flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                <h3 class="text-xl font-semibold text-slate-900">👁️ Product Details</h3>
+                <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" onclick="closeViewProductModal()" aria-label="Close modal">×</button>
+            </div>
+            <div id="viewProductContent" class="space-y-6 p-6 overflow-y-auto flex-1 min-h-0">
+                <div class="text-center py-10">
+                    <div class="text-2xl mb-4">⏳</div>
+                    <p class="text-sm text-slate-700">Loading product details...</p>
+                </div>
+            </div>
+            <div class="mt-4 flex flex-col gap-3 border-t border-slate-200 p-6 sm:flex-row sm:justify-between">
+                <button type="button" class="hidden inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600-dark" id="editViewModalBtn" onclick="editProduct(currentViewingProductId); closeViewProductModal();">
+                    ✏️ Edit Product</button>
+                <button type="button" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" onclick="closeViewProductModal()">
+                    ✕ Close</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Immediate logging to diagnose issues
+        console.log('[INIT] Page script starting');
+        console.log('[INIT] Document ready state:', document.readyState);
+        console.log('[INIT] Body element exists:', !!document.body);
+        console.log('[INIT] Body children count:', document.body?.children.length || 0);
+
         // Global translation variables
         let translations = {};
         let currentLanguage = 'en';
 
+        // Global runtime error overlay
+        window.addEventListener('error', (event) => {
+            console.error('[ERROR HANDLER] Error caught:', event.message);
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.right = '0';
+            overlay.style.bottom = '0';
+            overlay.style.background = 'rgba(0,0,0,0.85)';
+            overlay.style.color = '#fff';
+            overlay.style.zIndex = '99999';
+            overlay.style.padding = '24px';
+            overlay.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+            overlay.style.overflowY = 'auto';
+            overlay.innerHTML = `<h2 style="margin-top:0;">JavaScript Error</h2><pre style="white-space: pre-wrap;">${event.message}\n${event.filename}:${event.lineno}:${event.colno}</pre><p>${event.error ? event.error.stack : ''}</p>`;
+            document.body.innerHTML = '';
+            document.body.appendChild(overlay);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('[ERROR HANDLER] Unhandled rejection:', event.reason);
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.right = '0';
+            overlay.style.bottom = '0';
+            overlay.style.background = 'rgba(0,0,0,0.85)';
+            overlay.style.color = '#fff';
+            overlay.style.zIndex = '99999';
+            overlay.style.padding = '24px';
+            overlay.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+            overlay.style.overflowY = 'auto';
+            overlay.innerHTML = `<h2 style="margin-top:0;">Unhandled Promise Rejection</h2><pre style="white-space: pre-wrap;">${event.reason ? event.reason.stack || event.reason : event.reason}</pre>`;
+            document.body.innerHTML = '';
+            document.body.appendChild(overlay);
+        });
+
         // State
         let products = [];
+        let comments = [];
+        let commentsCurrentPage = 1;
+        let commentsPerPage = 15;
+        let productsCurrentPage = 1;
+        let productsPerPage = 15;
+        let searchTerm = '';
+
         let currentEditingProductId = null;
+        let currentViewingProductId = null;
         let categoriesList = [];
+        let currentSortField = 'no';
+        let currentSortDirection = 'desc';
 
         async function fetchCategories() {
             try {
-                const response = await fetch('/api/categories');
+                console.log('[Categories] Fetching categories...');
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+                
+                const response = await fetch('/api/categories', { signal: controller.signal });
+                clearTimeout(timeout);
+                
                 if (!response.ok) throw new Error('Failed to fetch categories');
                 categoriesList = await response.json();
+                console.log('[Categories] Loaded:', categoriesList.length);
                 populateCategoryDropdown();
             } catch (err) {
                 console.error('[Categories] Failed to load categories:', err);
+                categoriesList = [];
+            }
+        }
+
+        function buildCategoryTree(flatCategories) {
+            const categoryMap = new Map();
+            flatCategories.forEach(category => categoryMap.set(category.id, { ...category, children: [] }));
+
+            const roots = [];
+            categoryMap.forEach(category => {
+                const parentId = category.parent_id ? Number(category.parent_id) : null;
+                if (parentId) {
+                    const parent = categoryMap.get(parentId);
+                    if (parent) {
+                        parent.children.push(category);
+                        return;
+                    }
+                }
+                roots.push(category);
+            });
+
+            return roots.sort((a, b) => (a.name_en || '').localeCompare(b.name_en || ''));
+        }
+
+        function appendCategoryOptions(category, select, level = 0) {
+            const option = document.createElement('option');
+            option.value = category.id;
+            const prefix = level > 0 ? '— '.repeat(level) : '';
+            const label = category[`name_${currentLanguage}`] || category.name_en || category.name || 'Unnamed';
+            option.textContent = `${prefix}${label}`;
+            select.appendChild(option);
+
+            if (category.children && category.children.length) {
+                const children = category.children.sort((a, b) => (a.name_en || '').localeCompare(b.name_en || ''));
+                children.forEach(child => appendCategoryOptions(child, select, level + 1));
             }
         }
 
@@ -1322,35 +417,194 @@
             defaultOption.textContent = translations[currentLanguage]?.select_category || 'Select Category';
             categorySelect.appendChild(defaultOption);
 
-            categoriesList.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category.id;
-                option.textContent = category.name_en || category.name || 'Unnamed';
-                categorySelect.appendChild(option);
-            });
+            const tree = buildCategoryTree(categoriesList);
+            tree.forEach(category => appendCategoryOptions(category, categorySelect, 0));
 
             if (selectedValue) {
                 categorySelect.value = selectedValue;
             }
         }
 
+        function sortProducts(data) {
+            const sorted = [...data];
+
+            const compareStrings = (a, b) => a.toString().localeCompare(b.toString(), undefined, { sensitivity: 'base' });
+
+            sorted.sort((a, b) => {
+                switch (currentSortField) {
+                    case 'product_name': {
+                        const aName = (a[`name_${currentLanguage}`] || a.name_en || '').toString();
+                        const bName = (b[`name_${currentLanguage}`] || b.name_en || '').toString();
+                        return compareStrings(aName, bName);
+                    }
+                    case 'category': {
+                        const aCat = (a.category_name || a.category || '').toString();
+                        const bCat = (b.category_name || b.category || '').toString();
+                        return compareStrings(aCat, bCat);
+                    }
+                    case 'price': {
+                        return (parseFloat(a.price || 0) - parseFloat(b.price || 0));
+                    }
+                    case 'status': {
+                        const aStatus = (a.active === false ? 'inactive' : 'active').toString();
+                        const bStatus = (b.active === false ? 'inactive' : 'active').toString();
+                        return compareStrings(aStatus, bStatus);
+                    }
+                    case 'no':
+                    default: {
+                        const aId = Number(a.id) || 0;
+                        const bId = Number(b.id) || 0;
+                        return aId - bId;
+                    }
+                }
+            });
+
+            if (currentSortDirection === 'desc') {
+                sorted.reverse();
+            }
+
+            return sorted;
+        }
+
+        function updateSortIndicators() {
+            document.querySelectorAll('#productsTable thead th.sortable').forEach(th => {
+                const field = th.dataset.sort;
+                const indicator = th.querySelector('.sort-indicator');
+                if (!indicator) return;
+                if (field === currentSortField) {
+                    th.classList.add('sorted');
+                    indicator.textContent = currentSortDirection === 'asc' ? ' ▲' : ' ▼';
+                } else {
+                    th.classList.remove('sorted');
+                    indicator.textContent = '';
+                }
+            });
+        }
+
+        // Binary Search Algorithm for product filtering
+        // This implements an efficient search using binary search principles
+        function binarySearchFilter(products, searchTerm) {
+            if (!searchTerm.trim()) {
+                return products; // Return all products if no search term
+            }
+
+            const term = searchTerm.toLowerCase().trim();
+            const filtered = [];
+
+            // Create a sorted index for binary search
+            const productIndex = products.map((product, index) => ({
+                product,
+                name: (product[`name_${currentLanguage}`] || product.name_en || '').toLowerCase(),
+                originalIndex: index
+            })).sort((a, b) => a.name.localeCompare(b.name));
+
+            // Binary search to find potential matches
+            let left = 0;
+            let right = productIndex.length - 1;
+            const matches = new Set();
+
+            // Find first potential match using binary search
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                const currentName = productIndex[mid].name;
+
+                if (currentName.includes(term)) {
+                    // Found a match, now collect all matches around this point
+                    matches.add(productIndex[mid].originalIndex);
+
+                    // Check left side for more matches
+                    let leftCheck = mid - 1;
+                    while (leftCheck >= 0 && productIndex[leftCheck].name.includes(term)) {
+                        matches.add(productIndex[leftCheck].originalIndex);
+                        leftCheck--;
+                    }
+
+                    // Check right side for more matches
+                    let rightCheck = mid + 1;
+                    while (rightCheck < productIndex.length && productIndex[rightCheck].name.includes(term)) {
+                        matches.add(productIndex[rightCheck].originalIndex);
+                        rightCheck++;
+                    }
+
+                    break; // Found the cluster, no need to continue binary search
+                } else if (currentName < term) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            // If no exact cluster found, do a broader search for partial matches
+            if (matches.size === 0) {
+                // Linear search for partial matches (this is still efficient for typical product counts)
+                for (let i = 0; i < products.length; i++) {
+                    const productName = (products[i][`name_${currentLanguage}`] || products[i].name_en || '').toLowerCase();
+                    if (productName.includes(term)) {
+                        matches.add(i);
+                    }
+                }
+            }
+
+            // Return matched products in their original order
+            return Array.from(matches).sort((a, b) => a - b).map(index => products[index]);
+        }
+
+        // Perform product search
+        function performProductSearch() {
+            const searchInput = document.getElementById('productSearch');
+            searchTerm = searchInput.value.trim();
+
+            // Reset to first page when searching
+            productsCurrentPage = 1;
+
+            // Update clear button visibility
+            const clearBtn = document.getElementById('clearSearchBtn');
+            clearBtn.style.display = searchTerm ? 'flex' : 'none';
+
+            renderProducts();
+        }
+
+        // Clear search
+        function clearProductSearch() {
+            const searchInput = document.getElementById('productSearch');
+            searchInput.value = '';
+            searchTerm = '';
+            productsCurrentPage = 1;
+
+            const clearBtn = document.getElementById('clearSearchBtn');
+            clearBtn.style.display = 'none';
+
+            renderProducts();
+        }
+
         // Load translations from JSON file
         async function loadTranslations() {
             try {
-                const response = await fetch('/admin/translations.json');
+                console.log('[i18n] Loading translations...');
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+                
+                const response = await fetch('/admin/translations.json', { signal: controller.signal });
+                clearTimeout(timeout);
+                
                 translations = await response.json();
+                console.log('[i18n] Translations loaded');
+                
                 // Load saved language or use default
                 const savedLanguage = localStorage.getItem('adminLanguage') || localStorage.getItem('selectedLanguage') || 'en';
                 currentLanguage = savedLanguage;
                 localStorage.setItem('adminLanguage', currentLanguage);
                 localStorage.setItem('selectedLanguage', currentLanguage);
                 updateLanguageUI(currentLanguage);
+                
                 if (window.i18n && typeof window.i18n.setLanguage === 'function') {
                     window.i18n.setLanguage(currentLanguage);
                 }
                 applyTranslations();
             } catch (err) {
-                console.error('Error loading translations:', err);
+                console.error('[i18n] Error loading translations:', err);
+                // Use empty translations object as fallback
+                translations = { en: {}, fr: {}, pt: {} };
             }
         }
 
@@ -1389,7 +643,7 @@
 
             // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.language-selector')) {
+                if (!e.target.closest('.lang-selector')) {
                     langDropdown.classList.remove('active');
                 }
             });
@@ -1455,10 +709,12 @@
         // Check authentication
         function checkAuth() {
             const token = localStorage.getItem('adminToken');
+            console.log('[AUTH] checkAuth() - Token exists:', !!token);
             if (!token) {
-                window.location.href = 'login.html';
+                console.warn('[AUTH] ❌ No auth token found');
                 return false;
             }
+            console.log('[AUTH] ✓ Token found');
             return true;
         }
 
@@ -1494,14 +750,20 @@
         // Validate session with server
         async function validateSessionWithServer() {
             const token = localStorage.getItem('adminToken');
+            console.log('[SESSION] validateSessionWithServer() called');
+            console.log('[SESSION] Token exists:', !!token);
+            
             if (!token) {
-                console.error('[Frontend] No token in localStorage');
-                window.location.href = 'login.html';
+                console.error('[SESSION] ❌ No token in localStorage');
+                // Redirect to login after a short delay
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 500);
                 return false;
             }
 
-            console.log('[Frontend] Validating session with token:', token.substring(0, 10) + '...');
-            console.log('[Frontend] Full token length:', token.length);
+            console.log('[SESSION] ✓ Token found, validating with server...');
+            console.log('[SESSION] Token:', token.substring(0, 10) + '...');
 
             try {
                 const response = await fetch('/api/admin/validate', {
@@ -1511,80 +773,174 @@
                     }
                 });
 
-                console.log('[Frontend] Validation response status:', response.status);
+                console.log('[SESSION] Validation response status:', response.status);
 
-                if (response.status === 401) {
-                    // Session expired, redirect to login
-                    console.warn('[Frontend] Session validation failed (401)');
+                if (response.status === 401 || response.status === 403) {
+                    // Session expired or invalid, redirect to login
+                    console.warn('[SESSION] ❌ Session validation failed (' + response.status + ') - Session expired');
                     localStorage.removeItem('adminToken');
                     localStorage.removeItem('adminUsername');
                     setTimeout(() => {
-                        window.location.href = 'login.html';
+                        window.location.href = '/login';
                     }, 500);
                     return false;
                 }
 
-                const data = await response.json();
-                console.log('[Frontend] Session is valid:', data.success);
-                console.log('[Frontend] Session info:', data.session);
-                return true;
+                if (response.status === 200) {
+                    const data = await response.json();
+                    console.log('[SESSION] ✓ Session is valid');
+                    return true;
+                }
+
+                console.warn('[SESSION] ⚠️ Unexpected response status:', response.status);
+                return false;
             } catch (err) {
-                console.error('[Frontend] Session validation error:', err);
+                console.error('[SESSION] ⚠️ Validation error:', err.message);
+                console.error('[SESSION] Stack:', err.stack);
                 return true; // Continue anyway on network errors
             }
         }
 
         // Initialize page
         async function initPage() {
-            if (!checkAuth()) return;
+            try {
+                console.log('[DEBUG] initPage() starting...');
+                
+                if (!checkAuth()) {
+                    console.log('[DEBUG] checkAuth() returned false, exiting initPage');
+                    return false;
+                }
 
-            // Validate session with server before proceeding
-            const sessionValid = await validateSessionWithServer();
-            if (!sessionValid) return;
+                console.log('[DEBUG] Auth check passed');
+                
+                // Validate session with server before proceeding (but don't block if it fails)
+                const sessionValid = await validateSessionWithServer();
+                console.log('[DEBUG] Session validation result:', sessionValid);
 
-            // Initialize language selector
-            initLanguageSelector();
+                console.log('[DEBUG] Session check completed, continuing initialization...');
 
-            // Mobile menu toggle
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
+                // Logout functionality
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUsername');
+                        window.location.href = 'login.html';
+                    });
+                }
 
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
+                // Mark sidebar active item dynamically after navigation
+                setActiveSidebarItem();
 
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('adminUsername');
-                window.location.href = 'login.html';
-            });
+                // Add product button
+                const addProductBtn = document.getElementById('addProductBtn');
+                if (addProductBtn) {
+                    addProductBtn.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        openProductModal(null);
+                    });
+                }
 
-            // Mark sidebar active item dynamically after navigation
-            setActiveSidebarItem();
+                // Refresh button for products
+                const refreshBtn = document.getElementById('refreshBtn');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', loadProducts);
+                }
 
-            // Add product button
-            const addProductBtn = document.getElementById('addProductBtn');
-            addProductBtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                openProductModal(null);
-            });
+                // Search functionality
+                const searchInput = document.getElementById('productSearch');
+                const searchBtn = document.getElementById('searchBtn');
+                const clearSearchBtn = document.getElementById('clearSearchBtn');
 
-            // Refresh button
-            const refreshBtn = document.getElementById('refreshBtn');
-            refreshBtn.addEventListener('click', loadProducts);
+                if (searchInput && searchBtn && clearSearchBtn) {
+                    // Search on input change (debounced)
+                    let searchTimeout;
+                    searchInput.addEventListener('input', () => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(performProductSearch, 300); // 300ms debounce
+                    });
 
-            // Form submission
-            const productForm = document.getElementById('productForm');
-            productForm.addEventListener('submit', saveProduct);
+                    // Search on Enter key
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            performProductSearch();
+                        }
+                    });
 
-            // Setup auto-translation
-            setupAutoTranslation();
+                    // Search button click
+                    searchBtn.addEventListener('click', performProductSearch);
 
-            // Load categories for dropdown and products
-            await fetchCategories();
-            loadProducts();
+                    // Clear search button
+                    clearSearchBtn.addEventListener('click', clearProductSearch);
+                }
+
+                // Enable sortable headers on product table
+                document.querySelectorAll('#productsTable thead th.sortable').forEach(th => {
+                    th.addEventListener('click', () => {
+                        const field = th.dataset.sort;
+                        if (!field) return;
+                        if (currentSortField === field) {
+                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSortField = field;
+                            currentSortDirection = 'asc';
+                        }
+                        productsCurrentPage = 1; // Reset to first page when sorting changes
+                        renderProducts();
+                    });
+                });
+
+                // Refresh button for comments
+                const refreshCommentsBtn = document.getElementById('refreshCommentsBtn');
+                if (refreshCommentsBtn) {
+                    refreshCommentsBtn.addEventListener('click', loadPendingComments);
+                }
+
+                // Apply filters button for comments
+                const applyCommentFilterBtn = document.getElementById('applyCommentFilterBtn');
+                if (applyCommentFilterBtn) {
+                    applyCommentFilterBtn.addEventListener('click', () => {
+                        loadPendingComments();
+                    });
+                }
+
+                // Form submission
+                const productForm = document.getElementById('productForm');
+                if (productForm) {
+                    productForm.addEventListener('submit', saveProduct);
+                }
+
+                // Load translations, then initialize language selector
+                await loadTranslations();
+                initLanguageSelector();
+
+                // Setup auto-translation
+                setupAutoTranslation();
+
+                // Load categories for dropdown and products
+                console.log('[DEBUG] Loading categories and products...');
+                await fetchCategories();
+                console.log('[DEBUG] Categories loaded');
+                
+                loadProducts();
+                console.log('[DEBUG] Products loading started');
+                
+                loadPendingComments();
+                console.log('[DEBUG] Comments loading started');
+
+                // Initialize search input state
+                if (searchInput && searchBtn && clearSearchBtn) {
+                    clearSearchBtn.style.display = searchInput.value.trim() ? 'flex' : 'none';
+                }
+                
+                console.log('[DEBUG] initPage() completed successfully');
+                return true; // Initialization successful
+            } catch (err) {
+                console.error('[DEBUG] Error in initPage():', err);
+                console.error('[DEBUG] Stack:', err.stack);
+                return false;
+            }
         }
 
         function setActiveSidebarItem() {
@@ -1600,7 +956,8 @@
                 const isActive = itemFilename === filename || 
                                 (filename === '' && itemFilename === 'index.html') ||
                                 (filename === 'index.html' && itemFilename === 'index.html') ||
-                                (section === 'products' && filename === 'products.html');
+                                (section === 'products' && filename === 'products.html') ||
+                                (section === 'comments' && filename === 'products.html' && window.location.hash === '#comments');
                 
                 if (isActive) {
                     item.classList.add('active');
@@ -1639,12 +996,22 @@
 
         // Load products from database API
         function loadProducts() {
+            console.log('[PRODUCTS] loadProducts() called');
             const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken');
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            
+            console.log('[PRODUCTS] Token exists:', !!token);
+            console.log('[PRODUCTS] Fetching from /api/products');
 
-            fetch('/api/products', { headers })
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+            fetch('/api/products', { headers, signal: controller.signal })
                 .then(res => {
+                    clearTimeout(timeout);
+                    console.log('[PRODUCTS] Response status:', res.status);
                     if (res.status === 401) {
+                        console.error('[PRODUCTS] 401 Unauthorized - redirecting to login');
                         localStorage.removeItem('adminToken');
                         localStorage.removeItem('adminUsername');
                         window.location.href = '/login';
@@ -1653,13 +1020,18 @@
                     return res.json();
                 })
                 .then(data => {
+                    console.log('[PRODUCTS] Data received:', data);
                     products = Array.isArray(data) ? data : data.products || [];
+                    console.log('[PRODUCTS] Total products:', products.length);
+                    productsCurrentPage = 1;
                     renderProducts();
                 })
                 .catch(err => {
-                    console.error('Error loading products:', err);
+                    clearTimeout(timeout);
+                    console.error('[PRODUCTS] Error loading products:', err);
                     if (err !== 'Session expired') {
                         products = [];
+                        productsCurrentPage = 1;
                         renderProducts();
                     }
                 });
@@ -1681,31 +1053,228 @@
 
             emptyState.style.display = 'none';
             
-            // Sort products by ID in descending order (most recent first)
-            const sortedProducts = [...products].reverse();
+            // Apply binary search filter first
+            const filteredProducts = binarySearchFilter(products, searchTerm);
             
-            tbody.innerHTML = sortedProducts.map(product => {
+            if (filteredProducts.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                if (searchTerm) {
+                    emptyState.querySelector('h3').textContent = 'No products found';
+                    emptyState.querySelector('p').textContent = `No products match "${searchTerm}". Try a different search term.`;
+                } else {
+                    emptyState.querySelector('h3').textContent = t('no_products');
+                    emptyState.querySelector('p').textContent = t('start_by_adding');
+                }
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            // Then sort the filtered results
+            const sortedProducts = sortProducts(filteredProducts);
+            
+            // Calculate pagination
+            const totalProducts = sortedProducts.length;
+            const totalPages = Math.ceil(totalProducts / productsPerPage);
+            const startIndex = (productsCurrentPage - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const productsToShow = sortedProducts.slice(startIndex, endIndex);
+            
+            tbody.innerHTML = productsToShow.map((product, index) => {
                 // Get product name based on current language
                 const nameField = `name_${currentLang}`;
+                const productNumber = startIndex + index + 1;
                 const productName = product[nameField] || product.name_en || 'Unnamed';
                 const imageUrl = product.image ? product.image : '/images/placeholder.png';
                 
                 return `
-                <tr>
-                    <td class="product-name">${productName}</td>
-                    <td><span class="product-category">${product.category_name || 'Uncategorized'}</span></td>
-                    <td class="product-price">€${parseFloat(product.price || 0).toFixed(2)}</td>
-                    <td><img src="${imageUrl}" alt="${productName}" style="max-width: 60px; max-height: 60px; border-radius: 4px; object-fit: cover;"></td>
-                    <td><span class="product-status">${t('active')}</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-sm btn-edit" onclick="editProduct('${product.id}')" data-i18n="edit">${t('edit')}</button>
-                            <button class="btn-sm btn-delete" onclick="openDeleteModal('${product.id}')" data-i18n="delete">${t('delete')}</button>
+                <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">${productNumber}</td>
+                    <td class="px-4 py-4 text-sm font-semibold text-slate-900 min-w-max word-break break-word">${productName}</td>
+                    <td class="px-4 py-4 whitespace-nowrap"><span class="product-category inline-block px-3 py-1 bg-info text-white rounded-full text-xs font-semibold">${product.category_name || 'Uncategorized'}</span></td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="font-semibold text-sky-600 text-sm">
+                            ${product.promo_price && parseFloat(product.promo_price) > 0 && parseFloat(product.promo_price) < parseFloat(product.price || 0)
+                                ? `<div class="flex flex-col gap-1"><span class="line-through text-slate-500">€${parseFloat(product.price || 0).toFixed(2)}</span><span class="font-bold text-sky-600">€${parseFloat(product.promo_price).toFixed(2)}</span>${product.promo_label ? `<small class="text-slate-600 font-normal text-xs">${product.promo_label}</small>` : ''}</div>`
+                                : `€${parseFloat(product.price || 0).toFixed(2)}`}
+                            ${product.is_featured ? '<div class="mt-1"><span class="inline-block bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">Featured</span></div>' : ''}
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap"><img src="${imageUrl}" alt="${productName}" class="w-16 h-16 rounded object-cover shadow-sm"></td>
+                    <td class="px-4 py-4 whitespace-nowrap"><span class="inline-block px-3 py-1 bg-success text-white rounded-full text-xs font-semibold">${t('active')}</span></td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex gap-2 flex-wrap">
+                            <button class="px-2 py-1 bg-sky-600 text-white rounded text-xs hover:bg-sky-700 transition" onclick="viewProduct('${product.id}', '${product.slug || product.name_en || ''}')" title="View product details">👁️ View</button>
+                            <button class="px-2 py-1 bg-slate-800 text-white rounded text-xs hover:bg-slate-900 transition" onclick="editProduct('${product.id}')" title="Edit product">✏️ ${t('edit')}</button>
+                            <button class="px-2 py-1 bg-rose-600 text-white rounded text-xs hover:bg-rose-700 transition" onclick="openDeleteModal('${product.id}')" data-i18n="delete">${t('delete')}</button>
                         </div>
                     </td>
                 </tr>
             `;
             }).join('');
+            updateSortIndicators();
+            renderPaginationControls(totalPages);
+        }
+
+        // Render pagination controls
+        function renderPaginationControls(totalPages) {
+            const paginationContainer = document.getElementById('productsPagination');
+            if (!paginationContainer) return;
+
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '<div class="flex flex-wrap justify-center gap-2">';
+
+            // Previous button
+            if (productsCurrentPage > 1) {
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeProductsPage(${productsCurrentPage - 1})">&laquo; Previous</button>`;
+            }
+
+            // Page numbers
+            const startPage = Math.max(1, productsCurrentPage - 2);
+            const endPage = Math.min(totalPages, productsCurrentPage + 2);
+
+            if (startPage > 1) {
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeProductsPage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += '<span class="px-2 text-slate-500 text-sm">...</span>';
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === productsCurrentPage ? ' bg-sky-600 text-white border-sky-600 font-semibold' : '';
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center${activeClass}" onclick="changeProductsPage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += '<span class="px-2 text-slate-500 text-sm">...</span>';
+                }
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeProductsPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            // Next button
+            if (productsCurrentPage < totalPages) {
+                paginationHTML += `<button class="px-3 py-2 border border-slate-300 bg-white text-slate-700 rounded hover:bg-slate-100 transition text-sm min-w-10 text-center" onclick="changeProductsPage(${productsCurrentPage + 1})">Next &raquo;</button>`;
+            }
+
+            paginationHTML += '</div>';
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
+        // Change products page
+        function changeProductsPage(page) {
+            productsCurrentPage = page;
+            renderProducts();
+        }
+
+        // Load pending comments waiting for moderation
+        function loadPendingComments() {
+            const token = localStorage.getItem('adminToken');
+            const statusFilter = document.getElementById('commentStatusFilter')?.value || '';
+            const productFilter = document.getElementById('commentProductFilter')?.value || '';
+            const params = new URLSearchParams();
+            if (statusFilter) params.set('status', statusFilter);
+            if (productFilter) params.set('product_id', productFilter);
+
+            fetch(`/api/comments?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminUsername');
+                    window.location.href = 'login.html';
+                    return Promise.reject('Unauthorized');
+                }
+                return res.json();
+            })
+            .then(data => {
+                const allComments = Array.isArray(data) ? data : [];
+                comments = allComments.filter(c => c.status === 'pending');
+                renderComments();
+            })
+            .catch(err => {
+                console.error('Error loading pending comments:', err);
+                comments = [];
+                renderComments();
+            });
+        }
+
+        function renderComments() {
+            const tbody = document.getElementById('commentsBody');
+            const emptyCommentsState = document.getElementById('emptyCommentsState');
+            if (!tbody) return;
+            if (comments.length === 0) {
+                tbody.innerHTML = '';
+                emptyCommentsState.style.display = 'block';
+                return;
+            }
+
+            emptyCommentsState.style.display = 'none';
+            tbody.innerHTML = comments.map(comment => {
+                const productName = comment.product_name || comment.product_name || 'Unknown';
+                const userName = comment.user_username || comment.user_email || 'Guest';
+                const rating = comment.rating != null ? comment.rating : '-';
+                const text = comment.body ? comment.body : '';
+                const createdAt = comment.created_at ? new Date(comment.created_at).toLocaleString() : '-';
+                const status = (comment.status || 'pending').toUpperCase();
+
+                return `
+                    <tr>
+                        <td>${comment.id}</td>
+                        <td>${productName}</td>
+                        <td>${userName}</td>
+                        <td>${rating}</td>
+                        <td class="max-w-[320px] break-words">${text}</td>
+                        <td>${status}</td>
+                        <td>${createdAt}</td>
+                        <td>
+                            <div class="flex flex-wrap items-center gap-2">
+                                ${comment.status === 'pending' || !comment.status ? `
+                                    <button class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-600-dark" onclick="moderateComment(${comment.id}, 'approved')">Approve</button>
+                                    <button class="inline-flex items-center justify-center rounded-2xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-600/90" onclick="moderateComment(${comment.id}, 'rejected')">Reject</button>
+                                ` : '—'}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function moderateComment(commentId, newStatus) {
+            const token = localStorage.getItem('adminToken');
+            fetch(`/api/comments/${commentId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminUsername');
+                    window.location.href = 'login.html';
+                    return Promise.reject('Unauthorized');
+                }
+                return res.json();
+            })
+            .then(() => {
+                loadPendingComments();
+            })
+            .catch(err => {
+                console.error(`Error updating comment ${commentId} status:`, err);
+                alert('Unable to update comment status. Please try again.');
+            });
         }
 
         // Handle image file selection and preview
@@ -1746,7 +1315,7 @@
         function removeImagePreview() {
             const fileInput = document.getElementById('productImage');
             fileInput.value = '';
-            document.getElementById('imagePreview').style.display = 'none';
+document.getElementById('imagePreview').classList.add('hidden');
         }
 
         // Debounce timer for translation
@@ -1782,7 +1351,7 @@
                 return;
             }
 
-            console.log('🌐 Auto-translating:', englishName);
+            console.log('🔄 Auto-translating:', englishName);
             
             // Show loading state
             document.getElementById('productNameFr').style.opacity = '0.5';
@@ -1797,12 +1366,12 @@
 
                 if (frenchName) {
                     document.getElementById('productNameFr').value = frenchName;
-                    console.log('✏“ French translation:', frenchName);
+                    console.log('? French translation:', frenchName);
                 }
                 
                 if (portugueseName) {
                     document.getElementById('productNamePt').value = portugueseName;
-                    console.log('✏“ Portuguese translation:', portugueseName);
+                    console.log('? Portuguese translation:', portugueseName);
                 }
             } catch (err) {
                 console.error('Auto-translation error:', err);
@@ -1844,45 +1413,244 @@
             const submitBtn = form.querySelector('button[type="submit"]');
 
             if (productId) {
-                title.textContent = '✏ ' + t('edit_product_title');
+                title.textContent = '✏️ ' + t('edit_product_title');
                 submitBtn.textContent = '💾 ' + t('save_product');
-                const product = products.find(p => p.id === productId);
+                const product = products.find(p => String(p.id) === String(productId));
+                if (!product) {
+                    console.warn('[Edit] Product not found for edit:', productId, products);
+                }
                 if (product) {
                     // Populate all language fields
                     document.getElementById('productNameEn').value = product.name_en || '';
                     document.getElementById('productNameFr').value = product.name_fr || '';
                     document.getElementById('productNamePt').value = product.name_pt || '';
-                    document.getElementById('productCategory').value = product.category_id || '';
+                    document.getElementById('productCategory').value = product.category_id || product.category || '';
                     document.getElementById('productPrice').value = product.price || '';
+
+                    const featuredInput = document.getElementById('productIsFeatured');
+                    const promoPriceInput = document.getElementById('productPromoPrice');
+                    const promoLabelInput = document.getElementById('productPromoLabel');
+                    const promoExpiresInput = document.getElementById('productPromoExpiresAt');
+
+                    if (featuredInput) {
+                        featuredInput.checked = Boolean(product.is_featured);
+                    }
+                    if (promoPriceInput) {
+                        promoPriceInput.value = product.promo_price || '';
+                    }
+                    if (promoLabelInput) {
+                        promoLabelInput.value = product.promo_label || '';
+                    }
+                    if (promoExpiresInput) {
+                        promoExpiresInput.value = product.promo_expires_at ? product.promo_expires_at.split('T')[0] : '';
+                    }
+
+                    document.getElementById('productQuantity').value = product.quantity ?? 0;
                     document.getElementById('productDescription').value = product.description || '';
                     
                     // For existing products with images, show preview of existing image
                     if (product.image) {
                         document.getElementById('previewImg').src = product.image;
-                        document.getElementById('imagePreview').style.display = 'block';
+                        document.getElementById('imagePreview').classList.remove('hidden');
                     } else {
-                        document.getElementById('imagePreview').style.display = 'none';
+                        document.getElementById('imagePreview').classList.add('hidden');
                     }
                     document.getElementById('productImage').value = '';
                 }
             } else {
-                title.textContent = '✏️ ' + t('add_product_title');
+                title.textContent = '➕ ' + t('add_product_title');
                 submitBtn.textContent = '💾 ' + t('save_product');
                 form.reset();
-                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('imagePreview').classList.add('hidden');
                 document.getElementById('productNameEn').value = '';
                 document.getElementById('productNameFr').value = '';
                 document.getElementById('productNamePt').value = '';
+                document.getElementById('productQuantity').value = 0;
+
+                const featuredInput = document.getElementById('productIsFeatured');
+                const promoPriceInput = document.getElementById('productPromoPrice');
+                const promoLabelInput = document.getElementById('productPromoLabel');
+                const promoExpiresInput = document.getElementById('productPromoExpiresAt');
+
+                if (featuredInput) {
+                    featuredInput.checked = false;
+                }
+                if (promoPriceInput) {
+                    promoPriceInput.value = '';
+                }
+                if (promoLabelInput) {
+                    promoLabelInput.value = '';
+                }
+                if (promoExpiresInput) {
+                    promoExpiresInput.value = '';
+                }
             }
 
-            modal.classList.add('active');
+            modal.classList.remove('hidden');
         }
 
         // Close product modal
         function closeProductModal() {
             const modal = document.getElementById('productModal');
-            modal.classList.remove('active');
+            modal.classList.add('hidden');
             currentEditingProductId = null;
+        }
+
+        // Close view details modal
+        function closeViewProductModal() {
+            const modal = document.getElementById('viewProductModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // View product details in modal
+        async function viewProduct(productId, productSlug) {
+            const modal = document.getElementById('viewProductModal');
+            const content = document.getElementById('viewProductContent');
+            const editBtn = document.getElementById('editViewModalBtn');
+            currentViewingProductId = productId;
+            if (editBtn) {
+                editBtn.classList.remove('hidden');
+                editBtn.onclick = function() {
+                    editProduct(currentViewingProductId);
+                    closeViewProductModal();
+                };
+            }
+
+            // Show loading state
+            content.innerHTML = `
+                <div class="text-center py-10">
+                    <div class="text-2xl mb-4">⏳</div>
+                    <p class="text-sm text-slate-700">Loading product details...</p>
+                </div>
+            `;
+
+            // Show modal
+            modal.classList.remove('hidden');
+
+            const buildProductHtml = (productData, currentLang, fallbackNote = '') => {
+                const langSuffix = currentLang === 'en' ? '' : `_${currentLang}`;
+                const productPrice = productData.price != null ? parseFloat(productData.price).toFixed(2) : '0.00';
+                const descriptionText = productData['description' + langSuffix] || productData.description || '';
+
+                return `
+                    <div class="space-y-6">
+                        <div class="grid gap-6 xl:grid-cols-[280px_minmax(1fr,_1fr)]">
+                            <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                                ${productData.image ?
+                                    `<img src="${productData.image}" alt="${productData['name' + langSuffix] || productData.name_en}" class="h-72 w-full rounded-3xl object-cover" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">` : ''
+                                }
+                                <div class="${productData.image ? 'hidden' : ''} flex h-72 items-center justify-center rounded-3xl bg-slate-100 text-5xl text-slate-400">
+                                    📷
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="text-2xl font-semibold text-slate-900">${productData['name' + langSuffix] || productData.name_en || 'Unnamed Product'}</div>
+                                    <div class="mt-2 text-xl font-bold text-sky-600">€${productPrice}</div>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="inline-flex items-center rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">${productData.is_active ? 'Active' : 'Inactive'}</span>
+                                    <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">${productData.stock_quantity ?? 0} in stock</span>
+                                    <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">${productData.category_name || 'Uncategorized'}</span>
+                                </div>
+                                ${productData.summary ? `<p class="text-sm leading-6 text-slate-700">${productData.summary}</p>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-slate-200 bg-white p-6">
+                            <h4 class="text-lg font-semibold text-slate-900 mb-4">📝 Description</h4>
+                            <div class="prose prose-slate max-w-none text-sm leading-7 text-slate-700">
+                                ${descriptionText ?
+                                    `<p>${descriptionText.replace(/\n/g, '<br>')}</p>` :
+                                    '<p class="italic text-slate-500">No description available</p>'
+                                }
+                            </div>
+                        </div>
+
+                        ${productData.slug ? `
+                        <div class="rounded-3xl border border-slate-200 bg-white p-6">
+                            <h4 class="text-lg font-semibold text-slate-900 mb-4">🔗 Product URLs</h4>
+                            <div class="space-y-2 text-sm text-slate-700">
+                                <div><strong>English:</strong> <code class="rounded bg-slate-100 px-2 py-1 text-slate-800">/products/${productData.slug}</code></div>
+                                <div><strong>French:</strong> <code class="rounded bg-slate-100 px-2 py-1 text-slate-800">/produits/${productData.slug}</code></div>
+                                <div><strong>Portuguese:</strong> <code class="rounded bg-slate-100 px-2 py-1 text-slate-800">/produtos/${productData.slug}</code></div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="rounded-3xl border border-slate-200 bg-white p-6">
+                            <h4 class="text-lg font-semibold text-slate-900 mb-4">📊 Additional Information</h4>
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <div class="text-sm font-semibold text-slate-700">ID</div>
+                                    <div class="mt-1 text-sm text-slate-900">${productData.id}</div>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <div class="text-sm font-semibold text-slate-700">Created</div>
+                                    <div class="mt-1 text-sm text-slate-900">${productData.created_at ? new Date(productData.created_at).toLocaleDateString() : 'N/A'}</div>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <div class="text-sm font-semibold text-slate-700">Updated</div>
+                                    <div class="mt-1 text-sm text-slate-900">${productData.updated_at ? new Date(productData.updated_at).toLocaleDateString() : 'N/A'}</div>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <div class="text-sm font-semibold text-slate-700">Weight</div>
+                                    <div class="mt-1 text-sm text-slate-900">${productData.weight ? productData.weight + ' kg' : 'N/A'}</div>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <div class="text-sm font-semibold text-slate-700">Dimensions</div>
+                                    <div class="mt-1 text-sm text-slate-900">${productData.dimensions || 'N/A'}</div>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 p-4">
+                                    <div class="text-sm font-semibold text-slate-700">Promo Price</div>
+                                    <div class="mt-1 text-sm text-slate-900">${productData.promo_price ? `€${parseFloat(productData.promo_price).toFixed(2)}` : 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        ${fallbackNote ? `<div class="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">${fallbackNote}</div>` : ''}
+                    </div>
+                `;
+            };
+
+            try {
+                // Fetch product details from API
+                const token = localStorage.getItem('adminToken') || localStorage.getItem('userToken');
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const response = await fetch(`/api/products/${productId}`, { headers });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch product: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const product = data?.product || data;
+
+                if (!product || (typeof product !== 'object') || !product.id) {
+                    const errorMessage = data?.error || 'Product not found';
+                    throw new Error(errorMessage);
+                }
+
+                const currentLang = localStorage.getItem('adminLanguage') || 'en';
+                content.innerHTML = buildProductHtml(product, currentLang);
+            } catch (error) {
+                console.error('Error loading product details:', error);
+                const cachedProduct = products.find(item => String(item.id) === String(productId));
+
+                if (cachedProduct) {
+                    const currentLang = localStorage.getItem('adminLanguage') || 'en';
+                    content.innerHTML = buildProductHtml(cachedProduct, currentLang, 'Showing cached product data because the product detail request failed. Please refresh the page to load the latest details.');
+                } else {
+                    content.innerHTML = `
+                        <div class="text-center p-10 text-rose-600">
+                            <div class="text-2xl mb-4">❌</div>
+                            <p class="text-base font-semibold text-slate-900">Error loading product details</p>
+                            <p class="mt-2 text-sm text-slate-500">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
         }
 
         // Edit product
@@ -1898,7 +1666,10 @@
             const productNameFr = document.getElementById('productNameFr').value.trim();
             const productNamePt = document.getElementById('productNamePt').value.trim();
             const productCategory = document.getElementById('productCategory').value;
-            const productPrice = document.getElementById('productPrice').value;
+            const rawProductPrice = document.getElementById('productPrice').value;
+            const cleanedPriceValue = rawProductPrice.replace(/[€\s]/g, '').replace(',', '.');
+            const productPrice = parseFloat(cleanedPriceValue);
+            const productQuantity = parseInt(document.getElementById('productQuantity').value, 10);
             const productDescription = document.getElementById('productDescription').value;
             const fileInput = document.getElementById('productImage');
             const token = localStorage.getItem('adminToken');
@@ -1914,8 +1685,8 @@
             console.log('[Save] Token value:', token ? token.substring(0, 20) + '...' : 'NONE');
             console.log('[Save] Token length:', token ? token.length : 0);
 
-            if (!productNameEn || !productNameFr || !productNamePt || !productCategory || !productPrice) {
-                alert('Please fill in all required fields in all three languages');
+            if (!productNameEn || !productNameFr || !productNamePt || !productCategory || Number.isNaN(productPrice) || Number.isNaN(productQuantity) || productQuantity < 0) {
+                alert('Please fill in all required fields in all three languages and provide a valid price and non-negative quantity');
                 return;
             }
 
@@ -1931,18 +1702,42 @@
             formData.append('name_en', productNameEn);
             formData.append('name_fr', productNameFr);
             formData.append('name_pt', productNamePt);
+            const productIsFeaturedInput = document.getElementById('productIsFeatured');
+            const productPromoPriceInput = document.getElementById('productPromoPrice');
+            const productPromoLabelInput = document.getElementById('productPromoLabel');
+            const productPromoExpiresAtInput = document.getElementById('productPromoExpiresAt');
+            const productIsFeatured = productIsFeaturedInput ? productIsFeaturedInput.checked : false;
+            const rawPromoPrice = productPromoPriceInput ? productPromoPriceInput.value.trim() : '';
+            const promoPrice = rawPromoPrice ? parseFloat(rawPromoPrice.replace(/[,€\s]/g, '.')) : null;
+            const promoLabel = productPromoLabelInput ? productPromoLabelInput.value.trim() : '';
+            const promoExpiresAt = productPromoExpiresAtInput ? productPromoExpiresAtInput.value : '';
+
+            if (rawPromoPrice && Number.isNaN(promoPrice)) {
+                alert('Please enter a valid promo price');
+                return;
+            }
+
             formData.append('category_id', productCategory);
-            formData.append('price', parseFloat(productPrice));
+            formData.append('price', productPrice);
+            formData.append('quantity', Number.isNaN(productQuantity) ? 0 : productQuantity);
             formData.append('description', productDescription || '');
+            formData.append('is_featured', productIsFeatured ? '1' : '0');
+            formData.append('promo_price', promoPrice !== null ? promoPrice.toFixed(2) : '');
+            formData.append('promo_label', promoLabel || '');
+            formData.append('promo_expires_at', promoExpiresAt || '');
             
             // Log all names being saved to database
-            console.log('\n[Save] ⚙️ MULTILINGUAL DATA:')
+            console.log('\n[Save] 💾 MULTILINGUAL DATA:')
             console.log('  name_en:', productNameEn);
             console.log('  name_fr:', productNameFr);
             console.log('  name_pt:', productNamePt);
             console.log('  category:', productCategory);
             console.log('  price:', productPrice);
-            console.log('[Save] ⚙️ All data prepared for database save\n');
+            console.log('  featured:', productIsFeatured);
+            console.log('  promo_price:', promoPrice);
+            console.log('  promo_label:', promoLabel);
+            console.log('  promo_expires_at:', promoExpiresAt);
+            console.log('[Save] ✅ All data prepared for database save\n');
             
             // Append file if selected
             if (fileInput.files && fileInput.files[0]) {
@@ -1992,8 +1787,8 @@
                 .then(data => {
                     console.log('[Save] Response data:', data);
                     if (data.success) {
-                        console.log('✏… [Save] SUCCESS - Product updated to database');
-                        console.log('✏… [Save] Database now contains:');
+                        console.log('? [Save] SUCCESS - Product updated to database');
+                        console.log('? [Save] Database now contains:');
                         console.log('   - name_en:', data.product?.name_en);
                         console.log('   - name_fr:', data.product?.name_fr);
                         console.log('   - name_pt:', data.product?.name_pt);
@@ -2037,8 +1832,8 @@
                 .then(data => {
                     console.log('[Save] Response data:', data);
                     if (data.success) {
-                        console.log('✏… [Save] SUCCESS - Product created in database');
-                        console.log('✏… [Save] Database now contains:');
+                        console.log('? [Save] SUCCESS - Product created in database');
+                        console.log('? [Save] Database now contains:');
                         console.log('   - name_en:', data.product?.name_en);
                         console.log('   - name_fr:', data.product?.name_fr);
                         console.log('   - name_pt:', data.product?.name_pt);
@@ -2065,20 +1860,20 @@
             currentEditingProductId = productId;
             const modal = document.getElementById('deleteModal');
             const title = modal.querySelector('h3');
-            const deleteBtn = modal.querySelector('.btn-delete-confirm');
+            const deleteBtn = modal.querySelector('#deleteConfirmBtn');
             const confirmMsg = modal.querySelector('#deleteMessage');
             
             title.textContent = '🗑️ ' + t('delete_product');
             confirmMsg.textContent = t('confirm_delete');
             deleteBtn.textContent = '🗑️ ' + t('delete');
             
-            modal.classList.add('active');
+            modal.classList.remove('hidden');
         }
 
         // Close delete modal
         function closeDeleteModal() {
             const modal = document.getElementById('deleteModal');
-            modal.classList.remove('active');
+            modal.classList.add('hidden');
             currentEditingProductId = null;
         }
 
@@ -2120,15 +1915,45 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadTranslations();
-            initPage();
-            setupImagePreview();
+            try {
+                console.log('[INIT] DOMContentLoaded event fired');
+                console.log('[INIT] Body children:', document.body.children.length);
+                
+                // FORCE SHOW PAGE IMMEDIATELY
+                document.body.style.display = 'flex';
+                document.body.style.opacity = '1';
+                document.body.style.visibility = 'visible';
+                console.log('[INIT] Page visibility forced to visible');
+                
+                // Check auth first
+                const hasToken = localStorage.getItem('adminToken');
+                if (!hasToken) {
+                    console.warn('[INIT] No auth token, will redirect to login');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 500);
+                    return;
+                }
+                
+                console.log('[INIT] Loading translations...');
+                await loadTranslations();
+                console.log('[INIT] Translations loaded');
+                
+                console.log('[INIT] Starting initPage()...');
+                const result = await initPage();
+                console.log('[INIT] initPage() completed');
+                
+                console.log('[INIT] Page setup complete');
+            } catch (err) {
+                console.error('[INIT] Fatal error during initialization:', err);
+                console.error('[INIT] Stack:', err.stack);
+            }
         });
 
         // Handle window resize for responsive behavior
         window.addEventListener('resize', () => {
             const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
+            if (window.innerWidth > 768 && sidebar) {
                 sidebar.classList.remove('active');
             }
         });
@@ -2143,6 +1968,7 @@
     </script>
 </body>
 </html>
+
 
 
 

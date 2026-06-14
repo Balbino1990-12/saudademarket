@@ -107,6 +107,25 @@ class RecommendationController {
   }
 
   /**
+   * Get featured/promotional products
+   */
+  static async getFeaturedProducts(req, res, next) {
+    try {
+      const limit = parseInt(req.query.limit) || 10;
+      const recommendations = await RecommendationService.getFeaturedRecommendations(limit);
+
+      res.json({
+        success: true,
+        data: recommendations,
+        count: recommendations.length
+      });
+    } catch (error) {
+      console.error('[RecommendationController.getFeaturedProducts] Error:', error);
+      next(error);
+    }
+  }
+
+  /**
    * Track product view (for analytics)
    */
   static async trackProductView(req, res, next) {
@@ -135,3 +154,4 @@ class RecommendationController {
 }
 
 module.exports = RecommendationController;
+

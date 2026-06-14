@@ -541,6 +541,7 @@ async function loadProducts() {
               <th style="padding: 15px; text-align: left; font-weight: 600; color: var(--text-dark);">Product Name</th>
               <th style="padding: 15px; text-align: left; font-weight: 600; color: var(--text-dark);">Category</th>
               <th style="padding: 15px; text-align: right; font-weight: 600; color: var(--text-dark);">Price</th>
+              <th style="padding: 15px; text-align: right; font-weight: 600; color: var(--text-dark);">Quantity</th>
               <th style="padding: 15px; text-align: center; font-weight: 600; color: var(--text-dark);">Actions</th>
             </tr>
           </thead>
@@ -550,6 +551,7 @@ async function loadProducts() {
                 <td style="padding: 15px; color: var(--text-dark);"><strong>${p.name_en || p.name_fr || p.name_pt || 'Unnamed'}</strong></td>
                 <td style="padding: 15px; color: var(--text-light);">${p.category_name || 'N/A'}</td>
                 <td style="padding: 15px; color: var(--text-dark); text-align: right; font-weight: 600;">€${parseFloat(p.price || 0).toFixed(2)}</td>
+                <td style="padding: 15px; color: var(--text-dark); text-align: right;">${Number.isFinite(p.quantity) ? p.quantity : 0}</td>
                 <td style="padding: 15px; text-align: center;">
                   <button class="btn-small btn-edit" onclick="editProduct('${p.id}')">✎ Edit</button>
                   <button class="btn-small btn-delete" onclick="openDeleteModal('${p.id}', '${(p.name_en || p.name_pt || 'Product').replace(/'/g, "\\'")}')" style="margin-left: 5px;">✗ Delete</button>
@@ -697,10 +699,44 @@ if (createBtn) {
 
 // header interaction: notifications and profile
 const notificationBtn = document.getElementById('notificationBtn');
-if (notificationBtn) {
-  notificationBtn.addEventListener('click', () => {
-    alert(translate ? translate('admin.notifications') : 'Notifications');
+const notificationPopover = document.getElementById('notificationPopover');
+const notificationBadge = document.getElementById('notificationBadge');
+const notificationList = document.getElementById('notificationList');
+const notificationPlaceholder = document.getElementById('notificationPlaceholder');
+
+function updateNotificationCount(count) {
+  if (!notificationBadge) return;
+  notificationBadge.textContent = count;
+  notificationBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+}
+
+function renderNotifications(items = []) {
+  if (!notificationList || !notificationPlaceholder) return;
+  if (!items.length) {
+    notificationPlaceholder.textContent = translate ? translate('admin.notifications.empty') : 'No new notifications';
+    return;
+  }
+
+  notificationList.innerHTML = items.map((item) => `
+      <li class="notification-item">${item}</li>
+  `).join('');
+}
+
+if (notificationBtn && notificationPopover) {
+  notificationBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notificationPopover.classList.toggle('show');
   });
+
+  document.addEventListener('click', (e) => {
+    if (!notificationPopover.contains(e.target) && e.target !== notificationBtn) {
+      notificationPopover.classList.remove('show');
+    }
+  });
+
+  // Sample notification state – replace with real API data when ready.
+  updateNotificationCount(0);
+  renderNotifications([]);
 }
 
 const profileBtnEl = document.getElementById('profileBtn');
@@ -801,4 +837,5 @@ if (navbarSearchForm) {
     });
   });
 }
+
 

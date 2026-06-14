@@ -20,5 +20,6 @@ shopify theme serve
 3. When ready, publish or upload via `shopify theme push`.
 
 Notes:
-- Replace images in `shopify-theme/assets/` (logo.jpg, hero.jpg, charcutaria.jpg, etc.).
+- Replace images in `shopify-theme/assets/` (Saudade_market.png, hero.jpg, charcutaria.jpg, etc.).
 - The theme is minimal and uses static sections. For a production store you should map categories and products to Shopify Collections and Products.
+

@@ -102,9 +102,36 @@ class SpecialtiesController {
   /**
    * Create new specialty
    */
+  static normalizeProductIds(rawProductIds) {
+    if (rawProductIds === undefined || rawProductIds === null) {
+      return [];
+    }
+
+    if (Array.isArray(rawProductIds)) {
+      return rawProductIds.map(pid => parseInt(pid, 10)).filter(pid => !Number.isNaN(pid));
+    }
+
+    if (typeof rawProductIds === 'string') {
+      try {
+        const parsed = JSON.parse(rawProductIds);
+        if (Array.isArray(parsed)) {
+          return parsed.map(pid => parseInt(pid, 10)).filter(pid => !Number.isNaN(pid));
+        }
+      } catch (err) {
+        return rawProductIds
+          .split(',')
+          .map(pid => parseInt(pid, 10))
+          .filter(pid => !Number.isNaN(pid));
+      }
+    }
+
+    return [];
+  }
+
   static async create(req, res) {
     try {
-      const { name_en, name_fr, name_pt, category, description, image, icon, color } = req.body;
+      const { name_en, name_fr, name_pt, category, description, icon, color } = req.body;
+      const imageFile = req.file; // Multer file upload
 
       // Validation
       if (!name_en || !category) {
@@ -114,7 +141,17 @@ class SpecialtiesController {
         });
       }
 
+      if (!imageFile) {
+        return res.status(400).json({
+          success: false,
+          message: 'Image file is required'
+        });
+      }
+
       console.log('[SpecialtiesController.create] Creating new specialty:', name_en);
+
+      // Generate image path - use relative path for serving from public
+      const imagePath = `/uploads/${imageFile.filename}`;
 
       const specialtyData = {
         name_en,
@@ -122,12 +159,17 @@ class SpecialtiesController {
         name_pt: name_pt || name_en,
         category,
         description: description || '',
-        image: image || null,
+        image: imagePath,
         icon: icon || null,
         color: color || null
       };
 
       const specialty = await Specialties.create(specialtyData);
+      const productIds = SpecialtiesController.normalizeProductIds(req.body.product_ids);
+      if (productIds.length > 0) {
+        await Specialties.setProductAssignments(specialty.id, productIds);
+      }
+
       res.status(201).json({
         success: true,
         message: 'Specialty created successfully',
@@ -144,12 +186,43 @@ class SpecialtiesController {
   }
 
   /**
+   * Get products assigned to a specialty
+   */
+  static async getProducts(req, res) {
+    try {
+      const { id } = req.params;
+      const specialty = await Specialties.getById(id);
+      if (!specialty) {
+        return res.status(404).json({
+          success: false,
+          message: 'Specialty not found'
+        });
+      }
+
+      const products = await Specialties.getProducts(id);
+      res.json({
+        success: true,
+        count: products.length,
+        data: products
+      });
+    } catch (error) {
+      console.error('[SpecialtiesController.getProducts] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch specialty products',
+        error: error.message
+      });
+    }
+  }
+
+  /**
    * Update specialty
    */
   static async update(req, res) {
     try {
       const { id } = req.params;
       const updates = req.body;
+      const imageFile = req.file; // Multer file upload
 
       console.log('[SpecialtiesController.update] Updating specialty:', id);
 
@@ -162,7 +235,17 @@ class SpecialtiesController {
         });
       }
 
+      // If new image file uploaded, update the image path
+      if (imageFile) {
+        updates.image = `/uploads/${imageFile.filename}`;
+      }
+
       const updated = await Specialties.update(id, updates);
+      if (req.body.product_ids !== undefined) {
+        const productIds = SpecialtiesController.normalizeProductIds(req.body.product_ids);
+        await Specialties.setProductAssignments(id, productIds);
+      }
+
       res.json({
         success: true,
         message: 'Specialty updated successfully',
@@ -220,3 +303,4 @@ class SpecialtiesController {
 }
 
 module.exports = SpecialtiesController;
+

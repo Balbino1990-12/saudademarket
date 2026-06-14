@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const User = require('../models/User');
 const Role = require('../models/Role');
 const Activity = require('../models/Activity');
@@ -10,30 +11,8 @@ class UserController {
    */
   static async register(req, res, next) {
     try {
-      const { username, password, email, first_name, last_name, phone_number, city, confirm_password } = req.body;
+      const { username, password, email, first_name, last_name, phone_number, city } = req.body;
       console.log('[Register] Request body:', req.body);
-
-      // Custom validation
-      const errors = {};
-      if (!username) errors.username = 'Username is required';
-      if (!password) errors.password = 'Password is required';
-      if (!email) errors.email = 'Email is required';
-      if (!confirm_password) errors.confirm_password = 'Confirm password is required';
-      // Password strength: min 8 chars, at least 1 number, 1 letter
-      if (password && !/^.*(?=.{8,})(?=.*\d)(?=.*[a-zA-Z]).*$/.test(password)) {
-        errors.password = 'Password must be at least 8 characters and contain a number and a letter';
-      }
-      // Confirm password match
-      if (password && confirm_password && password !== confirm_password) {
-        errors.confirm_password = 'Passwords do not match';
-      }
-      // Email format
-      if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-        errors.email = 'Invalid email format';
-      }
-      if (Object.keys(errors).length > 0) {
-        return res.status(400).json({ success: false, errors });
-      }
 
       // Assign "buyer" role by default
       let buyerRole = null;
@@ -85,11 +64,11 @@ class UserController {
       let status = 500;
       let errors = {};
       if (err.message && err.message.includes('Username already exists')) {
-        status = 409;
+        status = 400;
         errors.username = 'Username already exists';
       }
       if (err.message && err.message.includes('Email already exists')) {
-        status = 409;
+        status = 400;
         errors.email = 'Email already exists';
       }
       if (err.message && err.message.includes('Invalid email format')) {
@@ -122,7 +101,7 @@ class UserController {
       
       if (!user) {
         console.warn(`[UserController.login] Login failed for user: ${username}`);
-        return res.status(401).json({ error: 'Invalid credentials' });
+        return res.status(401).json({ success: false, error: 'Invalid credentials' });
       }
 
       // Check if user is NOT an admin (allow only regular users)
@@ -159,15 +138,32 @@ class UserController {
         console.warn(`[UserController.login] Could not load role permissions:`, roleErr.message);
       }
 
-      // Generate token and create session
-      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      SessionManager.create(token, username);
+      const token = crypto.randomBytes(24).toString('hex');
+      SessionManager.create(token, user.username, user.id);
+
+      // Store user session data
+      req.session.userId = user.id;
+      req.session.username = user.username;
+      req.session.email = user.email;
+      req.session.firstName = user.first_name;
+      req.session.lastName = user.last_name;
+      req.session.role = roleName || user.role_name;
+      req.session.permissions = permissions;
+      req.session.isUser = true;
+      req.session.buyerId = user.id;
       
       console.log(`[UserController.login] ✅ Login successful for user: ${username}`);
+      // Update last_login timestamp
+      try {
+        await User.setLastLogin(user.id);
+      } catch (e) {
+        console.warn('[UserController.login] Failed to update last_login:', e.message || e);
+      }
       
       res.json({ 
-        success: true, 
+        success: true,
         token,
+        accessToken: token,
         user: {
           id: user.id,
           username: user.username,
@@ -183,6 +179,25 @@ class UserController {
       });
     } catch (err) {
       console.error(`[UserController.login] Error during login:`, err);
+      next(err);
+    }
+  }
+
+  /**
+   * User logout endpoint
+   * Destroys the user session
+   */
+  static async logout(req, res, next) {
+    try {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('[UserController.logout] Error destroying session:', err);
+          return next(err);
+        }
+        console.log(`[UserController] Logout successful`);
+        res.json({ success: true });
+      });
+    } catch (err) {
       next(err);
     }
   }
@@ -374,3 +389,4 @@ class UserController {
 }
 
 module.exports = UserController;
+

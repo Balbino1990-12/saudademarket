@@ -61,3 +61,4 @@ const mysql = require('mysql2/promise');
     await connection.end();
   }
 })();
+

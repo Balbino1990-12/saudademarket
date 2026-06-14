@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Cart - PortugalStore</title>
+   <title>Saudade Market</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="public/css/style.css">
   <style>
@@ -108,12 +108,20 @@
       }
       const res = await fetch('/api/cart', {
         method: 'GET',
+        credentials: 'same-origin',
         headers: {
           'Authorization': 'Bearer ' + token
         }
       });
       if (!res.ok) return [];
-      return await res.json();
+      const result = await res.json();
+      if (result && result.success && result.data) {
+        return result.data.items || [];
+      }
+      if (Array.isArray(result)) {
+        return result;
+      }
+      return [];
     }
 
     async function updateQuantity(productId, quantity) {
@@ -121,6 +129,7 @@
       if (!token) return;
       const res = await fetch('/api/cart', {
         method: 'PUT',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
@@ -135,6 +144,7 @@
       if (!token) return;
       const res = await fetch('/api/cart', {
         method: 'DELETE',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
@@ -203,3 +213,4 @@
   </script>
 </body>
 </html>
+

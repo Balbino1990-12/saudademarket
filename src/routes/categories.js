@@ -3,6 +3,7 @@ const router = express.Router(); // Create a new Express router to handle catego
 const CategoryController = require('../controllers/CategoryController'); // Import the CategoryController to handle category-related operations
 const { verifyAdminSession } = require('../middleware/authentication'); // Middleware to verify that the user has an active admin session, ensuring that only authorized users can access protected routes
 const { checkPermission } = require('../middleware/authorization'); //
+const upload = require('../middleware/upload');
 
 // Get all categories (public)
 router.get('/', CategoryController.list);
@@ -25,11 +26,11 @@ router.get('/:id', CategoryController.getOne);
 // Protected routes - require authentication
 // Create new category
 // This endpoint allows admin users to create a new category. It requires authentication and the 'manage_categories' permission to ensure that only authorized users can create categories, which helps maintain the integrity and organization of the product catalog.
-router.post('/', verifyAdminSession, checkPermission('manage_categories'), CategoryController.create);
+router.post('/', verifyAdminSession, checkPermission('manage_categories'), upload.single('icon'), CategoryController.create);
 
 // Update category
 // This endpoint allows admin users to update an existing category by its ID. It requires authentication and the 'manage_categories' permission to ensure that only authorized users can modify category information, which helps maintain the integrity and organization of the product catalog.
-router.put('/:id', verifyAdminSession, checkPermission('manage_categories'), CategoryController.update);
+router.put('/:id', verifyAdminSession, checkPermission('manage_categories'), upload.single('icon'), CategoryController.update);
 
 // Delete category
 // This endpoint allows admin users to delete a category by its ID. It requires authentication and the 'manage_categories' permission to ensure that only authorized users can remove categories, which helps maintain the integrity and organization of the product catalog. Deleting a category may also involve handling related products, so it's important to restrict this action to prevent accidental data loss.
@@ -37,3 +38,4 @@ router.delete('/:id', verifyAdminSession, checkPermission('manage_categories'), 
 
 // Note: The getCount and getAllWithProductCounts endpoints are intentionally left public to allow both admin and regular users to access category counts without authentication, as this information is often needed for analytics, dashboards, or frontend displays without requiring user login.
 module.exports = router;
+

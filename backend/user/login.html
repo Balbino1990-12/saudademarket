@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Login — PortugalStore</title>
+   <title>Saudade Market</title>
   <style>
     * {
       margin: 0;
@@ -257,6 +257,18 @@
       box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
     }
 
+    .form-input.error {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .field-error {
+      color: #b91c1c;
+      font-size: 0.9rem;
+      margin-top: 6px;
+      min-height: 1.2em;
+    }
+
     .form-input::placeholder {
       color: #9ca3af;
     }
@@ -274,6 +286,27 @@
       cursor: pointer;
       transition: all 0.3s ease;
       margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit.loading {
+      color: transparent;
+      pointer-events: none;
+    }
+
+    .btn-submit.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
     }
 
     .btn-submit:hover:not(:disabled) {
@@ -288,6 +321,12 @@
     .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* Footer */
@@ -329,27 +368,31 @@
     <div class="card">
       <!-- Card Header -->
       <div class="card-header">
-        <img src="/images/logo.jpg" alt="PortugalStore Logo" class="logo-img">
+        <img src="/images/Saudade_market.png" alt="Saudade Market" class="logo-img">
       </div>
 
-      <h1 class="card-title">PortugalStore</h1>
+      <h1 class="card-title">Saudade Market</h1>
       <p class="card-subtitle" data-i18n="user.userPortal">User Portal</p>
 
       <!-- Card Body -->
       <div class="card-body">
-        <div class="message" id="message"></div>
+        <div class="message" id="message">Loading security token...</div>
 
-        <form id="loginForm" onsubmit="handleLogin(event)">
+        <form id="loginForm" novalidate>
+          <input type="hidden" name="_csrf" id="csrfToken">
           <div class="form-group">
             <label class="form-label" for="username" data-i18n="user.loginUsername">Username</label>
             <input
               class="form-input"
               type="text"
               id="username"
+              name="username"
               placeholder="Username"
-              required
+              autocomplete="email"
               autofocus
+              required
             >
+            <div class="field-error" id="usernameError"></div>
           </div>
 
           <div class="form-group">
@@ -358,9 +401,12 @@
               class="form-input"
               type="password"
               id="password"
+              name="password"
               placeholder="Password"
+              autocomplete="current-password"
               required
             >
+            <div class="field-error" id="passwordError"></div>
           </div>
 
           <button type="submit" class="btn-submit" id="submitBtn" data-i18n="user.signIn">Sign In</button>
@@ -369,13 +415,19 @@
 
       <!-- Card Footer -->
       <div class="card-footer">
-        <p data-i18n="user.noAccount">Don't have an account? <a href="#" onclick="alert('Registration page coming soon!')">Sign up</a></p>
+        <p data-i18n="user.noAccount">Don't have an account? <a href="/user/register.html">Sign up</a></p>
       </div>
     </div>
   </div>
 
   <script src="/admin/i18n.js"></script>
   <script>
+    // Helper function for debugging
+    function repr(str) {
+      if (str === null || str === undefined) return str;
+      return '"' + str.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"';
+    }
+
     if (localStorage.getItem('userToken')) {
       window.location.href = '/user/dashboard.html';
     }
@@ -431,91 +483,217 @@
       langBtn.classList.remove('active');
     });
 
-    // Login Handler
-    async function handleLogin(event) {
-      event.preventDefault();
-
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const messageEl = document.getElementById('message');
+    async function loadCsrfToken() {
       const submitBtn = document.getElementById('submitBtn');
-      const originalText = submitBtn.textContent;
+      const messageEl = document.getElementById('message');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+      }
+
+      try {
+        const response = await fetch('/csrf-token', {
+          credentials: 'same-origin'
+        });
+        if (!response.ok) {
+          throw new Error('Unable to fetch CSRF token');
+        }
+        const data = await response.json();
+        const tokenInput = document.getElementById('csrfToken');
+        if (tokenInput) {
+          tokenInput.value = data.csrfToken;
+          console.log('CSRF token loaded successfully');
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+        }
+        if (messageEl) {
+          messageEl.textContent = '';
+          messageEl.className = 'message';
+        }
+      } catch (error) {
+        console.error('CSRF token load failed:', error);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+        }
+        if (messageEl) {
+          messageEl.className = 'message error show';
+          messageEl.textContent = 'Failed to load security token. Please refresh the page.';
+        }
+      }
+    }
+
+    function clearLoginErrors() {
+      const messageEl = document.getElementById('message');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const usernameError = document.getElementById('usernameError');
+      const passwordError = document.getElementById('passwordError');
 
       messageEl.className = 'message';
       messageEl.textContent = '';
+      usernameInput.classList.remove('error');
+      passwordInput.classList.remove('error');
+      usernameError.textContent = '';
+      passwordError.textContent = '';
+    }
 
-      // Validate inputs
-      if (!username || !password) {
+    function showFieldError(inputId, errorId, errorText) {
+      const input = document.getElementById(inputId);
+      const errorEl = document.getElementById(errorId);
+      input.classList.add('error');
+      errorEl.textContent = errorText;
+    }
+
+    // Login Handler
+    async function handleLogin(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const csrfTokenInput = document.getElementById('csrfToken');
+
+      const username = usernameInput?.value?.trim() || '';
+      const password = passwordInput?.value || '';
+      const csrfToken = csrfTokenInput?.value || '';
+
+      const messageEl = document.getElementById('message');
+      const submitBtn = document.getElementById('submitBtn');
+      const originalText = submitBtn?.textContent || 'Sign In';
+
+      clearLoginErrors();
+
+      // Enhanced validation with detailed logging
+      console.log('=== LOGIN DEBUG INFO ===');
+      console.log('Username input element:', usernameInput);
+      console.log('Password input element:', passwordInput);
+      console.log('CSRF input element:', csrfTokenInput);
+      console.log('Username value:', repr(username));
+      console.log('Password length:', password.length);
+      console.log('CSRF token length:', csrfToken.length);
+      console.log('Form elements:', {
+        username: document.getElementById('username')?.value,
+        password: document.getElementById('password')?.value,
+        csrf: document.getElementById('csrfToken')?.value
+      });
+
+      // Check if CSRF token is loaded
+      if (!csrfToken || csrfToken.length === 0) {
+        console.error('CSRF token not loaded!');
         messageEl.className = 'message error show';
-        messageEl.textContent = 'Username and password are required';
+        messageEl.textContent = 'Page not fully loaded. Please refresh and try again.';
         return;
       }
+
+      let hasValidationError = false;
+
+      if (!username || username.length === 0) {
+        console.log('Username validation failed');
+        showFieldError('username', 'usernameError', 'Username is required');
+        hasValidationError = true;
+      }
+
+      if (!password || password.length === 0) {
+        console.log('Password validation failed');
+        showFieldError('password', 'passwordError', 'Password is required');
+        hasValidationError = true;
+      }
+
+      if (hasValidationError) {
+        return;
+      }
+
+      console.log('All validations passed, proceeding with login...');
 
       try {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Signing In...';
 
+        const requestData = { username, password };
+        console.log('Sending request data:', { username, passwordLength: password.length });
+
         const resp = await fetch('/api/user/login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          body: JSON.stringify(requestData)
         });
 
-        console.log('User login response status:', resp.status);
-        
+        console.log('Response status:', resp.status);
+        console.log('Response headers:', Object.fromEntries(resp.headers.entries()));
+
         if (!resp.ok) {
           let errorMsg = 'Login failed';
           try {
-            const err = await resp.json();
-            errorMsg = err.error || err.message || 'Login failed';
-          } catch (e) {
+            const errorData = await resp.json();
+            console.log('Error response data:', errorData);
+            errorMsg = errorData.error || errorData.message || 'Login failed';
+          } catch (parseError) {
+            console.error('Failed to parse error response:', parseError);
             errorMsg = `Login failed (Status: ${resp.status})`;
           }
-          
+
           messageEl.className = 'message error show';
           messageEl.textContent = errorMsg;
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
-          console.error('User login error:', errorMsg);
           return;
         }
 
         const data = await resp.json();
-        console.log('User login response data:', data);
-        
-        const token = data.token || data.accessToken;
+        console.log('Success response data:', data);
 
-        if (!token) {
-          messageEl.className = 'message error show';
-          messageEl.textContent = 'Login failed: no token returned';
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
-          console.error('No token in response');
-          return;
-        }
+        const token = data.token || data.accessToken || 'session-based';
 
-        // Store token and user info
+        // Store token and user info for backward compatibility
         localStorage.setItem('userToken', token);
+        localStorage.setItem('buyerToken', token); // keep old buyerToken support
         if (data.user) {
           localStorage.setItem('currentUser', JSON.stringify(data.user));
         }
-        
+
         messageEl.className = 'message success show';
         messageEl.textContent = 'Login successful! Redirecting...';
-        
-        console.log('User token stored, redirecting to user dashboard');
 
+        const userRole = (data.user?.role || data.user?.role_name || '').toString().trim().toLowerCase();
+        if (userRole === 'seller') {
+          setTimeout(() => {
+            window.location.href = '/user/dashboard.html';
+          }, 800);
+          return;
+        }
+
+        const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || '/index.html';
         setTimeout(() => {
-          window.location.href = '/user/dashboard.html';
+          window.location.href = redirectUrl;
         }, 1000);
-      } catch (e) {
+
+      } catch (error) {
+        console.error('Login exception:', error);
         messageEl.className = 'message error show';
-        messageEl.textContent = 'Connection error: ' + e.message;
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-        console.error('User login exception:', e);
+        messageEl.textContent = 'Connection error: ' + error.message;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
       }
     }
+
+    // Attach login handler after function definition to ensure the form submit is intercepted
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', handleLogin);
+    }
+
+    loadCsrfToken();
   </script>
 </body>
 </html>
+

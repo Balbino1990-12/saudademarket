@@ -155,3 +155,4 @@ If permissions still don't seem to be saving when using the admin dashboard:
 
 The extensive logging added to the frontend will help identify exactly where any issue is occurring.
 
+

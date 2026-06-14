@@ -13,10 +13,11 @@ class SessionManager {
   /**
    * Create a new session
    */
-  create(token, username) {
+  create(token, username, id = null) {
     const sessionData = {
       token,
       username,
+      id,
       createdAt: Date.now(),
       lastActivity: Date.now(),
       expiresAt: Date.now() + this.sessionTimeout
@@ -154,3 +155,4 @@ class SessionManager {
 
 // Export singleton instance
 module.exports = new SessionManager();
+

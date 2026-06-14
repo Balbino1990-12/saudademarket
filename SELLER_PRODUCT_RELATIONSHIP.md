@@ -336,3 +336,4 @@ document.getElementById('seller-email').textContent = data.seller_email;
 - [src/models/Product.js](src/models/Product.js) - Product model implementation
 - [src/controllers/ProductController.js](src/controllers/ProductController.js) - Product controller methods
 - [src/routes/products.js](src/routes/products.js) - Product API routes
+

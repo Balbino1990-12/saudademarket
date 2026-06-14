@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saudade Market Admin - Coupons</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css">
+    <script src="/js/i18n.js"></script>
+    <script src="admin-icons.js"></script>
+    <script src="sidebar.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div class="min-h-screen flex bg-slate-50">
+        <div id="sidebar" class="sidebar w-[260px] shrink-0"></div>
+
+        <div class="content ml-[260px] w-[calc(100%-260px)] flex flex-col">
+            <header class="border-b border-slate-200 bg-white px-6 py-5">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-slate-900" data-i18n="coupons.title">Coupons</h1>
+                        <p class="mt-2 text-sm text-slate-600" data-i18n="coupons.manage">Manage discount coupons and promotional codes.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button id="refreshBtn" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100" data-i18n="refresh">Refresh</button>
+                        <button id="addCouponBtn" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700" data-i18n="coupons.button.add">+ Add Coupon</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div id="alertBox" class="hidden rounded-[32px] border px-5 py-4 text-sm"></div>
+
+                <div class="grid gap-4 xl:grid-cols-[1fr_260px]">
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-900" data-i18n="coupons.summary">Coupons overview</h2>
+                                <p class="mt-2 text-sm text-slate-500" data-i18n="coupons.summary_description">Track coupons and their status in one place.</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="coupons.total">Total Coupons</div>
+                                <div id="totalCoupons" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="coupons.active">Active</div>
+                                <div id="activeCoupons" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-900" data-i18n="coupons.table_info">Coupon table</h3>
+                        <p class="mt-2 text-sm text-slate-500" data-i18n="coupons.table_description">View, edit, and remove coupons.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-[32px] border border-slate-200 bg-white shadow-sm overflow-hidden mt-6">
+                    <div class="overflow-x-auto">
+                        <table id="couponsTable" class="min-w-[1000px] w-full text-sm divide-y divide-slate-200 hidden">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.id">ID</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.code">Code</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.type">Type</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.value">Value</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.min_order">Min Order</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.uses_left">Uses Left</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.used_by">Used By</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.valid_from">Valid From</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.valid_to">Valid To</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="coupons.column.status">Status</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="couponsBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="hidden rounded-[32px] border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 mt-6">
+                    <div class="text-4xl">🗑️</div>
+                    <h3 class="mt-4 text-xl font-semibold text-slate-900" data-i18n="coupons.no_coupons">No Coupons Found</h3>
+                    <p class="mt-2" data-i18n="coupons.create_first_coupon">Create your first coupon to start offering discounts.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="couponModal" class="hidden fixed inset-0 z-[1100] flex items-center justify-center bg-slate-900/60 p-4 overflow-y-auto">
+        <div class="w-full max-w-3xl rounded-[32px] bg-white shadow-2xl ring-1 ring-slate-200">
+            <div class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <h2 id="modalTitle" class="text-2xl font-semibold text-slate-900" data-i18n="coupons.modal.add">Add Coupon</h2>
+                <button type="button" onclick="closeCouponModal()" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900">✕</button>
+            </div>
+            <form id="couponForm" class="space-y-6 p-6" onsubmit="handleCouponSubmit(event)">
+                <input type="hidden" id="couponId" name="couponId">
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div>
+                        <label for="code" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.code">Code</label>
+                        <input type="text" id="code" name="code" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                    </div>
+                    <div>
+                        <label for="type" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.type">Type</label>
+                        <select id="type" name="type" required class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                            <option value="fixed" data-i18n="coupons.option.fixed_amount">Fixed Amount</option>
+                            <option value="percent" data-i18n="coupons.option.percentage">Percentage</option>
+                            <option value="free_shipping" data-i18n="coupons.option.free_shipping">Free Shipping</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div>
+                        <label for="value" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.value">Value</label>
+                        <input type="number" id="value" name="value" step="0.01" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                    </div>
+                    <div>
+                        <label for="minOrderTotal" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.min_order_total">Min Order Total</label>
+                        <input type="number" id="minOrderTotal" name="minOrderTotal" step="0.01" value="0" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                    </div>
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div>
+                        <label for="usesLeft" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.uses_left">Uses Left</label>
+                        <input type="number" id="usesLeft" name="usesLeft" placeholder="Unlimited if empty" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                    </div>
+                    <div>
+                        <label for="active" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.active">Active</label>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="active" name="active" checked class="h-5 w-5 rounded border-slate-300 text-sky-600 focus:ring-sky-500">
+                            <label for="active" class="text-sm text-slate-700" data-i18n="coupons.label.active_status">Enabled</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div>
+                        <label for="validFrom" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.valid_from">Valid From</label>
+                        <input type="datetime-local" id="validFrom" name="validFrom" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                    </div>
+                    <div>
+                        <label for="validTo" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.valid_to">Valid To</label>
+                        <input type="datetime-local" id="validTo" name="validTo" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
+                    <button type="button" onclick="closeCouponModal()" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700" data-i18n="coupons.button.save">Save Coupon</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        async function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const res = await fetch(url, { ...defaultOptions, ...options });
+
+            // If the session/token is invalid, force re-login to obtain a new token
+            if (res.status === 401) {
+                try {
+                    localStorage.removeItem('adminToken');
+                } catch (e) {}
+                // Redirect to login so admin can re-authenticate
+                window.location.href = 'login.html';
+                // return the original response for callers if needed
+            }
+
+            return res;
+        }
+
+        function showNotification(message, type = 'info') {
+            const alertBox = document.getElementById('alertBox');
+            if (!alertBox) {
+                alert(message);
+                return;
+            }
+
+            alertBox.textContent = message;
+            alertBox.className = 'rounded-[32px] border px-5 py-4 text-sm transition';
+            if (type === 'success') {
+                alertBox.classList.add('border-emerald-200', 'bg-emerald-50', 'text-emerald-700');
+            } else if (type === 'error') {
+                alertBox.classList.add('border-rose-200', 'bg-rose-50', 'text-rose-700');
+            } else {
+                alertBox.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-700');
+            }
+            alertBox.classList.remove('hidden');
+
+            window.clearTimeout(alertBox.hideTimeout);
+            alertBox.hideTimeout = window.setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 5000);
+        }
+
+        function updateStats(coupons) {
+            document.getElementById('totalCoupons').textContent = coupons.length;
+            document.getElementById('activeCoupons').textContent = coupons.filter(c => c.active).length;
+        }
+
+        function renderCoupons(coupons) {
+            const tbody = document.getElementById('couponsBody');
+            const table = document.getElementById('couponsTable');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!coupons || coupons.length === 0) {
+                tbody.innerHTML = '';
+                table.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                updateStats([]);
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            table.classList.remove('hidden');
+            updateStats(coupons);
+
+            tbody.innerHTML = coupons.map(coupon => {
+                const statusClasses = coupon.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600';
+                return `
+                    <tr class="transition hover:bg-slate-50">
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.id}</td>
+                        <td class="px-5 py-4 align-top font-semibold text-slate-900">${coupon.code}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.type}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.value !== null && coupon.value !== undefined ? coupon.value : '-'}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.min_order_total !== null && coupon.min_order_total !== undefined ? coupon.min_order_total : '-'}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.uses_left !== null && coupon.uses_left !== undefined ? coupon.uses_left : 'Unlimited'}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.used_by !== null && coupon.used_by !== undefined ? coupon.used_by : 0}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.valid_from ? new Date(coupon.valid_from).toLocaleDateString() : '-'}</td>
+                        <td class="px-5 py-4 align-top text-slate-700">${coupon.valid_to ? new Date(coupon.valid_to).toLocaleDateString() : '-'}</td>
+                        <td class="px-5 py-4 align-top">
+                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClasses}">${coupon.active ? 'Active' : 'Inactive'}</span>
+                        </td>
+                        <td class="px-5 py-4 align-top">
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" class="edit-btn inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100" data-id="${coupon.id}">Edit</button>
+                                <button type="button" class="delete-btn inline-flex items-center rounded-2xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-rose-700" data-id="${coupon.id}">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadCoupons() {
+            if (!(await checkAuth())) return;
+
+            try {
+                const res = await authFetch('/api/admin/coupons');
+                const data = await res.json();
+
+                if (data.success && Array.isArray(data.data)) {
+                    renderCoupons(data.data);
+                } else {
+                    renderCoupons([]);
+                    showNotification(data.error || 'Failed to load coupons', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to load coupons:', error);
+                renderCoupons([]);
+                showNotification('Failed to load coupons', 'error');
+            }
+        }
+
+        function openCouponModal(coupon = null) {
+            const modal = document.getElementById('couponModal');
+            const form = document.getElementById('couponForm');
+            const title = document.getElementById('modalTitle');
+
+            if (coupon && coupon.data) {
+                coupon = coupon.data;
+            }
+
+            if (coupon) {
+                title.setAttribute('data-i18n', 'coupons.modal.edit');
+                title.textContent = window.translate ? window.translate('coupons.modal.edit') : 'Edit Coupon';
+                populateForm(coupon);
+            } else {
+                title.setAttribute('data-i18n', 'coupons.modal.add');
+                title.textContent = window.translate ? window.translate('coupons.modal.add') : 'Add Coupon';
+                form.reset();
+                document.getElementById('couponId').value = '';
+                document.getElementById('active').checked = true;
+                updateCouponValueFieldState();
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeCouponModal() {
+            document.getElementById('couponModal').classList.add('hidden');
+        }
+
+        function updateCouponValueFieldState() {
+            const typeField = document.getElementById('type');
+            const valueField = document.getElementById('value');
+            if (!typeField || !valueField) return;
+
+            if (typeField.value === 'free_shipping') {
+                valueField.value = '';
+                valueField.disabled = true;
+                valueField.placeholder = 'Not required for free shipping';
+            } else {
+                valueField.disabled = false;
+                valueField.placeholder = '';
+            }
+        }
+
+        function populateForm(coupon) {
+            document.getElementById('couponId').value = coupon.id || '';
+            document.getElementById('code').value = coupon.code || '';
+            document.getElementById('type').value = coupon.type || 'fixed';
+            document.getElementById('value').value = coupon.value !== null && coupon.value !== undefined ? coupon.value : '';
+            document.getElementById('minOrderTotal').value = coupon.min_order_total !== null && coupon.min_order_total !== undefined ? coupon.min_order_total : '';
+            document.getElementById('usesLeft').value = coupon.uses_left !== null && coupon.uses_left !== undefined ? coupon.uses_left : '';
+            document.getElementById('validFrom').value = coupon.valid_from ? new Date(coupon.valid_from).toISOString().slice(0,16) : '';
+            document.getElementById('validTo').value = coupon.valid_to ? new Date(coupon.valid_to).toISOString().slice(0,16) : '';
+            document.getElementById('active').checked = Boolean(coupon.active);
+            updateCouponValueFieldState();
+        }
+
+        async function handleCouponSubmit(event) {
+            event.preventDefault();
+            if (!(await checkAuth())) return;
+
+            const formData = new FormData(event.target);
+            const couponType = formData.get('type');
+            const rawValue = formData.get('value');
+            const couponData = {
+                code: (formData.get('code') || '').toString().trim().toUpperCase(),
+                type: couponType,
+                value: couponType === 'free_shipping' ? 0 : (rawValue !== null && rawValue !== '' ? parseFloat(rawValue) : null),
+                min_order_total: formData.get('minOrderTotal') ? parseFloat(formData.get('minOrderTotal')) : null,
+                uses_left: formData.get('usesLeft') ? parseInt(formData.get('usesLeft')) : null,
+                valid_from: formData.get('validFrom') || null,
+                valid_to: formData.get('validTo') || null,
+                active: formData.has('active')
+            };
+
+            const couponId = formData.get('couponId');
+            const method = couponId ? 'PUT' : 'POST';
+            const url = couponId ? `/api/admin/coupons/${couponId}` : '/api/admin/coupons';
+
+            try {
+                const res = await authFetch(url, {
+                    method,
+                    body: JSON.stringify(couponData)
+                });
+
+                const responseData = await res.json();
+                if (res.ok && responseData.success !== false) {
+                    closeCouponModal();
+                    loadCoupons();
+                    showNotification(couponId ? (window.translate ? window.translate('coupons.updated') : 'Coupon updated successfully') : (window.translate ? window.translate('coupons.created') : 'Coupon created successfully'), 'success');
+                } else {
+                    showNotification(responseData.error || responseData.message || 'Failed to save coupon', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to save coupon:', error);
+                showNotification('Failed to save coupon', 'error');
+            }
+        }
+
+        async function editCoupon(id) {
+            try {
+                const res = await authFetch(`/api/admin/coupons/${id}`);
+                const data = await res.json();
+                const coupon = data && data.success ? data.data : data;
+
+                if (res.ok && coupon && !coupon.error) {
+                    openCouponModal(coupon);
+                } else {
+                    showNotification((coupon && coupon.error) || 'Failed to load coupon', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to load coupon:', error);
+                showNotification('Failed to load coupon', 'error');
+            }
+        }
+
+        async function deleteCoupon(id) {
+            if (!confirm(window.translate ? window.translate('coupons.confirm_delete') : 'Are you sure you want to delete this coupon?')) return;
+            try {
+                const res = await authFetch(`/api/admin/coupons/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok) {
+                    loadCoupons();
+                    showNotification(window.translate ? window.translate('coupons.deleted') : 'Coupon deleted successfully', 'success');
+                } else {
+                    showNotification(data.error || 'Failed to delete coupon', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to delete coupon:', error);
+                showNotification('Failed to delete coupon', 'error');
+            }
+        }
+
+        function initializeI18n() {
+            window.addEventListener('i18nLanguageChanged', () => {
+                const addBtn = document.getElementById('addCouponBtn');
+                if (addBtn) {
+                    addBtn.textContent = window.translate ? window.translate('coupons.button.add') : 'Add Coupon';
+                }
+                const title = document.getElementById('modalTitle');
+                if (title) {
+                    const isEditing = document.getElementById('couponId').value;
+                    title.textContent = window.translate
+                        ? window.translate(isEditing ? 'coupons.modal.edit' : 'coupons.modal.add')
+                        : (isEditing ? 'Edit Coupon' : 'Add Coupon');
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('refreshBtn').addEventListener('click', loadCoupons);
+            document.getElementById('addCouponBtn').addEventListener('click', () => openCouponModal());
+            document.getElementById('couponForm').addEventListener('submit', handleCouponSubmit);
+            document.getElementById('type').addEventListener('change', updateCouponValueFieldState);
+            document.getElementById('couponModal').addEventListener('click', (event) => {
+                if (event.target === document.getElementById('couponModal')) {
+                    closeCouponModal();
+                }
+            });
+            document.addEventListener('click', (event) => {
+                if (event.target.closest('.edit-btn')) {
+                    editCoupon(event.target.closest('.edit-btn').dataset.id);
+                }
+                if (event.target.closest('.delete-btn')) {
+                    deleteCoupon(event.target.closest('.delete-btn').dataset.id);
+                }
+            });
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeCouponModal();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (await checkAuth()) {
+                loadCoupons();
+                setupEventListeners();
+                initializeI18n();
+            }
+        });
+    </script>
+</body>
+</html>

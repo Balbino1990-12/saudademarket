@@ -68,6 +68,51 @@
             font-weight: 700;
         }
 
+        .product-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: #b45309;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .product-rating .stars {
+            display: inline-flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .product-rating .star {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .product-rating .star.full {
+            color: #f59e0b;
+        }
+
+        .product-rating .star.half {
+            color: transparent;
+            background: linear-gradient(to right, #f59e0b 50%, #cbd5e1 50%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .product-rating .star.empty {
+            color: #cbd5e1;
+        }
+
+        .product-rating .rating-value {
+            font-size: 0.85rem;
+            color: #4f5e72;
+            font-weight: 600;
+        }
+
         .product-detail-modal {
             position: fixed;
             inset: 0;
@@ -218,7 +263,43 @@
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.16);
             font-size: 1.1rem;
-            font-weight: 800;
+        }
+
+        .pagination-controls {
+            margin: 12px 36px 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            color: #1f2937;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            min-width: 38px;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .pagination-btn.active {
+            background: #1e40af;
+            color: #fff;
+            border-color: #1e3a8a;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
         }
 
         .product-detail-add-cart:hover {
@@ -253,15 +334,510 @@
                 height: 240px;
             }
         }
+
+
+
+        #productList {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            padding: 28px 24px 24px 0;
+            margin-top: 8px;
+        }
+
+        .product-toolbar {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            padding: 18px 36px;
+            margin: 12px 36px 12px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.1);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 210px;
+            z-index: 100;
+        }
+
+        .product-toolbar .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .product-toolbar label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #334155;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .product-toolbar select {
+            min-width: 170px;
+            height: 48px;
+            padding: 0 14px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 18px;
+            background: #fff;
+            color: #0f172a;
+            font-size: 0.97rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .product-toolbar select:hover {
+            transform: translateY(-1px);
+        }
+
+        .product-toolbar select:focus {
+            border-color: rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        .toolbar-actions {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .saved-products-toggle {
+            border: 1px solid rgba(37, 99, 235, 0.22);
+            background: #ffffff;
+            color: #1d4ed8;
+            padding: 12px 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 68px;
+            margin-left: auto;
+        }
+
+        .saved-products-toggle .heart-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            font-size: 1.1rem;
+            color: #dc2626;
+            line-height: 1;
+        }
+
+        .saved-products-toggle #savedCount {
+            font-size: 1rem;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .saved-products-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
+        }
+
+        .save-product-btn {
+            margin-top: 14px;
+            width: 100%;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 12px 14px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .save-product-btn.saved {
+            background: #1d4ed8;
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .save-product-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .saved-products-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            padding: 18px;
+        }
+
+        .saved-products-modal.active {
+            display: flex;
+        }
+
+        .saved-products-dialog {
+            position: relative;
+            width: min(860px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+        }
+
+        .saved-products-dialog h2 {
+            margin: 0 0 18px;
+            font-size: 1.5rem;
+            color: #111827;
+        }
+
+        .saved-products-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            border: none;
+            background: #f3f4f6;
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .saved-products-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .saved-product-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 18px;
+            background: #f8fbff;
+        }
+
+        .saved-product-info {
+            display: grid;
+            gap: 4px;
+        }
+
+        .saved-product-info strong {
+            font-size: 1rem;
+            color: #111827;
+        }
+
+        .saved-product-info span {
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .saved-product-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .saved-product-actions button {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .saved-product-actions .add-to-cart-btn {
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            color: #fff;
+        }
+
+        .saved-product-actions .remove-saved-btn {
+            background: #fff;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            color: #0f172a;
+        }
+
+        .saved-products-empty {
+            text-align: center;
+            color: #475569;
+            padding: 28px 0;
+        }
+
+        .product-list-with-sidebar {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .product-list-main {
+            flex: 1;
+            margin-left: 324px;
+        }
+
+        .product-category-sidebar {
+            flex: 0 0 300px;
+            background: #f8fbff;
+            border-radius: 24px;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            box-shadow: 0 16px 50px rgba(15, 23, 42, 0.1);
+            padding: 22px;
+            position: fixed;
+            top: 210px;
+            left: 24px;
+            width: 300px;
+            max-height: calc(100vh - 234px);
+            overflow-y: auto;
+        }
+
+        .product-category-sidebar h3 {
+            margin: 0 0 18px 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .sidebar-specialty-category-section {
+            margin-top: 24px;
+        }
+
+        .sidebar-specialty-category-section .sidebar-subtitle {
+            margin: 0 0 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .sidebar-category-tree {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-category-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-category-button {
+            width: 100%;
+            display: block;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.26);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+            text-align: left;
+            padding: 12px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #0f172a;
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .sidebar-category-button:hover {
+            transform: translateY(-1px);
+            background-color: #ffffff;
+            border-color: rgba(59, 130, 246, 0.18);
+        }
+
+        .sidebar-category-button.active {
+            background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+            color: #ffffff;
+            box-shadow: 0 18px 35px rgba(37, 99, 235, 0.18);
+            border-color: transparent;
+        }
+
+        .sidebar-category-children {
+            margin-left: 12px;
+            border-left: 1px solid rgba(148, 163, 184, 0.18);
+            padding-left: 12px;
+            margin-top: 8px;
+        }
+
+        .category {
+            border-radius: 24px;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding-top: 16px;
+        }
+
+        .category:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 26px 70px rgba(15, 23, 42, 0.12);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .category .image-wrapper {
+            width: 100%;
+            height: 190px;
+            overflow: hidden;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            background: #f8fafc;
+        }
+
+        .category .image-wrapper img,
+        .category img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .category p {
+            margin-top: 0;
+            font-weight: 800;
+            color: #111827;
+            font-size: 1.05rem;
+            line-height: 1.35;
+        }
+
+        .category .subtitle {
+            display: block;
+            font-size: 0.95rem;
+            color: #2563eb;
+            margin-top: 8px;
+            font-weight: 700;
+            letter-spacing: 0.15px;
+        }
+
+        .product-stock,
+        .product-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .product-stock {
+            background: #ecfdf5;
+            color: #166534;
+        }
+
+        #productList .product-stock {
+            margin-top: 14px;
+        }
+
+        #productList .product-rating {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        @media (max-width: 900px) {
+            .product-toolbar {
+                margin: 12px 0;
+                padding: 16px 20px;
+                justify-content: center;
+            }
+
+            .product-toolbar .toolbar-group {
+                flex: 1 1 260px;
+                min-width: 260px;
+            }
+
+            .product-toolbar label {
+                white-space: normal;
+            }
+
+            .product-toolbar select {
+                min-width: 180px;
+            }
+
+            .product-list-with-sidebar {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .product-category-sidebar {
+                padding: 20px;
+                position: relative;
+                top: 0;
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .product-list-main {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .product-toolbar {
+                margin: 12px 0;
+                padding: 16px 18px;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 12px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+
+            .product-toolbar::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .product-toolbar::-webkit-scrollbar-thumb {
+                background: rgba(148, 163, 184, 0.45);
+                border-radius: 999px;
+            }
+
+            .product-toolbar .toolbar-group {
+                flex: 0 0 auto;
+                min-width: 220px;
+                gap: 10px;
+            }
+
+            .product-toolbar label {
+                flex: 0 0 auto;
+                width: auto;
+                white-space: nowrap;
+            }
+
+            .product-toolbar select {
+                min-width: 180px;
+            }
+
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="header-top">
             <div class="logo">
-                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
                 <div class="logo-text">
-                    <h1>Portugalsstore.fr</h1>
+                    <h1>Saudade Market</h1>
                     <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
                 </div>
             </div>
@@ -271,7 +847,10 @@
             </div>
 
             <div class="header-actions">
-                <button class="icon user" title="Compte">👤</button>
+                <button class="icon user" id="profileBtn" title="Compte" style="display:flex; align-items:center; gap:6px;">
+                    <svg class="profile-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span class="profile-label" id="profileLabel">Profil</span>
+                </button>
                 <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
                 <div class="language-selector">
                     <button id="langBtn" class="lang-toggle">FR</button>
@@ -289,7 +868,7 @@
             <ul>
                 <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
                 <li><a href="produits.html" class="active" data-i18n="nav.products">PRODUITS</a></li>
-                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li id="specialties-menu-anchor"></li>
                 <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
                 <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
                 <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
@@ -299,24 +878,264 @@
             </ul>
         </nav>
     </header>
+    <style>
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        main {
+            padding-top: 210px;
+        }
+        .profile-dropdown {
+            display: none;
+            position: fixed;
+            top: 68px;
+            right: 16px;
+            min-width: 220px;
+            max-width: 77vw;
+            width: 220px;
+            background: rgba(10, 14, 22, 0.97);
+            border-radius: 14px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            box-shadow: 0 20px 34px rgba(0, 0, 0, 0.30);
+            color: #f8fafc;
+            padding: 10px;
+            z-index: 5500;
+            transform: translateY(-2px);
+            transition: transform 0.18s ease, opacity 0.18s ease;
+            opacity: 0;
+        }
 
+        .profile-dropdown.visible {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .profile-dropdown .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .profile-dropdown .thumb {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            color: #fff;
+            font-size: 1.0rem;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+        }
+
+        .profile-dropdown .profile-name {
+            margin: 0;
+            font-size: 0.96rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .profile-dropdown .profile-email {
+            margin: 1px 0 0;
+            font-size: 0.78rem;
+            color: #cbd5e1;
+        }
+
+        .profile-dropdown .menu-item,
+        .profile-dropdown .logout-btn {
+            width: 100%;
+            text-align: left;
+            border-radius: 8px;
+            padding: 8px 10px;
+            border: none;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.08);
+            margin-top: 6px;
+            backdrop-filter: blur(4px);
+        }
+
+        .profile-dropdown .menu-item:hover,
+        .profile-dropdown .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(1px);
+        }
+
+        .profile-dropdown .logout-btn {
+            color: #fff;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            font-weight: 700;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+    
+        .profile-dropdown.visible {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .profile-dropdown .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .profile-dropdown .thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            color: #fff;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-dropdown .profile-name {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.015em;
+        }
+
+        .profile-dropdown .profile-email {
+            margin: 2px 0 0;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            letter-spacing: 0.01em;
+        }
+
+        .profile-dropdown .profile-email {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .profile-dropdown .menu-item,
+        .profile-dropdown .logout-btn {
+            width: 100%;
+            text-align: left;
+            border-radius: 10px;
+            padding: 10px 12px;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            color: #e2e8f0;
+            background: rgba(234, 236, 248, 0.08);
+            margin-top: 8px;
+            backdrop-filter: blur(8px);
+        }
+
+        .profile-dropdown .menu-item:hover,
+        .profile-dropdown .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(2px);
+        }
+
+        .profile-dropdown .logout-btn {
+            color: #fff;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            font-weight: 700;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .profile-dropdown .logout-btn:hover {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            transform: translateX(2px);
+        }
+    </style>
+
+    <div id="profileDropdown" class="profile-dropdown" aria-hidden="true">
+        <div class="profile-top">
+            <div class="thumb" id="profileThumb">U</div>
+            <div>
+                <p class="profile-name" id="profileUsername"></p>
+                <p class="profile-email" id="profileEmail"></p>
+            </div>
+        </div>
+        <div id="profileRole" style="font-size:0.82rem;color:#94a3b8;margin-bottom:8px;"></div>
+        <button class="profile-all-profiles" id="seeAllProfiles" data-i18n="profile.all_profiles">👥 Voir tous les profils</button>
+        <button class="profile-menu-item" id="settingsPrivacy" data-i18n="profile.settings_privacy">⚙️ Paramètres & confidentialité</button>
+        <button class="profile-menu-item" id="profileOrders" data-i18n="profile.orders_history">📜 Historique des commandes</button>
+        <button class="profile-menu-item" id="helpSupport" data-i18n="profile.help_support">❓ Aide & support</button>
+        <button class="profile-menu-item" id="displayAccessibility" data-i18n="profile.display_accessibility">🌙 Affichage & accessibilité</button>
+        <button class="profile-menu-item" id="feedback" data-i18n="profile.feedback">💬 Retour (CTRL B)</button>
+        <button class="profile-logout" id="profileLogout" data-i18n="profile.logout">🚪 Déconnexion</button>
+    </div>
     <main>
-        <section style="padding: 24px 36px 8px;">
-            <h1 style="font-size: 2rem; margin: 0; color: #111;">All products</h1>
-        </section>
-        <section class="product-list" id="productList" style="padding:28px 36px; display:flex; flex-wrap:wrap; gap:18px;"></section>
-        
-        <!-- Recommendations Section -->
-        <section id="recommendationsContainer" style="padding: 40px 36px; background: #f9f9f9; margin-top: 40px;">
-            <!-- Recommendations will be loaded here by JavaScript -->
-        </section>
-    </main>
+        <div class="product-list-with-sidebar">
+            <aside class="product-category-sidebar">
+                <h3 data-i18n="product.sidebar.categories">Catégories</h3>
+                <div id="productCategorySidebarTree" class="sidebar-category-tree">
+                    <!-- Category tree will be populated by JavaScript -->
+                </div>
+                <div id="productSpecialtyCategorySidebarSection" class="sidebar-specialty-category-section" style="display:none; margin-top: 24px;">
+                    <h4 class="sidebar-subtitle">Catégories de spécialités</h4>
+                    <div id="productSpecialtyCategorySidebarTree" class="sidebar-category-tree"></div>
+                </div>
+            </aside>
+            <div class="product-list-main">
+                <div class="product-toolbar" id="productToolbar">
+                    <div class="toolbar-group">
+                        <label for="productFilter">Filtrer par
+                            <select id="productFilter">
+                                <option value="all">Tous</option>
+                                <option value="in_stock">En stock</option>
+                                <option value="out_of_stock">Rupture de stock</option>
+                            </select>
+                        </label>
+                        <label for="productCategoryFilter">Catégorie
+                            <select id="productCategoryFilter">
+                                <option value="all">Toutes catégories</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="toolbar-group">
+                        <label for="productSort">Trier par
+                            <select id="productSort">
+                                <option value="price_asc">Prix croissant</option>
+                                <option value="price_desc">Prix décroissant</option>
+                                <option value="rating_desc">Meilleures notes</option>
+                                <option value="stock_desc">Meilleur stock</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="toolbar-actions">
+                        <button id="viewSavedProductsBtn" type="button" class="saved-products-toggle" aria-label="Saved products">
+                            <span class="heart-icon">♥</span>
+                            <span id="savedCount">0</span>
+                        </button>
+                    </div>
+                </div>
+                <section class="product-list" id="productList"></section>
+                <div id="paginationControls" class="pagination-controls"></div>
+            </div>
+        </div>
 
     <div id="productDetailModal" class="product-detail-modal" aria-hidden="true">
         <div class="product-detail-dialog">
             <button id="closeProductDetailModal" class="product-detail-close" aria-label="Close">&times;</button>
             <div class="product-detail-body">
-                <img id="productDetailImage" class="product-detail-image" src="/images/logo.jpg" alt="Product image" />
+                <img id="productDetailImage" class="product-detail-image" src="/images/Saudade_market.png" alt="Product image" />
                 <div class="product-detail-info">
                     <h2 id="productDetailTitle">Product</h2>
                     <div id="productDetailCategory" class="product-detail-meta"></div>
@@ -331,6 +1150,7 @@
                     <div id="productDetailDescription" class="product-detail-description"></div>
                     <div class="product-detail-actions">
                         <button id="productDetailAddToCart" class="product-detail-add-cart" type="button">Add to cart now</button>
+                        <button id="productDetailSaveButton" type="button" class="save-product-btn">Save</button>
                     </div>
                 </div>
             </div>
@@ -338,6 +1158,16 @@
         </div>
     </div>
 
+    <div id="savedProductsModal" class="saved-products-modal" aria-hidden="true">
+        <div class="saved-products-dialog">
+            <button id="closeSavedProductsModal" class="saved-products-close" aria-label="Close">&times;</button>
+            <h2>Saved products</h2>
+            <div id="savedProductsList" class="saved-products-list"></div>
+            <p id="savedProductsEmpty" class="saved-products-empty">No saved products yet.</p>
+        </div>
+    </div>
+
     <script src="/js/script.js"></script>
 </body>
 </html>
+

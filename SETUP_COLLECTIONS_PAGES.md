@@ -93,3 +93,4 @@ If you get 404 errors on any link:
 1. Check that the collection/page exists in your admin
 2. Verify the handle matches exactly (case-sensitive)
 3. Ensure the collection/page is published (not archived)
+

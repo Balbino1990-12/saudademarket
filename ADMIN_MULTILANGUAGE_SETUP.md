@@ -376,3 +376,4 @@ Override CSS variables in `<style>`:
 - 💬 Translation management dashboard
 - 🎨 Theme customization (dark mode support)
 
+

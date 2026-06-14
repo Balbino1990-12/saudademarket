@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Saudade Market Admin</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css" />
+    <style>
+      main { min-height: calc(100vh - 6rem); }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div id="adminHeader" data-header-title="Settings" class="admin-header-placeholder"></div>
+    <div class="min-h-screen flex bg-slate-50">
+        <div id="sidebar" class="sidebar w-[260px] shrink-0"></div>
+        <div class="content ml-[260px] w-[calc(100%-260px)] flex flex-col">
+            <main class="flex-1 overflow-y-auto p-6">
+                <section class="rounded-[24px] border border-slate-200 bg-white shadow-sm p-6 max-w-4xl mx-auto">
+                    <h2 class="text-2xl font-semibold text-slate-900">Site Settings</h2>
+                    <p class="mt-2 text-sm text-slate-500">Configure global site settings.</p>
+
+                    <form id="settingsForm" class="mt-6 grid gap-4">
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Site Logo</span>
+                            <div class="mt-2 flex items-center gap-4">
+                                <img id="siteLogoPreview" src="" alt="Logo preview" class="h-14 w-14 object-contain rounded-md border" />
+                                <div>
+                                    <input id="siteLogoInput" type="file" accept="image/*" class="mt-2" />
+                                    <div class="text-xs text-slate-500 mt-1">Upload a logo (PNG, JPG, SVG). Max 2MB.</div>
+                                </div>
+                            </div>
+                            <input id="siteLogoUrl" type="hidden" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Site Title</span>
+                            <input id="siteTitle" type="text" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900" />
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Contact Email</span>
+                            <input id="contactEmail" type="email" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900" />
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Default Language</span>
+                            <select id="defaultLanguage" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900">
+                                <option value="en">English</option>
+                                <option value="fr">Français</option>
+                                <option value="pt">Português</option>
+                            </select>
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Currency</span>
+                            <input id="currency" type="text" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900" />
+                        </label>
+
+                        <label class="flex items-center gap-4">
+                            <input id="maintenanceMode" type="checkbox" class="h-5 w-5" />
+                            <span class="text-sm font-medium text-slate-700">Maintenance mode</span>
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Analytics ID</span>
+                            <input id="analyticsId" type="text" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900" />
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-slate-700">Advanced JSON (optional)</span>
+                            <textarea id="advancedJson" rows="6" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900"></textarea>
+                        </label>
+
+                        <div class="flex items-center gap-3 mt-2">
+                            <button id="saveSettingsBtn" type="button" class="inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white">Save Settings</button>
+                            <div id="saveStatus" class="text-sm text-slate-500"></div>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="admin-header.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

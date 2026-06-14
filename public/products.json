@@ -1,14 +1,5 @@
 [
   {
-    "id": "charcutaria-salame",
-    "name_fr": "Salami Traditionnel",
-    "name_pt": "Salame Tradicional Português",
-    "name_en": "Traditional Portuguese Salami",
-    "image": "/images/charcutaria.jpg",
-    "price": 8.99,
-    "category": "charcutaria"
-  },
-  {
     "id": "charcutaria-presunto",
     "name_fr": "Jambon Serrano",
     "name_pt": "Presunto Serrano",

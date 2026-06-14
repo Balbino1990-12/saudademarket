@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saudade Market Admin - Returns</title>
+    <link rel="stylesheet" href="dist/admin-tailwind.css">
+    <script src="/js/i18n.js"></script>
+    <script src="admin-icons.js"></script>
+    <script src="sidebar.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div class="min-h-screen flex bg-slate-50">
+        <div id="sidebar" class="sidebar w-[260px] shrink-0"></div>
+
+        <div class="content ml-[260px] w-[calc(100%-260px)] flex flex-col">
+            <header class="border-b border-slate-200 bg-white px-6 py-5">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight text-slate-900" data-i18n="returns.title">Returns</h1>
+                        <p class="mt-2 text-sm text-slate-600" data-i18n="returns.manage">Manage product returns and refund requests.</p>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div id="notificationBanner" class="hidden rounded-[32px] border px-5 py-4 text-sm mb-6"></div>
+
+                <div class="grid gap-4 xl:grid-cols-[1fr_260px]">
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-900" data-i18n="returns.summary">Returns overview</h2>
+                                <p class="mt-2 text-sm text-slate-500" data-i18n="returns.summary_description">Track return requests, refunds, and exchanges.</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 grid gap-4 sm:grid-cols-3">
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="returns.total">Total returns</div>
+                                <div id="summaryTotal" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="returns.pending">Pending</div>
+                                <div id="summaryPending" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                            <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                                <div class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500" data-i18n="returns.open_cases">Open cases</div>
+                                <div id="summaryOpen" class="mt-3 text-3xl font-semibold text-slate-900">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-900" data-i18n="returns.table_info">Return requests</h3>
+                        <p class="mt-2 text-sm text-slate-500" data-i18n="returns.table_description">Search, filter and manage return cases.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-[32px] border border-slate-200 bg-white shadow-sm overflow-hidden mt-6">
+                    <div class="grid gap-4 p-6 md:grid-cols-[1fr_auto] md:items-end">
+                        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(260px,1fr)_minmax(240px,280px)]">
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700" data-i18n="returns.label.search">Search returns</span>
+                                <input id="searchInput" type="search" placeholder="Search by order, buyer or product" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                            </label>
+                            <label class="block">
+                                <span class="text-sm font-semibold text-slate-700" data-i18n="returns.label.filter_status">Filter status</span>
+                                <select id="statusFilter" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20">
+                                    <option value="all">All statuses</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="received">Received</option>
+                                    <option value="refunded">Refunded</option>
+                                    <option value="exchanged">Exchanged</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table id="returnsTable" class="min-w-[1020px] w-full text-sm divide-y divide-slate-200">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.rma">RMA Number</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.order">Order</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.buyer">Buyer</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.product">Product</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.qty">Qty</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.reason">Reason</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.status">Status</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.refund_amount">Refund Amount</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.date">Requested</th>
+                                    <th class="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em]" data-i18n="returns.column.actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="returnsBody" class="divide-y divide-slate-200 bg-white">
+                                <!-- return rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="emptyState" class="hidden rounded-[32px] border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+                        <div class="text-4xl">📭</div>
+                        <h3 class="mt-4 text-xl font-semibold text-slate-900" data-i18n="returns.no_returns">No returns found.</h3>
+                        <p class="mt-2" data-i18n="returns.manage">Manage product returns and refund requests.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let returnsData = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuth()) return;
+            initializeI18n();
+            setupFilters();
+            loadReturns();
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            return fetch(url, { ...defaultOptions, ...options });
+        }
+
+        async function loadReturns() {
+            try {
+                const res = await authFetch('/api/returns/admin');
+                if (!res.ok) {
+                    throw new Error('Failed to fetch returns');
+                }
+                const data = await res.json();
+                returnsData = Array.isArray(data.data) ? data.data : [];
+                renderReturnsTable();
+                renderSummary();
+            } catch (err) {
+                console.error('Failed to load returns:', err);
+                showNotification(window.translate ? window.translate('returns.notification.load_error') : 'Failed to load returns.', 'error');
+            }
+        }
+
+        function renderReturnsTable() {
+            const tbody = document.getElementById('returnsBody');
+            const emptyState = document.getElementById('emptyState');
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const filtered = returnsData.filter(returnRequest => {
+                const status = (returnRequest.status || 'pending').toLowerCase();
+                const order = (returnRequest.order_serial || returnRequest.order_id || '').toLowerCase();
+                const buyer = (returnRequest.buyer_username || returnRequest.buyer_id || '').toLowerCase();
+                const product = (returnRequest.name_en || returnRequest.name_fr || returnRequest.name_pt || returnRequest.product_id || '').toLowerCase();
+                const text = `${order} ${buyer} ${product} ${status}`;
+                const statusMatch = statusFilter === 'all' || status === statusFilter;
+                const searchMatch = !search || text.includes(search);
+                return statusMatch && searchMatch;
+            });
+
+            tbody.innerHTML = '';
+            if (filtered.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            filtered.forEach(returnRequest => {
+                const statusLabel = returnRequest.status || 'pending';
+                const formattedDate = formatDate(returnRequest.created_at || returnRequest.order_date);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${returnRequest.rma_number || returnRequest.id}</td>
+                    <td>${returnRequest.order_serial || returnRequest.order_id || '-'}</td>
+                    <td>${returnRequest.buyer_username || returnRequest.buyer_id || '-'}</td>
+                    <td>${returnRequest.name_en || returnRequest.name_fr || returnRequest.name_pt || returnRequest.product_id || '-'}</td>
+                    <td>${returnRequest.quantity || 0}</td>
+                    <td>${returnRequest.reason || '-'}</td>
+                    <td><span class="${getStatusBadgeClasses(statusLabel)}">${statusLabel}</span></td>
+                    <td>${typeof returnRequest.refund_amount === 'number' ? returnRequest.refund_amount.toFixed(2) : (returnRequest.refund_amount || '-')}</td>
+                    <td>${formattedDate}</td>
+                    <td><div class="flex flex-wrap gap-2">${getActionButtons(returnRequest)}</div></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderSummary() {
+            const total = returnsData.length;
+            const pending = returnsData.filter(item => (item.status || 'pending') === 'pending').length;
+            const open = returnsData.filter(item => ['pending', 'approved', 'received'].includes((item.status || '').toLowerCase())).length;
+            document.getElementById('summaryTotal').textContent = total;
+            document.getElementById('summaryPending').textContent = pending;
+            document.getElementById('summaryOpen').textContent = open;
+        }
+
+        function formatDate(value) {
+            if (!value) return '-';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleDateString();
+        }
+
+        function getStatusBadgeClasses(status) {
+            const base = 'inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ';
+            switch ((status || '').toLowerCase()) {
+                case 'approved': return `${base}bg-emerald-100 text-emerald-700`;
+                case 'received': return `${base}bg-sky-100 text-sky-700`;
+                case 'refunded': return `${base}bg-violet-100 text-violet-700`;
+                case 'exchanged': return `${base}bg-indigo-100 text-indigo-700`;
+                case 'rejected': return `${base}bg-rose-100 text-rose-700`;
+                case 'pending':
+                default:
+                    return `${base}bg-amber-100 text-amber-700`;
+            }
+        }
+
+        function getActionButtons(returnRequest) {
+            const status = returnRequest.status || 'pending';
+            const id = returnRequest.id;
+            const actions = [];
+
+            if (status === 'pending') {
+                actions.push(createActionButton(id, 'approved', 'returns.action.approve', 'btn-primary'));
+                actions.push(createActionButton(id, 'rejected', 'returns.action.reject', 'btn-danger'));
+            } else if (status === 'approved') {
+                actions.push(createActionButton(id, 'received', 'returns.action.received', 'btn-secondary'));
+            } else if (status === 'received') {
+                actions.push(createActionButton(id, 'refunded', 'returns.action.refunded', 'btn-primary'));
+                actions.push(createActionButton(id, 'exchanged', 'returns.action.exchanged', 'btn-secondary'));
+            }
+
+            return actions.join(' ');
+        }
+
+        function createActionButton(returnId, action, translationKey, styleClass) {
+            const label = window.translate ? window.translate(translationKey) : translationKey;
+            const base = 'inline-flex items-center rounded-2xl px-3 py-2 text-xs font-semibold transition';
+            const styleMap = {
+                'btn-primary': 'bg-sky-600 text-white hover:bg-sky-700 border border-transparent',
+                'btn-secondary': 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100',
+                'btn-danger': 'bg-rose-600 text-white hover:bg-rose-700 border border-transparent'
+            };
+            return `<button class="${base} ${styleMap[styleClass] || ''}" data-action="${action}" data-id="${returnId}">${label}</button>`;
+        }
+
+        document.addEventListener('click', async (event) => {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;
+            const returnId = button.dataset.id;
+            const action = button.dataset.action;
+            const confirmMessage = getConfirmationMessage(action);
+            if (confirmMessage && !confirm(confirmMessage)) {
+                return;
+            }
+            await updateReturnStatus(returnId, action);
+        });
+
+        function getConfirmationMessage(action) {
+            if (!window.translate) return null;
+            switch (action) {
+                case 'rejected': return window.translate('returns.notification.confirm_reject');
+                case 'refunded': return window.translate('returns.notification.confirm_refund');
+                case 'exchanged': return window.translate('returns.notification.confirm_exchange');
+                case 'received': return window.translate('returns.notification.confirm_received');
+                default: return null;
+            }
+        }
+
+        async function updateReturnStatus(returnId, status) {
+            try {
+                const res = await authFetch(`/api/returns/${returnId}/status`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ status })
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || 'Unable to update status');
+                }
+                showNotification(window.translate ? window.translate('returns.notification.update_success') : 'Return status updated successfully.', 'success');
+                await loadReturns();
+            } catch (err) {
+                console.error('Failed to update return status:', err);
+                showNotification(window.translate ? window.translate('returns.notification.update_error') : 'Failed to update return status.', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const banner = document.getElementById('notificationBanner');
+            if (!banner) return;
+            banner.textContent = message;
+            banner.className = 'rounded-[32px] border px-5 py-4 text-sm mb-6 transition-all duration-200';
+            if (type === 'success') {
+                banner.classList.add('border-emerald-200', 'bg-emerald-50', 'text-emerald-700');
+            } else if (type === 'error') {
+                banner.classList.add('border-rose-200', 'bg-rose-50', 'text-rose-700');
+            } else {
+                banner.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-700');
+            }
+            banner.classList.remove('hidden');
+            window.clearTimeout(banner.hideTimeout);
+            banner.hideTimeout = window.setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 4200);
+        }
+
+        function setupFilters() {
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', renderReturnsTable);
+            }
+            if (statusFilter) {
+                statusFilter.addEventListener('change', renderReturnsTable);
+            }
+        }
+
+        function initializeI18n() {
+            const langBtn = document.getElementById('langBtn');
+            const langOptions = document.querySelectorAll('.lang-option');
+
+            langOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const lang = option.getAttribute('data-lang');
+                    if (!lang) return;
+
+                    document.querySelectorAll('.lang-option').forEach(el => {
+                        el.classList.toggle('active', el.getAttribute('data-lang') === lang);
+                    });
+
+                    if (window.setLanguage) {
+                        window.setLanguage(lang);
+                    } else if (window.getLang && window.translate) {
+                        localStorage.setItem('adminLang', lang);
+                    }
+
+                    updateSidebarLabels(lang);
+                    applyTranslations();
+                });
+            });
+
+            const savedLang = localStorage.getItem('adminLang') || 'en';
+            if (window.setLanguage) {
+                window.setLanguage(savedLang);
+            }
+            updateSidebarLabels(savedLang);
+        }
+
+        function updateSidebarLabels(lang) {
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                const label = item.getAttribute(`data-label-${lang}`) || item.getAttribute('data-label-en') || '';
+                const textNode = item.querySelector('.sidebar-label');
+                if (textNode) {
+                    textNode.textContent = label;
+                }
+            });
+        }
+
+        function applyTranslations() {
+            if (!window.translate) return;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const value = window.translate(key);
+                if (value) {
+                    el.textContent = value;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

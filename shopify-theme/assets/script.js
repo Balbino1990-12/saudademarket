@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   if(langBtn) updateLangBtn(currentLang);
 
-  // simple dictionary for static translations (nav + header + pages)
+  // fallback static translations (used if JSON fails to load)
   const staticTranslations = {
     nav: {
       home: {fr:"ACCUEIL",pt:"INÍCIO",en:"HOME"},
@@ -28,91 +28,55 @@ document.addEventListener('DOMContentLoaded', ()=>{
       about: {fr:"À PROPOS",pt:"SOBRE NÓS",en:"ABOUT US"},
       contact: {fr:"CONTACT",pt:"CONTACTOS",en:"CONTACT"},
       subtitle: {fr:">> Découvrir", pt:">> Conhecer", en:">> Discover"}
-    },
-    hero: {
-      intro: {fr:"Découvrez les",pt:"Descubra os",en:"Discover the"},
-      highlight: {fr:"Saveurs du Portugal",pt:"Sabores de Portugal",en:"Flavors of Portugal"},
-      sub: {fr:"Livrées en France",pt:"Entregues em França",en:"Delivered to France"},
-      features: {
-        authentic: {fr:"Produits authentiques",pt:"Produtos autênticos",en:"Authentic products"},
-        delivery: {fr:"Livraison rapide",pt:"Entrega rápida",en:"Fast delivery"},
-        secure: {fr:"Paiement sécurisé",pt:"Pagamento seguro",en:"Secure payment"}
-      },
-      cta: {fr:"DÉCOUVRIR LA BOUTIQUE →",pt:"CONHECER A LOJA →",en:"SHOP NOW →"}
-    },
-    header: {
-      search: {fr:"Rechercher un produit...",pt:"Pesquisar um produto...",en:"Search for a product..."},
-      account: {fr:"Mon compte",pt:"Minha conta",en:"Account"},
-      cart: {fr:"Panier",pt:"Carrinho",en:"Cart"}
-    },
-    features: {
-      authentic: {fr:"PRODUITS AUTHENTIQUES DU PORTUGAL",pt:"PRODUTOS AUTÊNTICOS DE PORTUGAL",en:"Authentic products from Portugal"},
-      delivery: {fr:"LIVRAISON RAPIDE EN FRANCE",pt:"ENTREGA RÁPIDA EM FRANÇA",en:"Fast delivery to France"},
-      secure: {fr:"PAIEMENT SÉCURISÉ",pt:"PAGAMENTO SEGURO",en:"Secure payment"},
-      support: {fr:"SERVICE CLIENT EN FRANÇAIS",pt:"ATENDIMENTO AO CLIENTE EM INGLÊS",en:"Customer service in English"}
-    },
-    specialties: {
-      heading: {fr:"Nos Spécialités Portugaises",pt:"Nossas Especialidades Portuguesas",en:"Our Portuguese Specialties"}
-    },
-    pages: {
-      produits: {
-        title: {fr:"Nos Produits",pt:"Nossos Produtos",en:"Our Products"},
-        description: {fr:"Explorez notre sélection complète de produits portugais authentiques et délicieux, spécialement importés pour vous.",pt:"Explore nossa seleção completa de produtos portugueses autênticos e deliciosos, especialmente importados para você.",en:"Explore our complete selection of authentic and delicious Portuguese products, specially imported for you."}
-      },
-      produtos: {
-        title: {fr:"Nos Produits",pt:"Nossos Produtos",en:"Our Products"},
-        description: {fr:"Explorez notre sélection complète de produits portugais authentiques et délicieux, spécialement importés pour vous.",pt:"Explore nossa seleção completa de produtos portugueses autênticos e deliciosos, especialmente importados para você.",en:"Explore our complete selection of authentic and delicious Portuguese products, specially imported for you."}
-      },
-      specialites: {
-        title: {fr:"Nos Spécialités Portugaises",pt:"Nossas Especialidades Portuguesas",en:"Our Portuguese Specialties"},
-        description: {fr:"Découvrez les spécialités les plus savoureuses et authentiques du Portugal, sélectionnées avec soin pour vous.",pt:"Descubra as especialidades mais saborosas e autênticas de Portugal, selecionadas com cuidado para você.",en:"Discover the most delicious and authentic specialties from Portugal, carefully selected for you."}
-      },
-      especialidades: {
-        title: {fr:"Nos Spécialités Portugaises",pt:"Nossas Especialidades Portuguesas",en:"Our Portuguese Specialties"},
-        description: {fr:"Découvrez les spécialités les plus savoureuses et authentiques du Portugal, sélectionnées avec soin pour vous.",pt:"Descubra as especialidades mais saborosas e autênticas de Portugal, selecionadas com cuidado para você.",en:"Discover the most delicious and authentic specialties from Portugal, carefully selected for you."}
-      },
-      vins: {
-        title: {fr:"Vin & Porto Portugais",pt:"Vinhos e Porto Portugueses",en:"Portuguese Wine & Port"},
-        description: {fr:"Explorez notre sélection exclusive de vins et Portos de qualité supérieure, directement du Portugal.",pt:"Explore nossa seleção exclusiva de vinhos e Portos de qualidade superior, diretamente de Portugal.",en:"Explore our exclusive selection of premium wines and Ports, straight from Portugal."}
-      },
-      vinhos: {
-        title: {fr:"Vin & Porto Portugais",pt:"Vinhos e Porto Portugueses",en:"Portuguese Wine & Port"},
-        description: {fr:"Explorez notre sélection exclusive de vins et Portos de qualité supérieure, directement du Portugal.",pt:"Explore nossa seleção exclusiva de vinhos e Portos de qualidade superior, diretamente de Portugal.",en:"Explore our exclusive selection of premium wines and Ports, straight from Portugal."}
-      },
-      epicerie: {
-        title: {fr:"Notre Épicerie",pt:"Nossa Mercearia",en:"Our Grocery"},
-        description: {fr:"Trouvez tous les produits de base essentiels pour cuisiner les plats portugais traditionnels authentiques.",pt:"Encontre todos os produtos essenciais para cozinhar os pratos portugueses tradicionais autênticos.",en:"Find all the essential ingredients for cooking authentic traditional Portuguese dishes."}
-      },
-      mercaria: {
-        title: {fr:"Notre Épicerie",pt:"Nossa Mercearia",en:"Our Grocery"},
-        description: {fr:"Trouvez tous les produits de base essentiels pour cuisiner les plats portugais traditionnels authentiques.",pt:"Encontre todos os produtos essenciais para cozinhar os pratos portugueses tradicionais autênticos.",en:"Find all the essential ingredients for cooking authentic traditional Portuguese dishes."}
-      },
-      coffrets: {
-        title: {fr:"Coffrets Gourmands",pt:"Cabazes Gourmet",en:"Gourmet Gift Baskets"},
-        description: {fr:"Offrez les saveurs du Portugal avec nos coffrets cadeaux luxueux et authentiques, parfaits pour tous les occasions.",pt:"Presenteie com os sabores de Portugal através dos nossos cabazes de presentes luxuosos e autênticos, perfeitos para todas as ocasiões.",en:"Give the flavors of Portugal with our luxurious and authentic gift baskets, perfect for any occasion."}
-      },
-      cabazes: {
-        title: {fr:"Coffrets Gourmands",pt:"Cabazes Gourmet",en:"Gourmet Gift Baskets"},
-        description: {fr:"Offrez les saveurs du Portugal avec nos coffrets cadeaux luxueux et authentiques, parfaits pour tous les occasions.",pt:"Presenteie com os sabores de Portugal através dos nossos cabazes de presentes luxuosos e autênticos, perfeitos para todas as ocasiões.",en:"Give the flavors of Portugal with our luxurious and authentic gift baskets, perfect for any occasion."}
-      },
-      apropos: {
-        title: {fr:"À Propos de Nous",pt:"Sobre Nós",en:"About Us"},
-        description: {fr:"Portugalsstore.fr est votre source de confiance pour les produits portugais authentiques et de qualité, livrés directement en France.",pt:"PortugalStore.fr é sua fonte confiável de produtos portugueses autênticos e de qualidade, entregues diretamente em Portugal.",en:"PortugalStore.fr is your trusted source for authentic and quality Portuguese products, delivered straight to your door."}
-      },
-      sobre: {
-        title: {fr:"À Propos de Nous",pt:"Sobre Nós",en:"About Us"},
-        description: {fr:"Portugalsstore.fr est votre source de confiance pour les produits portugais authentiques et de qualité, livrés directement en France.",pt:"PortugalStore.fr é sua fonte confiável de produtos portugueses autênticos e de qualidade, entregues diretamente em Portugal.",en:"PortugalStore.fr is your trusted source for authentic and quality Portuguese products, delivered straight to your door."}
-      },
-      contact: {
-        title: {fr:"Nous Contacter",pt:"Entre em Contato",en:"Contact Us"},
-        description: {fr:"Avez des questions ? Notre service client en français est prêt à vous aider. Contactez-nous pour tout renseignement sur nos produits.",pt:"Tem dúvidas? Gostaríamos de ouvir de você. Entre em contato conosco e responderemos o mais rápido possível.",en:"Have questions? Our customer service is ready to help you. Contact us for any information about our products."}
-      },
-      contactos: {
-        title: {fr:"Nous Contacter",pt:"Entre em Contato",en:"Contact Us"},
-        description: {fr:"Avez des questions ? Notre service client en français est prêt à vous aider. Contactez-nous pour tout renseignement sur nos produits.",pt:"Tem dúvidas? Gostaríamos de ouvir de você. Entre em contato conosco e responderemos o mais rápido possível.",en:"Have questions? Our customer service is ready to help you. Contact us for any information about our products."}
-      }
     }
+    // ... (other fallback translations can be added if needed)
   };
+
+  // Load translations from JSON file
+  let translations = null;
+  function loadTranslations(callback) {
+    fetch('/shopify-theme/assets/translations.json')
+      .then(r => r.json())
+      .then(json => {
+        translations = json;
+        callback();
+      })
+      .catch(() => {
+        translations = staticTranslations;
+        callback();
+      });
+  }
+
+  function applyStaticTranslations(lang){
+    const dict = translations || staticTranslations;
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.dataset.i18n.split('.');
+      let txt = dict?.[key[0]]?.[key[1]]?.[lang];
+      if(txt){
+        if(el.tagName.toLowerCase()==='input'){
+          el.placeholder = txt;
+          el.setAttribute('aria-label', txt);
+        } else if(el.tagName.toLowerCase()==='a' || el.tagName.toLowerCase()==='button'){
+          // icons have their own styling; keep icon markup and only update accessibility attributes
+          if(el.classList.contains('icon')){
+            if(el.hasAttribute('title')) el.setAttribute('title', txt);
+            el.setAttribute('aria-label', txt);
+          } else {
+            if(el.hasAttribute('title')) el.setAttribute('title', txt);
+            el.textContent = txt;
+          }
+        } else {
+          el.textContent = txt;
+        }
+      }
+    });
+  }
+
+  // Load translations then apply
+  loadTranslations(() => {
+    applyStaticTranslations(currentLang);
+    // ...existing code for dynamic content, menu, etc...
+  });
 
   function applyStaticTranslations(lang){
     document.querySelectorAll('[data-i18n]').forEach(el=>{
@@ -138,6 +102,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 
+  // Only show the first word in each header menu item (original, before unified logic)
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   document.querySelectorAll('nav ul li a').forEach(link => {
+  //     // Remove line breaks and trim
+  //     const text = link.textContent.replace(/\n/g, ' ').trim();
+  //     // Split by space and keep only the first word
+  //     const firstWord = text.split(/\s+/)[0];
+  //     link.textContent = firstWord;
+  //   });
+  // });
+
   // Language dropdown
   if(langBtn){
     langBtn.addEventListener('click', e=>{document.querySelector('.lang-dropdown').classList.toggle('active');e.stopPropagation();});
@@ -156,7 +131,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   });
 
-  // menu toggle for mobile
+  // menu toggle for mobile (original logic, products menu handled separately)
   const menuToggle = document.getElementById('menuToggle');
   const themeNav = document.querySelector('nav.theme-nav');
   if(menuToggle && themeNav){
@@ -165,6 +140,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
       themeNav.classList.toggle('active');
     });
   }
+
+  // Restore original products menu toggle (if any custom logic existed, add here)
+  // Example: If products menu had its own toggle, re-enable it here
+  // const productsMenu = document.querySelector('.products-menu');
+  // if(productsMenu) {
+  //   productsMenu.addEventListener('click', (e) => {
+  //     productsMenu.classList.toggle('open');
+  //     e.stopPropagation();
+  //   });
+  //   document.addEventListener('click', () => productsMenu.classList.remove('open'));
+  // }
 
   // apply translations on load
   applyStaticTranslations(currentLang);
@@ -188,4 +174,59 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const specCont=document.querySelector('.specialty-list');
     if(specCont && data.specialties){specCont.innerHTML='';data.specialties.forEach(s=>{const name=s['name_'+(localStorage.getItem('lang')||'fr')]||s.name_fr;const d=document.createElement('div');d.className='specialty';d.innerHTML=`<img src="${s.image}" alt="${name}"/><p>${name}</p>`;specCont.appendChild(d);});}
   }).catch(()=>{});
+  // End of dynamic content loading
 });
+
+  // Show buyer name in header if logged in
+  document.addEventListener('DOMContentLoaded', function() {
+    var buyerName = localStorage.getItem('buyerName');
+    var buyerNameSpan = document.getElementById('buyer-name');
+    if (buyerName && buyerNameSpan) {
+      buyerNameSpan.textContent = buyerName;
+      buyerNameSpan.style.display = 'inline';
+    } else if (buyerNameSpan) {
+      buyerNameSpan.textContent = '';
+      buyerNameSpan.style.display = 'none';
+    }
+  });
+
+// Move profile translations into staticTranslations
+// Add this inside staticTranslations if not already present:
+// staticTranslations.profile = {
+//   all_profiles: {
+//     fr: "Voir tous les profils",
+//     en: "View all profiles",
+//     pt: "Ver todos os perfis"
+//   },
+//   settings_privacy: {
+//     fr: "Paramètres & confidentialité",
+//     en: "Settings & privacy",
+//     pt: "Configurações & privacidade"
+//   },
+//   orders_history: {
+//     fr: "Historique des commandes",
+//     en: "Order history",
+//     pt: "Histórico de pedidos"
+//   },
+//   help_support: {
+//     fr: "Aide & support",
+//     en: "Help & support",
+//     pt: "Ajuda & suporte"
+//   },
+//   display_accessibility: {
+//     fr: "Affichage & accessibilité",
+//     en: "Display & accessibility",
+//     pt: "Exibição & acessibilidade"
+//   },
+//   feedback: {
+//     fr: "Retour (CTRL B)",
+//     en: "Feedback (CTRL B)",
+//     pt: "Feedback (CTRL B)"
+//   },
+//   logout: {
+//     fr: "Déconnexion",
+//     en: "Logout",
+//     pt: "Sair"
+//   }
+// };
+

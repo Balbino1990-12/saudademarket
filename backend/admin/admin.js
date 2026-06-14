@@ -1,8 +1,8 @@
 // Global state
 let token = localStorage.getItem('adminToken') || null;
 
-// If user already has a valid token, redirect to dashboard immediately
-if (token) {
+// Only redirect if on login page AND user has a valid token
+if (token && (window.location.pathname.includes('login.html') || window.location.pathname.endsWith('/admin/'))) {
   console.log('Token found in localStorage, redirecting to dashboard...');
   window.location.href = '/admin/products.html';
 }
@@ -45,6 +45,7 @@ async function login() {
   try {
     const resp = await fetch('/api/login', {
       method: 'POST',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
@@ -175,3 +176,4 @@ if (token) {
   console.log('No token, showing login panel');
   showLogin(false);
 }
+

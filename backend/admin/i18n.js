@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
       langBtn.addEventListener('click', (e) => {
         const dd = document.querySelector('.lang-dropdown, .lang-options');
         if (dd) {
-          dd.classList.toggle('active');
+          dd.classList.toggle('show');
           langBtn.classList.toggle('active');
           e.stopPropagation();
         }
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const dd = document.querySelector('.lang-dropdown, .lang-options');
             if (dd) {
-              dd.classList.remove('active');
+              dd.classList.remove('show');
               const btn = document.getElementById('langBtn');
               if (btn) btn.classList.remove('active');
             }
@@ -65,12 +65,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const dd = document.querySelector('.lang-dropdown, .lang-options');
         const btn = document.getElementById('langBtn');
         if (dd) {
-          dd.classList.remove('active');
+          dd.classList.remove('show');
           if (btn) btn.classList.remove('active');
         }
       }
     });
   }
+
+  window.addEventListener('adminHeaderReady', () => {
+    initializeLanguageUI();
+    setLanguage(currentLang);
+  });
 
   function setLanguage(lang) {
     const langBtn = document.getElementById('langBtn');
@@ -165,12 +170,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Helper function to get nested translation
   function getTranslation(key, langData) {
+    if (!langData) return undefined;
+
+    // First, attempt nested object lookup (supports dot notation keys as nested objects)
     const parts = key.split('.');
     let val = langData;
     for (const p of parts) {
-      if (!val) break;
+      if (val === undefined || val === null) {
+        val = undefined;
+        break;
+      }
       val = val[p];
     }
+
+    // Fallback to flat key in case translations are stored as flat keys with dots
+    if (val === undefined && Object.prototype.hasOwnProperty.call(langData, key)) {
+      return langData[key];
+    }
+
     return val;
   }
 

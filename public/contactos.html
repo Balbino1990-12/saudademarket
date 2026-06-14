@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contactos - PortugalStore</title>
+     <title>Saudade Market</title>
     <link rel="stylesheet" href="/css/style.css" />
     <script src="/js/i18n.js"></script>
 </head>
@@ -11,9 +11,9 @@
     <header>
         <div class="header-top">
             <div class="logo">
-                <img src="/images/logo.jpg" alt="PortugalStore.fr" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
                 <div class="logo-text">
-                    <h1>PortugalStore.fr</h1>
+                    <h1>Saudade Market</h1>
                     <p>MERCADO PORTUGUÊS ONLINE</p>
                 </div>
             </div>
@@ -23,7 +23,10 @@
             </div>
 
             <div class="header-actions">
-                <button class="icon user" title="Conta">👤</button>
+                <button class="icon user" id="profileBtn" title="Conta" style="display:flex; align-items:center; gap:6px;">
+                    <svg class="profile-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="buyerUsername" style="font-weight:600;margin-left:6px;"></span>
+                </button>
 
                 <div class="lang">PT</div>
                 <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
@@ -43,6 +46,7 @@
                 <li><a href="contactos.html" class="active">CONTACTOS</a></li>
             </ul>
         </nav>
+        <div id="profileDropdown" class="profile-dropdown" aria-hidden="true" style="display:none;"></div>
     </header>
 
     <main>
@@ -53,3 +57,4 @@
     <script src="/js/script.js"></script>
 </body>
 </html>
+

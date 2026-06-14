@@ -6,14 +6,415 @@
     <title>Contact - Portugalsstore.fr</title>
     <link rel="stylesheet" href="/css/style.css" />
     <script src="/js/i18n.js"></script>
+    <style>
+        /* Modern Contact Page Styles */
+        .contact-hero {
+            background: linear-gradient(135deg, #c41e1e 0%, #8a1515 50%, #2c3e50 100%);
+            color: white;
+            padding: 100px 40px 80px;
+            text-align: center;
+            margin-top: 140px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .contact-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .contact-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .contact-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .contact-hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Contact Container */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 40px;
+        }
+
+        @media (max-width: 968px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 50px;
+                padding: 0 24px;
+            }
+        }
+
+        /* Contact Info Section */
+        .contact-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .contact-info-header {
+            margin-bottom: 20px;
+        }
+
+        .contact-info-header h2 {
+            font-size: 2rem;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .contact-info-header p {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Contact Cards */
+        .contact-card {
+            display: flex;
+            gap: 20px;
+            padding: 24px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+            border-color: #c41e1e;
+        }
+
+        .contact-card-icon {
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(196, 30, 30, 0.1) 0%, rgba(196, 30, 30, 0.05) 100%);
+            border-radius: 12px;
+            font-size: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover .contact-card-icon {
+            background: linear-gradient(135deg, #c41e1e 0%, #8a1515 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .contact-card-content h3 {
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .contact-card-content p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .contact-card-content a {
+            color: #c41e1e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .contact-card-content a:hover {
+            color: #8a1515;
+        }
+
+        /* Form Section */
+        .contact-form-section {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .contact-form-section h2 {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .contact-form-section p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #1a1a1a;
+            background: #fafafa;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #c41e1e;
+            background: white;
+            box-shadow: 0 4px 12px rgba(196, 30, 30, 0.12);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 140px;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-submit-btn {
+            width: 100%;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #c41e1e 0%, #8a1515 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(196, 30, 30, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(196, 30, 30, 0.35);
+        }
+
+        .form-submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(196, 30, 30, 0.25);
+        }
+
+        /* Hours Section */
+        .hours-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .hour-item {
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hour-day {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .hour-time {
+            color: #666;
+        }
+
+        .hour-time.closed {
+            color: #c41e1e;
+            font-weight: 600;
+        }
+
+        /* Success Message */
+        .form-message {
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-message::before {
+            content: '';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .form-message.success {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.08) 100%);
+            border: 1.5px solid rgba(34, 197, 94, 0.4);
+            color: #166534;
+            display: flex;
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.15);
+        }
+
+        .form-message.success::before {
+            content: '✓';
+            color: #22c55e;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .form-message.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.08) 100%);
+            border: 1.5px solid rgba(239, 68, 68, 0.4);
+            color: #991b1b;
+            display: flex;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+        }
+
+        .form-message.error::before {
+            content: '✕';
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Footer spacing */
+        main {
+            padding-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .contact-hero {
+                padding: 60px 24px 50px;
+                margin-top: 140px;
+            }
+
+            .contact-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .contact-hero p {
+                font-size: 1rem;
+            }
+
+            .contact-container {
+                margin: 50px auto;
+                gap: 40px;
+            }
+
+            .contact-form-section {
+                padding: 28px 20px;
+            }
+
+            .contact-card {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="header-top">
             <div class="logo">
-                <img src="/images/logo.jpg" alt="Portugalsstore.fr" />
+                <img src="/images/Saudade_market.png" alt="Saudade Market" />
                 <div class="logo-text">
-                    <h1>Portugalsstore.fr</h1>
+                    <h1>Saudade Market</h1>
                     <p>ÉPICERIE PORTUGAISE EN LIGNE</p>
                 </div>
             </div>
@@ -23,7 +424,10 @@
             </div>
 
             <div class="header-actions">
-                <button class="icon user" title="Compte">👤</button>
+                <button class="icon user" id="profileBtn" title="Compte" style="display:flex; align-items:center; gap:6px;">
+                    <svg class="profile-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="buyerUsername" style="font-weight:600;margin-left:6px;"></span>
+                </button>
                 <button class="icon cart" title="Panier">🛒<span class="badge">0</span></button>
                 <div class="language-selector">
                     <button id="langBtn" class="lang-toggle">FR</button>
@@ -41,7 +445,7 @@
             <ul>
                 <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
                 <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
-                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
+                <li id="specialties-menu-anchor"></li>
                 <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
                 <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
                 <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
@@ -50,18 +454,219 @@
                 <li><a href="contact.html" class="active" data-i18n="nav.contact">CONTACT</a></li>
             </ul>
         </nav>
+        <div id="profileDropdown" class="profile-dropdown" aria-hidden="true" style="display:none;"></div>
     </header>
 
     <main>
-        <section style="padding: 40px 36px; text-align: center; min-height: 60vh;">
-            <h1 style="font-size: 2.4rem; margin-bottom: 20px; color: #111;" data-i18n="contact.title">Nous Contacter</h1>
-            <p style="font-size: 1.1rem; color: #666; max-width: 600px; margin: 0 auto;" data-i18n="contact.description">
-                Avez des questions? Notre service client en français est prêt à vous aider.
-                Contactez-nous pour tout renseignement sur nos produits.
-            </p>
+        <!-- Hero Section -->
+        <section class="contact-hero">
+            <div class="contact-hero-content">
+                <h1 data-i18n="contact.title">Nous Contacter</h1>
+                <p data-i18n="contact.description">Avez des questions? Notre service client en français est prêt à vous aider. Contactez-nous pour tout renseignement sur nos produits.</p>
+            </div>
         </section>
+
+        <!-- Contact Content -->
+        <div class="contact-container">
+            <!-- Contact Info Column -->
+            <div class="contact-info-section">
+                <div class="contact-info-header">
+                    <h2 data-i18n="contact.info.title">Informations de Contact</h2>
+                    <p>Retrouvez tous nos coordonnées ci-dessous</p>
+                </div>
+
+                <!-- Address Card -->
+                <div class="contact-card">
+                    <div class="contact-card-icon">📍</div>
+                    <div class="contact-card-content">
+                        <h3 data-i18n="contact.address.label">Adresse</h3>
+                        <p data-i18n="contact.address">123 Rue de la Portugaise<br>75001 Paris, France</p>
+                    </div>
+                </div>
+
+                <!-- Phone Card -->
+                <div class="contact-card">
+                    <div class="contact-card-icon">📞</div>
+                    <div class="contact-card-content">
+                        <h3 data-i18n="contact.phone.label">Téléphone</h3>
+                        <p><a href="tel:+33123456789" data-i18n="contact.phone">+33 1 23 45 67 89</a></p>
+                        <p style="margin-top: 6px; font-size: 0.85rem; color: #999;">Lun-Ven 9h-18h, Sam 10h-16h</p>
+                    </div>
+                </div>
+
+                <!-- Email Card -->
+                <div class="contact-card">
+                    <div class="contact-card-icon">✉️</div>
+                    <div class="contact-card-content">
+                        <h3 data-i18n="contact.email.label">Email</h3>
+                        <p><a href="mailto:contact@saudade-market.fr" data-i18n="contact.email">contact@saudade-market.fr</a></p>
+                        <p style="margin-top: 6px; font-size: 0.85rem; color: #999;">Réponse en 24h</p>
+                    </div>
+                </div>
+
+                <!-- Hours Card -->
+                <div class="contact-card">
+                    <div class="contact-card-icon">🕐</div>
+                    <div class="contact-card-content">
+                        <h3 data-i18n="contact.hours.label">Horaires d'ouverture</h3>
+                        <div class="hours-grid">
+                            <div class="hour-item">
+                                <span class="hour-day">Lun-Ven</span>
+                                <span class="hour-time">9h - 18h</span>
+                            </div>
+                            <div class="hour-item">
+                                <span class="hour-day">Samedi</span>
+                                <span class="hour-time">10h - 16h</span>
+                            </div>
+                            <div class="hour-item">
+                                <span class="hour-day">Dimanche</span>
+                                <span class="hour-time closed">Fermé</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form Column -->
+            <div class="contact-form-section">
+                <h2>Envoyez-nous un Message</h2>
+                <p>Remplissez le formulaire ci-dessous et nous vous répondrons dans les 24 heures.</p>
+
+                <div class="form-message" id="formMessage"></div>
+
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nom complet *</label>
+                            <input type="text" id="name" name="name" required aria-label="Votre nom">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required aria-label="Votre email">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Téléphone</label>
+                            <input type="tel" id="phone" name="phone" aria-label="Votre téléphone">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Sujet *</label>
+                            <select id="subject" name="subject" required aria-label="Sujet du message">
+                                <option value="">-- Sélectionnez un sujet --</option>
+                                <option value="general">Demande générale</option>
+                                <option value="product">Question sur un produit</option>
+                                <option value="order">Problème de commande</option>
+                                <option value="feedback">Retour d'expérience</option>
+                                <option value="partnership">Partenariat</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" required aria-label="Votre message"></textarea>
+                    </div>
+
+                    <button type="submit" class="form-submit-btn">Envoyer le Message</button>
+                </form>
+            </div>
+        </div>
     </main>
 
     <script src="/js/script.js"></script>
+    <script>
+        // Handle contact form submission
+        const contactForm = document.getElementById('contactForm');
+        const formMessage = document.getElementById('formMessage');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Disable submit button
+                const submitBtn = contactForm.querySelector('.form-submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Envoi en cours...';
+
+                const formData = new FormData(contactForm);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        // Show success message
+                        showMessage(result.message, 'success');
+                        
+                        // Scroll to message immediately
+                        setTimeout(() => {
+                            formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 100);
+                        
+                        // Reset form after showing message
+                        setTimeout(() => {
+                            contactForm.reset();
+                            submitBtn.textContent = originalText;
+                            submitBtn.disabled = false;
+                        }, 500);
+                    } else {
+                        // Build detailed error message
+                        let errorMsg = result.message || 'Une erreur est survenue. Veuillez réessayer.';
+                        
+                        if (result.errors && result.errors.length > 0) {
+                            errorMsg = result.errors.map(err => `${err.field}: ${err.message}`).join(' | ');
+                        }
+                        
+                        showMessage(errorMsg, 'error');
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Form submission error:', error);
+                    showMessage('Une erreur est survenue. Veuillez vérifier votre connexion internet et réessayer.', 'error');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        function showMessage(text, type) {
+            // Set message text and styling
+            const messageElement = document.createElement('div');
+            messageElement.textContent = text;
+            
+            // Clear previous message
+            formMessage.innerHTML = '';
+            formMessage.textContent = text;
+            formMessage.className = `form-message ${type}`;
+            formMessage.style.display = 'flex';
+            
+            if (type === 'success') {
+                // Keep success message visible for 8 seconds
+                const hideTimer = setTimeout(() => {
+                    formMessage.style.opacity = '0.5';
+                }, 6000);
+                
+                setTimeout(() => {
+                    formMessage.style.display = 'none';
+                    formMessage.style.opacity = '1';
+                    clearTimeout(hideTimer);
+                }, 8000);
+            }
+        }
+    </script>
 </body>
 </html>
+

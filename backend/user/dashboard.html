@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard – PortugalStore User Portal</title>
+     <title>Saudade Market User Portal</title>
     <style>
         * {
             margin: 0;
@@ -628,10 +628,10 @@
                 <div class="header">
                     <div class="header-left">
                         <div class="logo">
-                            <img src="/images/logo.jpg" alt="PortugalStore Logo" style="height: 40px; width: auto; border-radius: 4px;">
+                            <img src="/images/Saudade_market.png" alt="Saudade Market" style="height: 40px; width: auto; border-radius: 4px;">
                         </div>
                         <div class="header-title">
-                            <h1>PortugalStore</h1>
+                            <h1>Saudade Market</h1>
                             <p data-i18n="seller_dashboard">Seller Dashboard</p>
                         </div>
                     </div>
@@ -990,6 +990,14 @@
             try {
                 currentUser = JSON.parse(storedUser);
                 console.log('[Dashboard] User data loaded:', currentUser.username);
+
+                const userRole = (currentUser.role || currentUser.role_name || '').toString().trim().toLowerCase();
+                if (userRole === 'buyer') {
+                    console.warn('[Dashboard] Buyer role detected on dashboard, redirecting to store home.');
+                    setTimeout(() => { window.location.href = '/index.html'; }, 300);
+                    return;
+                }
+
                 displayUserInfo();
                 
                 // Fetch fresh permissions from server (not cached from login)
@@ -1926,3 +1934,4 @@
     </script>
 </body>
 </html>
+

@@ -233,6 +233,10 @@ nav ul li a {
     display: block;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    white-space: normal;   /* Allow text to wrap */
+    height: auto;          /* Allow height to grow for multiple lines */
+    overflow: visible;     /* Show all content */
+    line-height: 1.2;      /* Improve readability for multi-line */
 }
 
 nav ul li a:hover {

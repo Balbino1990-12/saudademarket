@@ -131,3 +131,4 @@ async function testSpecialistsAPI() {
 
 // Run tests
 testSpecialistsAPI();
+

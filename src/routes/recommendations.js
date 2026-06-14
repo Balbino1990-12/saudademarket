@@ -15,7 +15,11 @@ router.get('/similar/:productId', RecommendationController.getSimilarProducts);
 // Get popular products
 router.get('/popular', RecommendationController.getPopularProducts);
 
+// Get featured/promotional products
+router.get('/featured', RecommendationController.getFeaturedProducts);
+
 // Track product view (for analytics)
 router.post('/track-view/:productId', RecommendationController.trackProductView);
 
 module.exports = router;
+

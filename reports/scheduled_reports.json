@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1776634412786,
+    "name": "Weekly revenue report",
+    "frequency": "daily",
+    "format": "csv",
+    "filters": {
+      "status": "pending",
+      "limit": "100"
+    },
+    "createdAt": "2026-04-19T21:33:32.786Z",
+    "lastRun": null
+  },
+  {
+    "id": 1779261620438,
+    "name": "weekly",
+    "frequency": "weekly",
+    "format": "csv",
+    "filters": {
+      "startDate": "2026-05-17",
+      "endDate": "2026-05-20",
+      "limit": "100"
+    },
+    "createdAt": "2026-05-20T07:20:20.438Z",
+    "lastRun": null
+  }
+]
