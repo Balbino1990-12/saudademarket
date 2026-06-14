@@ -1,66 +1,120 @@
-# PortugalStore Prototype
+# PortugalStore
 
-This repository contains a mockup of the PortugalStore website, featuring a simple Express backend and a vanilla HTML/CSS/JS front end. It has been progressively enhanced with product loading, cart functionality and Shopify integration.
+This repository is the working codebase for the PortugalStore storefront and admin platform. It combines a Node.js/Express backend, MySQL-backed data models, Redis/session support, Socket.IO real-time hooks, and a set of static storefront/admin HTML pages.
+
+## What is in this project
+
+- Storefront pages under `public/` and the main product detail page at the repository root.
+- Admin interfaces under `backend/admin/` and `backend/user/`.
+- Express API routes under `src/routes/` for products, categories, users, orders, cart, checkout, recommendations, analytics, specialties, coupons, returns, referrals, contact, chat, and Shopify integration.
+- Server bootstrap in `server.js` -> `src/server.js` -> `src/app.js`.
+- Database setup and table creation in `src/config/database.js`.
+
+## Current runtime stack
+
+- Node.js + Express
+- MySQL (primary application database)
+- Redis (optional session/cache support)
+- Socket.IO (cart and real-time hooks)
+- Tailwind-based admin styling
+- Shopify and Stripe integrations
+- OpenAI-powered chat support
+
+## Prerequisites
+
+Before starting the app, make sure you have:
+
+- Node.js 18+ (the project is currently run with the standard Node toolchain)
+- MySQL running locally or reachable via `DB_HOST`
+- Optional: Redis if you want session caching enabled
+
+## Installation
+
+```bash
+npm install
+```
+
+## Environment variables
+
+Create a `.env` file at the project root before starting the app. At minimum, the application expects database and session settings such as:
+
+```env
+PORT=3000
+NODE_ENV=development
+
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=portugalstore_db
+
+SESSION_SECRET=change-this-secret
+APP_URL=http://localhost:3000
+
+# Optional integrations
+SHOP_NAME=portugalstorefr.myshopify.com
+SHOPIFY_ADMIN_TOKEN=your_admin_token
+SHOPIFY_STOREFRONT_TOKEN=your_storefront_token
+STRIPE_SECRET_KEY=your_stripe_secret
+STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+OPENAI_API_KEY=your_openai_key
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=user@example.com
+SMTP_PASS=password
+SMTP_FROM=noreply@example.com
+```
+
+The server initializes its database automatically on startup, so the MySQL schema is created as needed.
 
 ## Running the project
 
+Start the development server:
+
 ```bash
-npm install           # install dependencies (express, nodemon, dotenv, etc.)
-npm run dev           # start development server
-npm run dev:tailwind  # run Tailwind CLI watch for admin CSS while developing
+npm run dev
 ```
 
-Browse `http://localhost:3000` to see the storefront. `produits.html` will display products fetched from either a local `products.json` file or, if configured, from Shopify.
+This launches the main application on `http://localhost:3000`.
 
-Admin pages are styled from `backend/admin/dist/admin-tailwind.css`, which is compiled from `backend/admin/admin-tailwind.css` using the Tailwind CLI.
+Build the admin Tailwind CSS bundle:
 
-## Shopify Integration
-
-The server now includes additional routes that proxy to Shopify's APIs. You must configure credentials using environment variables (create a `.env` file at the project root):
-
-```
-SHOP_NAME=portugalstorefr.myshopify.com
-SHOPIFY_ADMIN_TOKEN=your_admin_api_access_token   # Admin credentials (private)
-SHOPIFY_STOREFRONT_TOKEN=your_storefront_access_token   # Public storefront token
+```bash
+npm run tailwind:build
 ```
 
-- `GET /api/shopify/products` 
-  - Fetches catalogue data from Shopify Admin API and returns the raw products array.
-  - If the admin token is missing the route will respond with `500`.
+For production-style PM2 deployment:
 
-- `POST /api/shopify/checkout` 
-  - Accepts a JSON body with `{ lineItems: [{ variantId, quantity }, ...] }`.
-  - Forwards the mutation to Shopify's Storefront GraphQL API to create a checkout.
-  - Returns the GraphQL response; redirects to `checkout.webUrl` on the client.
+```bash
+npm run prod
+```
 
-### Obtaining tokens
+## Key entry points
 
-1. Log in to your Shopify admin.
-2. For the **Admin API access token**:
-   - Go to Apps &gt; Develop apps &gt; [your app] &gt; **API credentials**.
-   - Create an Admin API key with `read_products` scope and copy the token.
-3. For the **Storefront API access token**:
-   - In the same app page, go to **Storefront API access tokens** and click "Create token".
-   - Ensure the token has `unauthenticated_read_product_listings` and `unauthenticated_write_checkouts` scopes.
+- Storefront home: `/`
+- Product listing: `/produits` or `/products`
+- Cart: `/cart`
+- Checkout: `/checkout`
+- Admin login: `/admin/login`
+- Admin dashboard: `/admin/dashboard`
+- Health check: `/health`
 
-Store these tokens in `.env` or your environment before running `npm run dev`.
+## API areas
 
-## Frontend changes
+The main backend routes are organized under `src/routes/` and include:
 
-`public/js/script.js` now:
+- `/api/products` — products and catalog data
+- `/api/categories` — category management
+- `/api/users`, `/api/auth`, `/api/roles` — authentication and access control
+- `/api/orders`, `/api/cart`, `/api/checkouts` — checkout and purchasing flows
+- `/api/shopify` — Shopify product and checkout integration
+- `/api/analytics`, `/api/recommendations`, `/api/comments`, `/api/coupons`, `/api/returns`, `/api/referrals`, `/api/expenses` — business features and reporting
 
-* Attempts to load `/api/shopify/products` (if available) and maps the Shopify response to simple cards.
-* Falls back to the local `products.json` if Shopify is not configured.
-* Adds `data-price` attributes so carts carry price information.
-* Builds a checkout using the `/api/shopify/checkout` endpoint when the user clicks "Passer commande".
+## Notes for contributors
 
-## Further enhancements
+- The frontend is mostly static HTML/CSS/JS, with API-driven behavior added through the Express backend.
+- The admin UI assets are generated from `backend/admin/admin-tailwind.css` into `backend/admin/dist/admin-tailwind.css`.
+- The app is designed to run both as a local development project and as a deployed Node service.
 
-- Replace the flat JSON file with a database or call the Shopify Storefront API directly from the browser.
-- Authenticate customers using Shopify's customer accounts or a third‑party system.
-- Add product detail pages, variant selectors, and real pricing/stock info.
-- Implement webhooks to sync inventory, orders, etc.
-- Add user management and persistent carts in a server‑side session.
-
-This skeleton is meant as a starting point for a full e‑commerce prototype; feel free to extend it.
+This README reflects the current repository layout and runtime setup rather than an older prototype description.
 
