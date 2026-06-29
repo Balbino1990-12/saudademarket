@@ -16,7 +16,7 @@ console.log('\n🔍 Translation Keys Validation\n');
 
 // List specific nav keys
 console.log('\n📌 Navigation Keys:');
-['nav.home', 'nav.products', 'nav.specialties', 'nav.wine', 'nav.grocery', 'nav.gifts', 'nav.about', 'nav.contact'].forEach(key => {
+['nav.home', 'nav.products', 'nav.specialties', 'nav.about', 'nav.contact'].forEach(key => {
     console.log(`  ${key}:`);
     console.log(`    EN: "${data.en[key]}"`);
     console.log(`    FR: "${data.fr[key]}"`);

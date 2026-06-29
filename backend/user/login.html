@@ -372,7 +372,7 @@
       </div>
 
       <h1 class="card-title">Saudade Market</h1>
-      <p class="card-subtitle" data-i18n="user.userPortal">User Portal</p>
+      <p class="card-subtitle" id="cardSubtitle">User Portal</p>
 
       <!-- Card Body -->
       <div class="card-body">
@@ -381,7 +381,7 @@
         <form id="loginForm" novalidate>
           <input type="hidden" name="_csrf" id="csrfToken">
           <div class="form-group">
-            <label class="form-label" for="username" data-i18n="user.loginUsername">Username</label>
+            <label class="form-label" for="username" id="usernameLabel">Username</label>
             <input
               class="form-input"
               type="text"
@@ -396,7 +396,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="password" data-i18n="user.loginPassword">Password</label>
+            <label class="form-label" for="password" id="passwordLabel">Password</label>
             <input
               class="form-input"
               type="password"
@@ -409,13 +409,13 @@
             <div class="field-error" id="passwordError"></div>
           </div>
 
-          <button type="submit" class="btn-submit" id="submitBtn" data-i18n="user.signIn">Sign In</button>
+          <button type="submit" class="btn-submit" id="submitBtn">Sign In</button>
         </form>
       </div>
 
       <!-- Card Footer -->
       <div class="card-footer">
-        <p data-i18n="user.noAccount">Don't have an account? <a href="/user/register.html">Sign up</a></p>
+        <p id="noAccountText">Don't have an account? <a href="/user/register.html" id="signUpLink">Sign up</a></p>
       </div>
     </div>
   </div>
@@ -426,6 +426,93 @@
     function repr(str) {
       if (str === null || str === undefined) return str;
       return '"' + str.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"';
+    }
+
+    const loginTranslations = {
+      en: {
+        portal: 'User Portal',
+        username: 'Username',
+        password: 'Password',
+        signIn: 'Sign In',
+        signingIn: 'Signing In...',
+        noAccountPrefix: "Don't have an account?",
+        signUp: 'Sign up',
+        usernameRequired: 'Username is required',
+        passwordRequired: 'Password is required',
+        credentialsRequired: 'Username and password are required',
+        loginSuccess: 'Login successful! Redirecting...',
+        tokenLoadError: 'Failed to load security token. Please refresh the page.',
+        pageNotReady: 'Page not fully loaded. Please refresh and try again.',
+        connectionError: 'Connection error: ',
+        loginFailed: 'Login failed'
+      },
+      fr: {
+        portal: 'Portail utilisateur',
+        username: 'Nom d\'utilisateur',
+        password: 'Mot de passe',
+        signIn: 'Se connecter',
+        signingIn: 'Connexion...',
+        noAccountPrefix: "Vous n\'avez pas de compte ?",
+        signUp: 'Inscrivez-vous',
+        usernameRequired: 'Le nom d\'utilisateur est requis',
+        passwordRequired: 'Le mot de passe est requis',
+        credentialsRequired: 'Le nom d\'utilisateur et le mot de passe sont requis',
+        loginSuccess: 'Connexion réussie ! Redirection...',
+        tokenLoadError: 'Impossible de charger le jeton de sécurité. Veuillez actualiser la page.',
+        pageNotReady: 'La page n\'est pas complètement chargée. Veuillez actualiser et réessayer.',
+        connectionError: 'Erreur de connexion : ',
+        loginFailed: 'Échec de la connexion'
+      },
+      pt: {
+        portal: 'Portal do utilizador',
+        username: 'Nome de utilizador',
+        password: 'Palavra-passe',
+        signIn: 'Entrar',
+        signingIn: 'A entrar...',
+        noAccountPrefix: 'Ainda não tem conta?',
+        signUp: 'Registe-se',
+        usernameRequired: 'O nome de utilizador é obrigatório',
+        passwordRequired: 'A palavra-passe é obrigatória',
+        credentialsRequired: 'O nome de utilizador e a palavra-passe são obrigatórios',
+        loginSuccess: 'Login efetuado com sucesso! A redirecionar...',
+        tokenLoadError: 'Não foi possível carregar o token de segurança. Atualize a página.',
+        pageNotReady: 'A página ainda não carregou completamente. Atualize e tente novamente.',
+        connectionError: 'Erro de ligação: ',
+        loginFailed: 'Falha no login'
+      }
+    };
+
+    function getLoginLang() {
+      return localStorage.getItem('language') || 'en';
+    }
+
+    function getLoginCopy(lang) {
+      return loginTranslations[lang] || loginTranslations.en;
+    }
+
+    function applyLoginLanguage(lang) {
+      const copy = getLoginCopy(lang);
+      const langMap = { en: 'English', fr: 'Français', pt: 'Português' };
+
+      document.documentElement.lang = lang;
+      if (langBtn) {
+        langBtn.textContent = langMap[lang] || 'English';
+      }
+
+      document.getElementById('cardSubtitle').textContent = copy.portal;
+      document.getElementById('usernameLabel').textContent = copy.username;
+      document.getElementById('passwordLabel').textContent = copy.password;
+      document.getElementById('submitBtn').textContent = copy.signIn;
+      document.getElementById('noAccountText').childNodes[0].textContent = `${copy.noAccountPrefix} `;
+      document.getElementById('signUpLink').textContent = copy.signUp;
+
+      document.getElementById('username').placeholder = copy.username;
+      document.getElementById('password').placeholder = copy.password;
+
+      const messageEl = document.getElementById('message');
+      if (messageEl && !messageEl.classList.contains('show')) {
+        messageEl.textContent = '';
+      }
     }
 
     if (localStorage.getItem('userToken')) {
@@ -470,6 +557,8 @@
         
         // Store language preference
         localStorage.setItem('language', selectedLang);
+
+        applyLoginLanguage(selectedLang);
         
         // Trigger translation if i18n is available
         if (window.setLanguage) {
@@ -521,7 +610,7 @@
         }
         if (messageEl) {
           messageEl.className = 'message error show';
-          messageEl.textContent = 'Failed to load security token. Please refresh the page.';
+          messageEl.textContent = getLoginCopy(getLoginLang()).tokenLoadError;
         }
       }
     }
@@ -564,6 +653,7 @@
       const messageEl = document.getElementById('message');
       const submitBtn = document.getElementById('submitBtn');
       const originalText = submitBtn?.textContent || 'Sign In';
+      const copy = getLoginCopy(getLoginLang());
 
       clearLoginErrors();
 
@@ -585,7 +675,7 @@
       if (!csrfToken || csrfToken.length === 0) {
         console.error('CSRF token not loaded!');
         messageEl.className = 'message error show';
-        messageEl.textContent = 'Page not fully loaded. Please refresh and try again.';
+        messageEl.textContent = copy.pageNotReady;
         return;
       }
 
@@ -593,13 +683,13 @@
 
       if (!username || username.length === 0) {
         console.log('Username validation failed');
-        showFieldError('username', 'usernameError', 'Username is required');
+        showFieldError('username', 'usernameError', copy.usernameRequired);
         hasValidationError = true;
       }
 
       if (!password || password.length === 0) {
         console.log('Password validation failed');
-        showFieldError('password', 'passwordError', 'Password is required');
+        showFieldError('password', 'passwordError', copy.passwordRequired);
         hasValidationError = true;
       }
 
@@ -611,7 +701,7 @@
 
       try {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Signing In...';
+        submitBtn.textContent = copy.signingIn;
 
         const requestData = { username, password };
         console.log('Sending request data:', { username, passwordLength: password.length });
@@ -630,7 +720,7 @@
         console.log('Response headers:', Object.fromEntries(resp.headers.entries()));
 
         if (!resp.ok) {
-          let errorMsg = 'Login failed';
+          let errorMsg = copy.loginFailed;
           try {
             const errorData = await resp.json();
             console.log('Error response data:', errorData);
@@ -660,7 +750,7 @@
         }
 
         messageEl.className = 'message success show';
-        messageEl.textContent = 'Login successful! Redirecting...';
+        messageEl.textContent = copy.loginSuccess;
 
         const userRole = (data.user?.role || data.user?.role_name || '').toString().trim().toLowerCase();
         if (userRole === 'seller') {
@@ -678,7 +768,7 @@
       } catch (error) {
         console.error('Login exception:', error);
         messageEl.className = 'message error show';
-        messageEl.textContent = 'Connection error: ' + error.message;
+        messageEl.textContent = copy.connectionError + error.message;
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
@@ -691,6 +781,8 @@
     if (loginForm) {
       loginForm.addEventListener('submit', handleLogin);
     }
+
+    applyLoginLanguage(savedLang);
 
     loadCsrfToken();
   </script>

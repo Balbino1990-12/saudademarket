@@ -4,8 +4,6 @@
         '/',
         '/index.html',
         '/produits.html',
-        '/produtos.html',
-        '/produits.html',
         '/specialites.html',
         '/especialidades.html',
         '/cabazes.html',
@@ -15,7 +13,6 @@
         '/vinhos-porto.html',
         '/mercaria.html',
         '/apropos.html',
-        '/sobre.html',
         '/contact.html',
         '/contactos.html',
         '/cart.html',
@@ -148,6 +145,9 @@
     function buildSpecialtyMenu(lang) {
         if (!specialtiesData || specialtiesData.length === 0) return;
 
+        // Do not render specialty submenu items on the specialties landing page itself.
+        if (normalizedPath === '/specialites' || normalizedPath === '/specialites.html') return;
+
         const anchor = document.getElementById('specialties-menu-anchor');
         if (!anchor) return;
 
@@ -219,6 +219,12 @@
     }
 
     function showBuyerNameIfLogged() {
+        if (normalizedPath === '/specialites' || normalizedPath === '/specialites.html' || window.location.pathname.endsWith('/specialites.html')) {
+            const existing = document.getElementById('buyer-name');
+            if (existing) existing.remove();
+            return;
+        }
+
         const name = getBuyerDisplayName();
         if (!name) return;
         const actions = document.querySelector('.header-actions');
@@ -286,11 +292,24 @@
                 });
                 if (specLink) {
                     specLink.classList.add('active');
-                    // when specialty is active, show buyer name if logged (same as PRODUCTS behavior)
-                    showBuyerNameIfLogged();
+                    return;
                 }
             }
+
+            const mainSpecialtiesLink = document.querySelector('nav a[data-i18n="nav.specialties"]');
+            if (mainSpecialtiesLink) {
+                mainSpecialtiesLink.classList.add('active');
+            }
             return;
+        }
+
+        if (normalizedPath === '/order-history' || normalizedPath === '/order-history.html') {
+            const productsLink = document.querySelector('nav a[data-i18n="nav.products"]');
+            if (productsLink) {
+                productsLink.classList.add('active');
+                showBuyerNameIfLogged();
+                return;
+            }
         }
 
         // Default: mark nav item whose href matches current path
@@ -1333,7 +1352,7 @@
 
         btn.addEventListener('click', toggleDropdown);
 
-        document.addEventListener('click', (event) => {
+        document.addEventListener('click', async (event) => {
             if (dropdown && !dropdown.contains(event.target) && !btn.contains(event.target)) {
                 dropdown.classList.remove('visible');
                 dropdown.style.display = 'none';
@@ -1341,7 +1360,17 @@
 
             const target = event.target;
             if (target && target.id === 'profileLogout') {
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                } catch (error) {
+                    console.warn('Logout request failed, clearing local state anyway', error);
+                }
+
                 localStorage.removeItem('currentUser');
+                localStorage.removeItem('buyerName');
                 localStorage.removeItem('userToken');
                 localStorage.removeItem('buyerToken');
                 location.reload();
@@ -1554,6 +1583,64 @@
         return null;
     }
 
+    async function bootstrapAuthenticatedUser() {
+        const storedUser = getCurrentUser();
+        const storedToken = localStorage.getItem('buyerToken') || localStorage.getItem('userToken');
+
+        if (storedUser && storedToken) {
+            return storedUser;
+        }
+
+        try {
+            const response = await fetch('/api/auth/session', {
+                method: 'GET',
+                credentials: 'include',
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                return storedUser;
+            }
+
+            const payload = await response.json();
+            const token = payload.token || payload.accessToken;
+            const user = payload.user || null;
+
+            if (token) {
+                localStorage.setItem('userToken', token);
+                localStorage.setItem('buyerToken', token);
+            }
+
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                if (user.username || user.name) {
+                    localStorage.setItem('buyerName', user.username || user.name);
+                }
+            }
+
+            return user;
+        } catch (error) {
+            console.warn('Failed to bootstrap authenticated user', error);
+            return storedUser;
+        }
+    }
+
+    async function ensureAuthenticatedUser() {
+        const currentUser = getCurrentUser();
+        const token = localStorage.getItem('buyerToken') || localStorage.getItem('userToken');
+
+        if (currentUser && token) {
+            return token;
+        }
+
+        const restoredUser = await bootstrapAuthenticatedUser();
+        if (restoredUser) {
+            return localStorage.getItem('buyerToken') || localStorage.getItem('userToken');
+        }
+
+        return null;
+    }
+
     function updateProfileUI() {
         const profileBtn = document.getElementById('profileBtn');
         const dropdown = document.getElementById('profileDropdown');
@@ -1613,8 +1700,11 @@
     // initialize cart modal and state
     createCartModal();
     loadCart();
-    setupGlobalProfileButton();
-    trackAnalyticsPageView();
+    (async () => {
+        await bootstrapAuthenticatedUser();
+        setupGlobalProfileButton();
+        trackAnalyticsPageView();
+    })();
 
     function setupGlobalProfileButton() {
         const profileBtn = document.getElementById('profileBtn');
@@ -3470,7 +3560,7 @@
         });
         // checkout button: if authenticated go to checkout, otherwise go login
         modal.querySelector('#checkoutBtn').addEventListener('click', async () => {
-            const token = localStorage.getItem('buyerToken') || localStorage.getItem('userToken');
+            const token = await ensureAuthenticatedUser();
             if (!token) {
                 window.location.href = '/user/login.html';
                 return;

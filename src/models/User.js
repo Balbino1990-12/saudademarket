@@ -1,6 +1,7 @@
 
 const { pool } = require('../config/database');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 class User {
   /**
@@ -91,6 +92,27 @@ class User {
   }
 
   /**
+   * Get user by OAuth provider and provider ID
+   * @param {string} provider - OAuth provider name
+   * @param {string} providerId - Provider user ID
+   * @returns {Promise<Object|null>} User object with role info or null if not found
+   */
+  static async getByOAuth(provider, providerId) {
+    try {
+      const [result] = await pool.query(`
+        SELECT u.*, r.name as role_name, r.description as role_description
+        FROM users u
+        LEFT JOIN roles r ON u.role_id = r.id
+        WHERE u.oauth_provider = ? AND u.oauth_provider_id = ?
+      `, [provider, providerId]);
+      return result.length > 0 ? result[0] : null;
+    } catch (err) {
+      console.error('[User.getByOAuth] Error:', err);
+      throw err;
+    }
+  }
+
+  /**
    * Create a new user
    * @param {Object} userData - User object with required fields (role_id is optional)
    * @returns {Promise<Object>} Created user
@@ -105,7 +127,8 @@ class User {
       if (!userData.email || !String(userData.email).trim()) {
         throw new Error('Email is required');
       }
-      if (!userData.password || !String(userData.password).trim()) {
+      const isOAuthUser = Boolean(userData.oauth_provider && userData.oauth_provider_id);
+      if (!isOAuthUser && (!userData.password || !String(userData.password).trim())) {
         throw new Error('Password is required');
       }
 
@@ -135,14 +158,18 @@ class User {
       }
 
       // Hash password only when it is not already a bcrypt hash.
-      const isHashedPassword = typeof userData.password === 'string' && /^\$2[aby]\$/.test(userData.password);
+      // OAuth users get a random placeholder hash because they do not sign in with a local password.
+      const passwordSource = isOAuthUser && !userData.password
+        ? crypto.randomBytes(32).toString('hex')
+        : userData.password;
+      const isHashedPassword = typeof passwordSource === 'string' && /^\$2[aby]\$/.test(passwordSource);
       const hashedPassword = isHashedPassword
-        ? userData.password
-        : await bcrypt.hash(userData.password, 10);
+        ? passwordSource
+        : await bcrypt.hash(passwordSource, 10);
 
       const sql = `
-        INSERT INTO users (username, email, password, first_name, last_name, phone_number, city, role_id, active)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (username, email, password, first_name, last_name, phone_number, city, role_id, active, oauth_provider, oauth_provider_id, profile_picture)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const result = await pool.query(sql, [
@@ -154,7 +181,10 @@ class User {
         userData.phone_number || null,
         userData.city || null,
         roleId,
-        userData.active !== undefined ? userData.active : true
+        userData.active !== undefined ? userData.active : true,
+        userData.oauth_provider || null,
+        userData.oauth_provider_id || null,
+        userData.profile_picture || null
       ]);
 
       console.log('[User.create] ✅ User created with ID:', result[0].insertId);
@@ -224,6 +254,18 @@ class User {
       if (userData.role_id !== undefined) {
         updates.push('role_id = ?');
         values.push(userData.role_id);
+      }
+      if (userData.oauth_provider !== undefined) {
+        updates.push('oauth_provider = ?');
+        values.push(userData.oauth_provider);
+      }
+      if (userData.oauth_provider_id !== undefined) {
+        updates.push('oauth_provider_id = ?');
+        values.push(userData.oauth_provider_id);
+      }
+      if (userData.profile_picture !== undefined) {
+        updates.push('profile_picture = ?');
+        values.push(userData.profile_picture);
       }
       if (userData.active !== undefined) {
         updates.push('active = ?');
@@ -311,6 +353,12 @@ class User {
       }
       if (!user) return null;
 
+      if (!user.active) {
+        const error = new Error('Your user have deactivated for some reason, contact your administrator to activate again');
+        error.code = 'USER_DEACTIVATED';
+        throw error;
+      }
+
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) return null;
 
@@ -321,7 +369,8 @@ class User {
         first_name: user.first_name,
         last_name: user.last_name,
         role_id: user.role_id,
-        role_name: user.role_name
+        role_name: user.role_name,
+        active: user.active
       };
     } catch (err) {
       console.error('[User.authenticate] Error:', err);
@@ -445,7 +494,6 @@ class User {
         LEFT JOIN roles r ON u.role_id = r.id
         WHERE u.email IS NOT NULL 
           AND u.email != ''
-          AND u.active = 1
           AND r.name = 'Buyer'
         ORDER BY u.created_at DESC
       `);

@@ -5,6 +5,7 @@ const ProductController = require('../controllers/ProductController'); // Import
 const CouponController = require('../controllers/CouponController'); // Import the CouponController to handle coupon-related operations for admin routes
 const OrderController = require('../controllers/OrderController'); // Import the OrderController to handle order-related operations for admin routes
 const ReportController = require('../controllers/ReportController'); // Import the ReportController to handle reporting and export endpoints
+const User = require('../models/User');
 const { verifyAdminSession } = require('../middleware/authentication'); // Middleware to verify that the user has an active admin session, ensuring that only authorized users can access protected admin routes
 const { checkPermission } = require('../middleware/authorization');
 const path = require('path');
@@ -84,6 +85,37 @@ router.get('/reports/schedules', verifyAdminSession, ReportController.listSchedu
 // Consumers endpoint (requires admin session)
 // This endpoint retrieves all buyer accounts for the admin consumer page
 router.get('/consumers', verifyAdminSession, AdminController.getConsumers);
+
+// Consumer actions (requires admin session)
+router.patch('/consumers/:id/deactivate', verifyAdminSession, async (req, res) => {
+  try {
+    const user = await User.getById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Consumer not found' });
+    }
+
+    const updated = await User.update(req.params.id, { active: false });
+    return res.json({ success: true, data: updated, message: 'Consumer deactivated successfully' });
+  } catch (err) {
+    console.error('[AdminRoutes.deactivateConsumer] Error:', err);
+    return res.status(500).json({ success: false, error: err.message || 'Failed to deactivate consumer' });
+  }
+});
+
+router.patch('/consumers/:id/activate', verifyAdminSession, async (req, res) => {
+  try {
+    const user = await User.getById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Consumer not found' });
+    }
+
+    const updated = await User.update(req.params.id, { active: true });
+    return res.json({ success: true, data: updated, message: 'Consumer activated successfully' });
+  } catch (err) {
+    console.error('[AdminRoutes.activateConsumer] Error:', err);
+    return res.status(500).json({ success: false, error: err.message || 'Failed to activate consumer' });
+  }
+});
 
 // Example protected route to get all products (requires admin session)
 // This endpoint allows admin users to retrieve a list of all products in the system. It requires an active admin session to ensure that only authorized users can access this information, which helps maintain security and control over product data. The ProductController.list method will handle the logic for fetching and returning the product data, which can be used for managing products in the admin dashboard or for other administrative purposes.

@@ -20,6 +20,7 @@ const userRoutes = require('./routes/users');
 const roleRoutes = require('./routes/roles');
 const adminRoutes = require('./routes/admin');
 const authRoutes = require('./routes/auth');
+const AuthController = require('./controllers/AuthController');
 const shopifyRoutes = require('./routes/shopify');
 const activitiesRoutes = require('./routes/activities');
 const analyticsRoutes = require('./routes/analytics');
@@ -48,6 +49,40 @@ const { initDatabase } = require('./config/database');
  * @type {import('express').Express}
  */
 const app = express();
+
+const MOBILE_USER_AGENT_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i;
+
+function isMobileRequest(req) {
+  const forcedDesktop = req.query && (req.query.desktop === '1' || req.query.view === 'desktop');
+  if (forcedDesktop) {
+    return false;
+  }
+
+  const userAgent = String(req.headers['user-agent'] || '');
+  const mobileHint = String(req.headers['sec-ch-ua-mobile'] || '').toLowerCase();
+
+  return mobileHint === '?1' || MOBILE_USER_AGENT_REGEX.test(userAgent);
+}
+
+function buildRedirectQuery(req) {
+  const query = new URLSearchParams((req.url && req.url.includes('?')) ? req.url.split('?')[1] : '');
+  query.delete('desktop');
+  query.delete('view');
+  const suffix = query.toString();
+
+  return suffix ? `?${suffix}` : '';
+}
+
+function buildMobileProductDetailUrl(product, req) {
+  const query = new URLSearchParams(buildRedirectQuery(req).replace(/^\?/, ''));
+  const productId = String(product?.id ?? product?.slug ?? '').trim();
+
+  if (productId) {
+    query.set('id', productId);
+  }
+
+  return `/mobile/product-detail/${query.toString() ? `?${query.toString()}` : ''}`;
+}
 
 /**
  * TRUST PROXY CONFIGURATION
@@ -155,10 +190,23 @@ app.get('/product-detail.html', async (req, res, next) => {
     if (!product) {
       return res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
     }
+
+    if (isMobileRequest(req)) {
+      return res.redirect(302, buildMobileProductDetailUrl(product, req));
+    }
+
     res.sendFile(path.join(__dirname, '../product-detail.html'));
   } catch (err) {
     next(err);
   }
+});
+
+app.get(['/', '/index.html'], (req, res) => {
+  if (isMobileRequest(req)) {
+    return res.redirect(302, `/mobile/${buildRedirectQuery(req)}`);
+  }
+
+  return res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.use(express.static(path.join(__dirname, '../public'), staticOptions));
@@ -279,7 +327,7 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production' && app.get('trust proxy'), // HTTPS only in production with proxy
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Strict in production, lax in dev
+    sameSite: 'lax', // Required for OAuth callback redirects to preserve the session cookie
     domain: process.env.COOKIE_DOMAIN || undefined // Set domain for cross-subdomain cookies if needed
   },
   name: 'portugalstore.sid' // Change default session name for security
@@ -453,8 +501,8 @@ app.get('/admin/customers', (req, res) => res.redirect('/admin/consumers'));
 // User pages (with and without .html)
 app.get('/user/login', (req, res) => res.sendFile(path.join(__dirname, '../backend/user/login.html')));
 app.get('/user/login.html', (req, res) => res.sendFile(path.join(__dirname, '../backend/user/login.html')));
-app.get('/user/register', (req, res) => res.sendFile(path.join(__dirname, '../backend/user/register.html')));
-app.get('/user/register.html', (req, res) => res.sendFile(path.join(__dirname, '../backend/user/register.html')));
+app.get('/user/register', (req, res) => res.type('html').send(AuthController.buildRegisterPageHtml()));
+app.get('/user/register.html', (req, res) => res.type('html').send(AuthController.buildRegisterPageHtml()));
 app.get('/user/dashboard', (req, res) => res.sendFile(path.join(__dirname, '../backend/user/dashboard.html')));
 app.get('/user/dashboard.html', (req, res) => res.sendFile(path.join(__dirname, '../backend/user/dashboard.html')));
 
@@ -502,8 +550,13 @@ app.get('/cart.html', (req, res) => res.sendFile(path.join(__dirname, '../public
 app.get('/checkout', (req, res) => res.sendFile(path.join(__dirname, '../public/checkout.html')));
 app.get('/checkout.html', (req, res) => res.sendFile(path.join(__dirname, '../public/checkout.html')));
 
-app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, '../public/contact.html')));
-app.get('/contact.html', (req, res) => res.sendFile(path.join(__dirname, '../public/contact.html')));
+app.get(['/contact', '/contact.html'], (req, res) => {
+  if (isMobileRequest(req)) {
+    return res.sendFile(path.join(__dirname, '../public/mobile/contact/index.html'));
+  }
+
+  return res.sendFile(path.join(__dirname, '../public/contact.html'));
+});
 
 app.get('/contactos', (req, res) => res.sendFile(path.join(__dirname, '../public/contactos.html')));
 app.get('/contactos.html', (req, res) => res.sendFile(path.join(__dirname, '../public/contactos.html')));
@@ -526,8 +579,7 @@ app.get('/mercaria.html', (req, res) => res.sendFile(path.join(__dirname, '../pu
 app.get('/order-info', (req, res) => res.sendFile(path.join(__dirname, '../public/order-info.html')));
 app.get('/order-info.html', (req, res) => res.sendFile(path.join(__dirname, '../public/order-info.html')));
 
-app.get('/sobre', (req, res) => res.sendFile(path.join(__dirname, '../public/sobre.html')));
-app.get('/sobre.html', (req, res) => res.sendFile(path.join(__dirname, '../public/sobre.html')));
+app.get(['/sobre', '/sobre.html'], (req, res) => res.redirect(301, '/apropos.html'));
 
 app.get('/specialites', (req, res) => res.sendFile(path.join(__dirname, '../public/specialites.html')));
 app.get('/specialites.html', (req, res) => res.sendFile(path.join(__dirname, '../public/specialites.html')));
@@ -600,18 +652,40 @@ app.use('/backend/admin', express.static(path.join(__dirname, '../backend/admin'
 app.use('/user', express.static(path.join(__dirname, '../backend/user'), backendStaticOptions));
 app.use('/backend/user', express.static(path.join(__dirname, '../backend/user'), backendStaticOptions));
 
+// Redirect removed Portuguese products page and aliases to the canonical French listing page
+app.get(['/produtos.html', '/produtos', '/produtos/categoria/:categoryId', '/produtos/:productSlug'], (req, res) => {
+  res.redirect(301, '/produits.html');
+});
+
+app.get('/produits.html', (req, res) => {
+  if (isMobileRequest(req)) {
+    return res.redirect(302, `/mobile/products/${buildRedirectQuery(req)}`);
+  }
+
+  return res.sendFile(path.join(__dirname, '../public/produits.html'));
+});
+
 // Public category listing route by category id
-app.get(['/produits/categorie/:categoryId', '/produtos/categoria/:categoryId', '/products/category/:categoryId'], (req, res) => {
+app.get(['/produits/categorie/:categoryId', '/products/category/:categoryId'], (req, res) => {
+  if (isMobileRequest(req)) {
+    return res.redirect(302, `/mobile/products/${buildRedirectQuery(req)}`);
+  }
+
   res.sendFile(path.join(__dirname, '../public/produits.html'));
 });
 
 // Public product detail route by slug
-app.get(['/produits/:productSlug', '/produtos/:productSlug', '/products/:productSlug'], async (req, res, next) => {
+app.get(['/produits/:productSlug', '/products/:productSlug'], async (req, res, next) => {
   try {
     const product = await Product.getBySlugOrName(req.params.productSlug);
     if (!product) {
       return res.status(404).sendFile(path.join(__dirname, '../public/404.html'));
     }
+
+    if (isMobileRequest(req)) {
+      return res.redirect(302, buildMobileProductDetailUrl(product, req));
+    }
+
     res.sendFile(path.join(__dirname, '../product-detail.html'));
   } catch (err) {
     next(err);
@@ -619,8 +693,20 @@ app.get(['/produits/:productSlug', '/produtos/:productSlug', '/products/:product
 });
 
 // List route aliases for products
-app.get(['/produits', '/produtos', '/products'], (req, res) => {
+app.get(['/produits', '/products'], (req, res) => {
+  if (isMobileRequest(req)) {
+    return res.redirect(302, `/mobile/products/${buildRedirectQuery(req)}`);
+  }
+
   res.sendFile(path.join(__dirname, '../public/produits.html'));
+});
+
+app.get(['/cart', '/cart.html'], (req, res) => {
+  if (isMobileRequest(req)) {
+    return res.redirect(302, `/mobile/cart/${buildRedirectQuery(req)}`);
+  }
+
+  return res.sendFile(path.join(__dirname, '../public/cart.html'));
 });
 
 // fallback

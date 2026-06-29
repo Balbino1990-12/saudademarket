@@ -178,6 +178,10 @@ class UserController {
         }
       });
     } catch (err) {
+      if (err && err.code === 'USER_DEACTIVATED') {
+        return res.status(403).json({ success: false, error: err.message });
+      }
+
       console.error(`[UserController.login] Error during login:`, err);
       next(err);
     }

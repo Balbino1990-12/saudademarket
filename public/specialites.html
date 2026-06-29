@@ -32,21 +32,20 @@
                         <button data-lang="en" class="lang-option">EN</button>
                     </div>
                 </div>
-                <button class="icon user" id="profileBtn" title="Compte" style="display:flex; align-items:center; gap:6px;"></button>
+                <button class="icon user" id="profileBtn" title="Compte" style="display:flex; align-items:center; gap:6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span class="profile-label" id="profileLabel"></span>
+                </button>
                 <button class="menu-toggle" id="menuToggle" title="Menu" style="display:none">☰</button>
             </div>
         </div>
 
         <nav>
             <ul>
-                <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
-                <li><a href="produits.html" data-i18n="nav.products">PRODUITS</a></li>
-                <li id="specialties-menu-anchor"></li>
-                <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
-                <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
-                <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
-                <li><a href="cart.html" data-i18n="nav.cart">PANIER</a></li>
-                <li><a href="apropos.html" data-i18n="nav.about">À PROPOS</a></li>
+                <li><a href="index.html" data-i18n="nav.home">HOME</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">ALL PRODUCTS</a></li>
+                <li><a href="specialites.html" data-i18n="nav.specialties" class="active">SPECIALTIES</a></li>
+                <li><a href="apropos.html" data-i18n="nav.about">ABOUT</a></li>
                 <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
             </ul>
         </nav>

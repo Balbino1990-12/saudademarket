@@ -94,8 +94,9 @@
                 <h2 id="modalTitle" class="text-2xl font-semibold text-slate-900" data-i18n="coupons.modal.add">Add Coupon</h2>
                 <button type="button" onclick="closeCouponModal()" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-200 text-slate-600 transition hover:bg-slate-300 hover:text-slate-900">✕</button>
             </div>
-            <form id="couponForm" class="space-y-6 p-6" onsubmit="handleCouponSubmit(event)">
+            <form id="couponForm" class="space-y-6 p-6">
                 <input type="hidden" id="couponId" name="couponId">
+                <div id="couponFormError" class="hidden rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
                 <div class="grid gap-4 lg:grid-cols-2">
                     <div>
                         <label for="code" class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="coupons.label.code">Code</label>
@@ -169,7 +170,7 @@
             const token = localStorage.getItem('adminToken');
             if (!token) {
                 window.location.href = 'login.html';
-                return;
+                throw new Error('Admin session missing. Please log in again.');
             }
 
             const defaultOptions = {
@@ -186,9 +187,6 @@
                 try {
                     localStorage.removeItem('adminToken');
                 } catch (e) {}
-                // Redirect to login so admin can re-authenticate
-                window.location.href = 'login.html';
-                // return the original response for callers if needed
             }
 
             return res;
@@ -309,11 +307,52 @@
                 updateCouponValueFieldState();
             }
 
+            const errorBox = document.getElementById('couponFormError');
+            if (errorBox) {
+                errorBox.textContent = '';
+                errorBox.classList.add('hidden');
+            }
+
             modal.classList.remove('hidden');
         }
 
         function closeCouponModal() {
             document.getElementById('couponModal').classList.add('hidden');
+            const errorBox = document.getElementById('couponFormError');
+            if (errorBox) {
+                errorBox.textContent = '';
+                errorBox.classList.add('hidden');
+            }
+        }
+
+        function showCouponFormError(message) {
+            const errorBox = document.getElementById('couponFormError');
+            if (!errorBox) return;
+
+            errorBox.textContent = message || 'Failed to save coupon';
+            errorBox.classList.remove('hidden');
+        }
+
+        function formatCouponSaveError(kind, message) {
+            const fallbackMessage = message || 'Failed to save coupon';
+
+            if (kind === 'session') {
+                return fallbackMessage;
+            }
+
+            if (kind === 'network') {
+                return fallbackMessage;
+            }
+
+            if (kind === 'validation') {
+                return `Validation error: ${fallbackMessage}`;
+            }
+
+            if (kind === 'server') {
+                return `Server error: ${fallbackMessage}`;
+            }
+
+            return fallbackMessage;
         }
 
         function updateCouponValueFieldState() {
@@ -372,16 +411,48 @@
                     body: JSON.stringify(couponData)
                 });
 
-                const responseData = await res.json();
+                const responseText = await res.text();
+                let responseData = null;
+
+                try {
+                    responseData = responseText ? JSON.parse(responseText) : null;
+                } catch (parseError) {
+                    responseData = { raw: responseText };
+                }
+
                 if (res.ok && responseData.success !== false) {
                     closeCouponModal();
                     loadCoupons();
                     showNotification(couponId ? (window.translate ? window.translate('coupons.updated') : 'Coupon updated successfully') : (window.translate ? window.translate('coupons.created') : 'Coupon created successfully'), 'success');
                 } else {
-                    showNotification(responseData.error || responseData.message || 'Failed to save coupon', 'error');
+                    const responseMessage = responseData?.error || responseData?.message || responseData?.raw || 'Failed to save coupon';
+                    const errorKind = res.status === 401
+                        ? 'session'
+                        : res.status >= 500
+                            ? 'server'
+                            : 'validation';
+                    const modalErrorMessage = formatCouponSaveError(errorKind, responseMessage);
+                    console.error('Coupon save failed:', {
+                        status: res.status,
+                        statusText: res.statusText,
+                        response: responseData,
+                        payload: couponData
+                    });
+                    showCouponFormError(modalErrorMessage);
+                    showNotification('Failed to save coupon', 'error');
                 }
             } catch (error) {
                 console.error('Failed to save coupon:', error);
+                const lowerMessage = (error?.message || '').toLowerCase();
+                const kind = lowerMessage.includes('failed to fetch') || lowerMessage.includes('fetch failed') || lowerMessage.includes('econnrefused')
+                    ? 'network'
+                    : lowerMessage.includes('session expired') || lowerMessage.includes('log in again')
+                        ? 'session'
+                        : 'server';
+                const specificMessage = kind === 'network'
+                    ? 'Unable to reach the server. Make sure the backend is running and try again.'
+                    : formatCouponSaveError(kind, error?.message || 'Failed to save coupon');
+                showCouponFormError(specificMessage);
                 showNotification('Failed to save coupon', 'error');
             }
         }

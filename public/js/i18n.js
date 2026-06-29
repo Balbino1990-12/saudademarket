@@ -5,7 +5,6 @@
  */
 
 const i18n = (() => {
-    let currentLanguage = localStorage.getItem('adminLanguage') || localStorage.getItem('selectedLanguage') || 'fr';
     let translations = {};
     let isLoading = false;
 
@@ -16,6 +15,20 @@ const i18n = (() => {
         'fr': { name: 'Français', flag: '🇫🇷', code: 'fr' },
         'pt': { name: 'Português', flag: '🇵🇹', code: 'pt' }
     };
+
+    function getInitialLanguage() {
+        const isAdmin = window.location.pathname.startsWith('/admin');
+        const userLanguage = localStorage.getItem('selectedLanguage');
+        const adminLanguage = localStorage.getItem('adminLanguage');
+
+        if (isAdmin) {
+            return adminLanguage || userLanguage || 'fr';
+        }
+
+        return userLanguage || adminLanguage || 'fr';
+    }
+
+    let currentLanguage = getInitialLanguage();
 
     /**
      * Initialize i18n system

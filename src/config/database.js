@@ -106,12 +106,17 @@ async function createTables() {
       city VARCHAR(100) DEFAULT NULL,
       last_login DATETIME DEFAULT NULL,
       role_id INT DEFAULT NULL,
+      oauth_provider VARCHAR(50) DEFAULT NULL,
+      oauth_provider_id VARCHAR(255) DEFAULT NULL,
+      profile_picture VARCHAR(500) DEFAULT NULL,
       active BOOLEAN DEFAULT true,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       INDEX idx_username (username),
       INDEX idx_email (email),
       INDEX idx_role_id (role_id),
+      INDEX idx_oauth_provider (oauth_provider),
+      INDEX idx_oauth_provider_id (oauth_provider_id),
       INDEX idx_user_active (active),
       CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL ON UPDATE CASCADE
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -594,6 +599,42 @@ async function createTables() {
     } catch (err) {
       if (!err.message.includes('Duplicate column')) {
         warn('⚠ Could not add last_login column:', err.message);
+      }
+    }
+
+    try {
+      await db.pool.query(`ALTER TABLE users ADD COLUMN oauth_provider VARCHAR(50) DEFAULT NULL`);
+      log('✓ Added oauth_provider column to users table');
+    } catch (err) {
+      if (!err.message.includes('Duplicate column')) {
+        warn('⚠ Could not add oauth_provider column:', err.message);
+      }
+    }
+
+    try {
+      await db.pool.query(`ALTER TABLE users ADD COLUMN oauth_provider_id VARCHAR(255) DEFAULT NULL`);
+      log('✓ Added oauth_provider_id column to users table');
+    } catch (err) {
+      if (!err.message.includes('Duplicate column')) {
+        warn('⚠ Could not add oauth_provider_id column:', err.message);
+      }
+    }
+
+    try {
+      await db.pool.query(`ALTER TABLE users ADD COLUMN profile_picture VARCHAR(500) DEFAULT NULL`);
+      log('✓ Added profile_picture column to users table');
+    } catch (err) {
+      if (!err.message.includes('Duplicate column')) {
+        warn('⚠ Could not add profile_picture column:', err.message);
+      }
+    }
+
+    try {
+      await db.pool.query(`CREATE UNIQUE INDEX idx_users_oauth_provider_id ON users (oauth_provider, oauth_provider_id)`);
+      log('✓ Added unique oauth provider index to users table');
+    } catch (err) {
+      if (!err.message.includes('Duplicate key name') && !err.message.includes('Duplicate key')) {
+        warn('⚠ Could not add oauth provider unique index:', err.message);
       }
     }
   } catch (err) {

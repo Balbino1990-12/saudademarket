@@ -128,6 +128,121 @@
             text-decoration: underline;
         }
 
+        .policy-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.62);
+            z-index: 2000;
+        }
+
+        .policy-modal.open {
+            display: flex;
+        }
+
+        .policy-modal__dialog {
+            width: min(100%, 760px);
+            max-height: min(88vh, 820px);
+            overflow: hidden;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.28);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .policy-modal__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .policy-modal__title {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .policy-modal__subtitle {
+            margin: 6px 0 0;
+            color: #6b7280;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .policy-modal__close {
+            border: none;
+            background: #f3f4f6;
+            color: #374151;
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            flex: 0 0 auto;
+        }
+
+        .policy-modal__close:hover {
+            background: #e5e7eb;
+        }
+
+        .policy-modal__content {
+            padding: 24px;
+            overflow: auto;
+            color: #374151;
+            line-height: 1.7;
+        }
+
+        .policy-modal__content h4 {
+            margin: 20px 0 8px;
+            color: #111827;
+            font-size: 1.05rem;
+        }
+
+        .policy-modal__content h4:first-child {
+            margin-top: 0;
+        }
+
+        .policy-modal__content p,
+        .policy-modal__content li {
+            margin: 0 0 12px;
+            color: #4b5563;
+        }
+
+        .policy-modal__content ul {
+            padding-left: 20px;
+            margin: 0 0 12px;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+            .policy-modal {
+                padding: 12px;
+                align-items: flex-end;
+            }
+
+            .policy-modal__dialog {
+                max-height: 92vh;
+                border-radius: 18px 18px 0 0;
+            }
+
+            .policy-modal__header,
+            .policy-modal__content {
+                padding: 18px;
+            }
+        }
+
         .register-btn {
             width: 100%;
             padding: 16px;
@@ -328,6 +443,9 @@
         }
 
         .social-icon {
+            width: 1.2rem;
+            height: 1.2rem;
+            display: inline-block;
             font-size: 1.2rem;
         }
 
@@ -370,14 +488,10 @@
 
         <nav>
             <ul>
-                <li><a href="index.html" data-i18n="nav.home">ACCUEIL</a></li>
-                <li><a href="produits.html" data-i18n="nav.products">All products</a></li>
-                <li><a href="specialites.html" data-i18n="nav.specialties">SPÉCIALITÉS</a></li>
-                <li><a href="vin-porto.html" data-i18n="nav.wine">VIN & PORTO</a></li>
-                <li><a href="epicerie.html" data-i18n="nav.grocery">ÉPICERIE</a></li>
-                <li><a href="coffrets.html" data-i18n="nav.gifts">COFFRETS</a></li>
-                <li><a href="cart.html" data-i18n="nav.cart">PANIER</a></li>
-                <li><a href="apropos.html" data-i18n="nav.about">À PROPOS</a></li>
+                <li><a href="index.html" data-i18n="nav.home">HOME</a></li>
+                <li><a href="produits.html" data-i18n="nav.products">ALL PRODUCTS</a></li>
+                <li><a href="specialites.html" data-i18n="nav.specialties">SPECIALTIES</a></li>
+                <li><a href="apropos.html" data-i18n="nav.about">ABOUT</a></li>
                 <li><a href="contact.html" data-i18n="nav.contact">CONTACT</a></li>
             </ul>
         </nav>
@@ -496,7 +610,7 @@
                         <div class="terms-group">
                             <input type="checkbox" id="terms" name="terms">
                             <label for="terms" class="terms-text" data-i18n="register.terms">
-                                J'accepte les <a href="#" class="terms-link">Conditions générales d'utilisation</a> et la <a href="#" class="terms-link">Politique de confidentialité</a>
+                                J'accepte les <a href="#" class="terms-link" data-policy="terms">Conditions générales d'utilisation</a> et la <a href="#" class="terms-link" data-policy="privacy">Politique de confidentialité</a>
                             </label>
                         </div>
                         <span class="error-message" id="terms-error">required</span>
@@ -509,18 +623,20 @@
 
                 <div class="social-buttons">
                     <button class="social-btn google" id="googleSignupBtn" title="Sign up with Google">
-                        <span class="social-icon">🔵</span>
+                        <img class="social-icon" src="https://cdn.simpleicons.org/google/4285F4" alt="" aria-hidden="true" />
                         <span data-i18n="register.google">Google</span>
                     </button>
                     <button class="social-btn facebook" id="facebookSignupBtn" title="Sign up with Facebook">
-                        <span class="social-icon">👥</span>
+                        <img class="social-icon" src="https://cdn.simpleicons.org/facebook/1877F2" alt="" aria-hidden="true" />
                         <span data-i18n="register.facebook">Facebook</span>
                     </button>
                     <button class="social-btn apple" id="appleSignupBtn" title="Sign up with Apple">
-                        <span class="social-icon">🍎</span>
+                        <img class="social-icon" src="https://cdn.simpleicons.org/apple/000000" alt="" aria-hidden="true" />
                         <span data-i18n="register.apple">Apple</span>
                     </button>
                 </div>
+
+                <div id="socialLoginNotice" class="social-login-notice" style="display:none; margin-top:14px; font-size:0.92rem; color:#7a5b00; background:#fff7d6; border:1px solid #f0d98b; border-radius:10px; padding:10px 12px;"></div>
 
                 <div class="login-link" data-i18n="register.login_link">
                     Déjà un compte ? <a href="/user/login.html">Se connecter</a>
@@ -528,6 +644,20 @@
             </div>
         </section>
     </main>
+
+    <div id="policyModal" class="policy-modal" role="dialog" aria-modal="true" aria-labelledby="policyModalTitle" aria-hidden="true">
+        <div class="policy-modal__dialog">
+            <div class="policy-modal__header">
+                <div>
+                    <h3 id="policyModalTitle" class="policy-modal__title"></h3>
+                    <p id="policyModalSubtitle" class="policy-modal__subtitle"></p>
+                </div>
+                <button type="button" class="policy-modal__close" id="policyModalClose" aria-label="Fermer la fenêtre">&times;</button>
+            </div>
+            <div id="policyModalContent" class="policy-modal__content">
+            </div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -544,6 +674,229 @@
             const registerBtn = document.getElementById('registerBtn');
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
+            const socialLoginConfig = window.__SOCIAL_LOGIN_CONFIG__ || {};
+            const socialLoginNotice = document.getElementById('socialLoginNotice');
+            const googleBtn = document.getElementById('googleSignupBtn');
+            const facebookBtn = document.getElementById('facebookSignupBtn');
+            const appleBtn = document.getElementById('appleSignupBtn');
+            const policyModal = document.getElementById('policyModal');
+            const policyModalTitle = document.getElementById('policyModalTitle');
+            const policyModalSubtitle = document.getElementById('policyModalSubtitle');
+            const policyModalContent = document.getElementById('policyModalContent');
+            const policyModalClose = document.getElementById('policyModalClose');
+
+            const policyContent = {
+                fr: {
+                    terms: {
+                        title: "Conditions générales d'utilisation",
+                        subtitle: "Consultez les règles qui encadrent l'utilisation du compte et du service.",
+                        content: `
+                            <h4>1. Acceptation des conditions</h4>
+                            <p>En créant un compte, vous acceptez d'utiliser le site conformément aux présentes conditions générales et aux lois applicables.</p>
+                            <h4>2. Utilisation du service</h4>
+                            <ul>
+                                <li>Vous devez fournir des informations exactes et à jour.</li>
+                                <li>Vous êtes responsable de la confidentialité de votre mot de passe et de votre compte.</li>
+                                <li>Tout usage frauduleux ou abusif peut entraîner la suspension du compte.</li>
+                            </ul>
+                            <h4>3. Protection des données</h4>
+                            <p>Les informations collectées sont utilisées pour gérer votre compte, vos commandes et l'amélioration du service. Pour plus de détails, consultez la politique de confidentialité.</p>
+                        `
+                    },
+                    privacy: {
+                        title: 'Politique de confidentialité',
+                        subtitle: 'Découvrez comment vos données sont collectées et utilisées.',
+                        content: `
+                            <h4>1. Données collectées</h4>
+                            <p>Nous collectons les données nécessaires à la création de votre compte, à la gestion des commandes et à la fourniture de nos services.</p>
+                            <h4>2. Utilisation des données</h4>
+                            <ul>
+                                <li>Créer et sécuriser votre compte.</li>
+                                <li>Traiter vos commandes et vos demandes.</li>
+                                <li>Améliorer l'expérience utilisateur et prévenir les fraudes.</li>
+                            </ul>
+                            <h4>3. Vos droits</h4>
+                            <p>Vous pouvez demander l'accès, la rectification ou la suppression de vos données en nous contactant via les canaux de support du site.</p>
+                        `
+                    }
+                },
+                en: {
+                    terms: {
+                        title: 'Terms and Conditions',
+                        subtitle: 'Review the rules that govern account and service usage.',
+                        content: `
+                            <h4>1. Acceptance of terms</h4>
+                            <p>By creating an account, you agree to use the site in accordance with these terms and all applicable laws.</p>
+                            <h4>2. Service usage</h4>
+                            <ul>
+                                <li>You must provide accurate and up-to-date information.</li>
+                                <li>You are responsible for keeping your password and account confidential.</li>
+                                <li>Fraudulent or abusive use may result in account suspension.</li>
+                            </ul>
+                            <h4>3. Data protection</h4>
+                            <p>The information collected is used to manage your account, your orders, and service improvements. For more details, see the privacy policy.</p>
+                        `
+                    },
+                    privacy: {
+                        title: 'Privacy Policy',
+                        subtitle: 'Learn how your data is collected and used.',
+                        content: `
+                            <h4>1. Data collected</h4>
+                            <p>We collect the data needed to create your account, manage orders, and provide our services.</p>
+                            <h4>2. How we use data</h4>
+                            <ul>
+                                <li>Create and secure your account.</li>
+                                <li>Process your orders and requests.</li>
+                                <li>Improve user experience and prevent fraud.</li>
+                            </ul>
+                            <h4>3. Your rights</h4>
+                            <p>You can request access, correction, or deletion of your data by contacting us through the site's support channels.</p>
+                        `
+                    }
+                },
+                pt: {
+                    terms: {
+                        title: 'Termos e Condições',
+                        subtitle: 'Consulte as regras que regem o uso da conta e do serviço.',
+                        content: `
+                            <h4>1. Aceitação dos termos</h4>
+                            <p>Ao criar uma conta, você concorda em usar o site de acordo com estes termos e com as leis aplicáveis.</p>
+                            <h4>2. Uso do serviço</h4>
+                            <ul>
+                                <li>Você deve fornecer informações precisas e atualizadas.</li>
+                                <li>Você é responsável por manter sua senha e conta em sigilo.</li>
+                                <li>O uso fraudulento ou abusivo pode resultar na suspensão da conta.</li>
+                            </ul>
+                            <h4>3. Proteção de dados</h4>
+                            <p>As informações coletadas são usadas para gerenciar sua conta, seus pedidos e melhorias do serviço. Para mais detalhes, consulte a política de privacidade.</p>
+                        `
+                    },
+                    privacy: {
+                        title: 'Política de Privacidade',
+                        subtitle: 'Saiba como os seus dados são recolhidos e usados.',
+                        content: `
+                            <h4>1. Dados recolhidos</h4>
+                            <p>Recolhemos os dados necessários para criar a sua conta, gerir encomendas e prestar os nossos serviços.</p>
+                            <h4>2. Como usamos os dados</h4>
+                            <ul>
+                                <li>Criar e proteger a sua conta.</li>
+                                <li>Processar as suas encomendas e pedidos.</li>
+                                <li>Melhorar a experiência do utilizador e prevenir fraudes.</li>
+                            </ul>
+                            <h4>3. Os seus direitos</h4>
+                            <p>Pode solicitar acesso, correção ou eliminação dos seus dados contactando-nos através dos canais de apoio do site.</p>
+                        `
+                    }
+                }
+            };
+
+            function getPolicyLanguage() {
+                const domLanguage = document.documentElement.lang;
+                const activeLanguage = domLanguage || (window.i18n && typeof window.i18n.getLanguage === 'function'
+                    ? window.i18n.getLanguage()
+                    : (localStorage.getItem('selectedLanguage') || localStorage.getItem('adminLanguage') || 'fr'));
+
+                return policyContent[activeLanguage] ? activeLanguage : 'fr';
+            }
+
+            function openPolicyModal(policyType) {
+                if (!policyModal || !policyModalTitle || !policyModalSubtitle || !policyModalContent) {
+                    return;
+                }
+
+                const language = getPolicyLanguage();
+                const policy = (policyContent[language] && policyContent[language][policyType]) || policyContent.fr.terms;
+                policyModalTitle.textContent = policy.title;
+                policyModalSubtitle.textContent = policy.subtitle;
+                policyModalContent.innerHTML = policy.content;
+                policyModal.classList.add('open');
+                policyModal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            }
+
+            function refreshPolicyModal() {
+                if (!policyModal || !policyModal.classList.contains('open')) {
+                    return;
+                }
+
+                const activeLink = document.querySelector('[data-policy][data-active-policy="true"]');
+                const policyType = activeLink ? activeLink.getAttribute('data-policy') : 'terms';
+                openPolicyModal(policyType);
+            }
+
+            function closePolicyModal() {
+                if (!policyModal) {
+                    return;
+                }
+
+                policyModal.classList.remove('open');
+                policyModal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+            }
+
+            document.addEventListener('click', function(event) {
+                const policyLink = event.target.closest('[data-policy]');
+                if (!policyLink) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                document.querySelectorAll('[data-policy]').forEach(function(link) {
+                    link.removeAttribute('data-active-policy');
+                });
+                policyLink.setAttribute('data-active-policy', 'true');
+                openPolicyModal(policyLink.dataset.policy);
+            });
+
+            if (policyModalClose) {
+                policyModalClose.addEventListener('click', closePolicyModal);
+            }
+
+            if (policyModal) {
+                policyModal.addEventListener('click', function(event) {
+                    if (event.target === policyModal) {
+                        closePolicyModal();
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && policyModal && policyModal.classList.contains('open')) {
+                    closePolicyModal();
+                }
+            });
+
+            window.addEventListener('languageChanged', refreshPolicyModal);
+
+            const languageObserver = new MutationObserver(function(mutations) {
+                const languageChanged = mutations.some(function(mutation) {
+                    return mutation.type === 'attributes' && mutation.attributeName === 'lang';
+                });
+
+                if (languageChanged) {
+                    refreshPolicyModal();
+                }
+            });
+
+            languageObserver.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['lang']
+            });
+
+            const missingProviders = [];
+            if (!socialLoginConfig.googleClientId) missingProviders.push('Google');
+            if (!socialLoginConfig.facebookAppId) missingProviders.push('Facebook');
+            if (!socialLoginConfig.appleClientId) missingProviders.push('Apple');
+
+            if (socialLoginNotice && missingProviders.length > 0) {
+                socialLoginNotice.textContent = `Social login is not configured for: ${missingProviders.join(', ')}.`;
+                socialLoginNotice.style.display = 'block';
+            }
+
+            if (googleBtn) googleBtn.disabled = !socialLoginConfig.googleClientId;
+            if (facebookBtn) facebookBtn.disabled = !socialLoginConfig.facebookAppId;
+            if (appleBtn) appleBtn.disabled = !socialLoginConfig.appleClientId;
 
             console.log('DOM elements:', { form: !!form, messageEl: !!messageEl, registerBtn: !!registerBtn, togglePassword: !!togglePassword, passwordInput: !!passwordInput });
             
@@ -1208,36 +1561,13 @@
             loadCsrfToken();
 
             // Social login handlers
-            const googleBtn = document.getElementById('googleSignupBtn');
-            const facebookBtn = document.getElementById('facebookSignupBtn');
-            const appleBtn = document.getElementById('appleSignupBtn');
-
             if (googleBtn) {
                 googleBtn.addEventListener('click', async function(e) {
                     e.preventDefault();
+                    if (googleBtn.disabled) return;
                     console.log('Google signup clicked');
                     try {
-                        // Generate nonce for security
-                        const state = btoa(JSON.stringify({ 
-                            timestamp: Date.now(),
-                            random: Math.random().toString(36).substr(2, 9)
-                        }));
-                        sessionStorage.setItem('oauth_state_google', state);
-                        
-                        // Redirect to Google OAuth authorization
-                        const clientId = '{{ GOOGLE_CLIENT_ID }}'; // Will be replaced by server
-                        const redirectUri = `${window.location.origin}/api/auth/google/callback`;
-                        const scope = 'openid email profile';
-                        const responseType = 'code';
-                        
-                        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-                            `client_id=${encodeURIComponent(clientId)}&` +
-                            `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-                            `response_type=${responseType}&` +
-                            `scope=${encodeURIComponent(scope)}&` +
-                            `state=${encodeURIComponent(state)}`;
-                        
-                        window.location.href = authUrl;
+                        window.location.href = '/api/auth/google/init';
                     } catch (error) {
                         console.error('Google signup error:', error);
                         if (messageEl) {
@@ -1251,28 +1581,10 @@
             if (facebookBtn) {
                 facebookBtn.addEventListener('click', async function(e) {
                     e.preventDefault();
+                    if (facebookBtn.disabled) return;
                     console.log('Facebook signup clicked');
                     try {
-                        // Generate state for security
-                        const state = btoa(JSON.stringify({ 
-                            timestamp: Date.now(),
-                            random: Math.random().toString(36).substr(2, 9)
-                        }));
-                        sessionStorage.setItem('oauth_state_facebook', state);
-                        
-                        // Redirect to Facebook OAuth authorization
-                        const appId = '{{ FACEBOOK_APP_ID }}'; // Will be replaced by server
-                        const redirectUri = `${window.location.origin}/api/auth/facebook/callback`;
-                        const scope = 'email,public_profile';
-                        
-                        const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?` +
-                            `client_id=${encodeURIComponent(appId)}&` +
-                            `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-                            `scope=${encodeURIComponent(scope)}&` +
-                            `state=${encodeURIComponent(state)}&` +
-                            `response_type=code`;
-                        
-                        window.location.href = authUrl;
+                        window.location.href = '/api/auth/facebook/init';
                     } catch (error) {
                         console.error('Facebook signup error:', error);
                         if (messageEl) {
@@ -1286,19 +1598,10 @@
             if (appleBtn) {
                 appleBtn.addEventListener('click', async function(e) {
                     e.preventDefault();
+                    if (appleBtn.disabled) return;
                     console.log('Apple signup clicked');
                     try {
-                        // Generate state and nonce for security
-                        const state = btoa(JSON.stringify({ 
-                            timestamp: Date.now(),
-                            random: Math.random().toString(36).substr(2, 9)
-                        }));
-                        sessionStorage.setItem('oauth_state_apple', state);
-                        
-                        // For Apple, we'll use a backend-mediated flow
-                        // First, redirect to our backend to initiate Apple OAuth
-                        const redirectUri = `/api/auth/apple/init?state=${encodeURIComponent(state)}`;
-                        window.location.href = redirectUri;
+                        window.location.href = '/api/auth/apple/init';
                     } catch (error) {
                         console.error('Apple signup error:', error);
                         if (messageEl) {

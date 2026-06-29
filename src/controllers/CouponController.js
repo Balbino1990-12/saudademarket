@@ -1,6 +1,11 @@
 const Coupon = require('../models/Coupon');
 
 class CouponController {
+  static formatErrorMessage(err, fallbackMessage) {
+    if (!err) return fallbackMessage;
+    return err.message || err.sqlMessage || fallbackMessage;
+  }
+
   static parseDecimal(value) {
     if (value === undefined || value === null || value === '') return null;
     const parsed = Number(value);
@@ -11,6 +16,40 @@ class CouponController {
     if (value === undefined || value === null || value === '') return null;
     const parsed = parseInt(value, 10);
     return Number.isNaN(parsed) ? null : parsed;
+  }
+
+  static normalizeDateTime(value) {
+    if (value === undefined || value === null || value === '') return null;
+    const rawValue = String(value).trim();
+    if (!rawValue) return null;
+
+    const parsed = new Date(rawValue);
+    if (Number.isNaN(parsed.getTime())) {
+      return rawValue;
+    }
+
+    const pad = (num) => String(num).padStart(2, '0');
+    return [
+      parsed.getFullYear(),
+      pad(parsed.getMonth() + 1),
+      pad(parsed.getDate())
+    ].join('-') + ' ' + [
+      pad(parsed.getHours()),
+      pad(parsed.getMinutes()),
+      pad(parsed.getSeconds())
+    ].join(':');
+  }
+
+  static normalizeBoolean(value, fallback = true) {
+    if (value === undefined || value === null) return fallback;
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'number') return value === 1;
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on') return true;
+      if (normalized === 'false' || normalized === '0' || normalized === 'no' || normalized === 'off') return false;
+    }
+    return fallback;
   }
 
   static async validateCoupon(req, res) {
@@ -51,15 +90,19 @@ class CouponController {
         return res.status(400).json({ success: false, error: 'Code and type are required' });
       }
 
+      const normalizedType = String(type).trim();
+      const parsedValue = CouponController.parseDecimal(value);
+      const parsedMinOrderTotal = CouponController.parseDecimal(min_order_total);
+
       const couponData = {
         code: code.toUpperCase(),
-        type,
-        value: type === 'free_shipping' ? 0 : this.parseDecimal(value),
-        min_order_total: this.parseDecimal(min_order_total),
-        uses_left: this.parseInteger(uses_left),
-        valid_from: valid_from || null,
-        valid_to: valid_to || null,
-        active: active !== undefined ? active : true
+        type: normalizedType,
+        value: normalizedType === 'free_shipping' ? 0 : (parsedValue ?? 0),
+        min_order_total: parsedMinOrderTotal ?? 0,
+        uses_left: CouponController.parseInteger(uses_left),
+        valid_from: CouponController.normalizeDateTime(valid_from),
+        valid_to: CouponController.normalizeDateTime(valid_to),
+        active: CouponController.normalizeBoolean(active, true)
       };
 
       const couponId = await Coupon.create(couponData);
@@ -69,7 +112,10 @@ class CouponController {
       if (err.code === 'ER_DUP_ENTRY') {
         res.status(400).json({ success: false, error: 'Coupon code already exists' });
       } else {
-        res.status(500).json({ success: false, error: 'Failed to create coupon' });
+        res.status(500).json({
+          success: false,
+          error: CouponController.formatErrorMessage(err, 'Failed to create coupon')
+        });
       }
     }
   }
@@ -83,15 +129,19 @@ class CouponController {
         return res.status(400).json({ success: false, error: 'Coupon ID is required' });
       }
 
+      const couponType = type !== undefined ? String(type).trim() : undefined;
+      const parsedValue = CouponController.parseDecimal(value);
+      const parsedMinOrderTotal = CouponController.parseDecimal(min_order_total);
+
       const couponData = {
         code: code ? code.toUpperCase() : undefined,
-        type,
-        value: type === 'free_shipping' ? 0 : (value !== undefined ? this.parseDecimal(value) : undefined),
-        min_order_total: min_order_total !== undefined ? this.parseDecimal(min_order_total) : undefined,
-        uses_left: uses_left !== undefined ? this.parseInteger(uses_left) : undefined,
-        valid_from: valid_from || null,
-        valid_to: valid_to || null,
-        active: active !== undefined ? active : undefined
+        type: couponType,
+        value: couponType === 'free_shipping' ? 0 : (value !== undefined ? (parsedValue ?? 0) : undefined),
+        min_order_total: min_order_total !== undefined ? (parsedMinOrderTotal ?? 0) : undefined,
+        uses_left: uses_left !== undefined ? CouponController.parseInteger(uses_left) : undefined,
+        valid_from: valid_from !== undefined ? CouponController.normalizeDateTime(valid_from) : undefined,
+        valid_to: valid_to !== undefined ? CouponController.normalizeDateTime(valid_to) : undefined,
+        active: active !== undefined ? CouponController.normalizeBoolean(active, undefined) : undefined
       };
 
       // Remove undefined values
@@ -108,7 +158,10 @@ class CouponController {
       if (err.code === 'ER_DUP_ENTRY') {
         res.status(400).json({ success: false, error: 'Coupon code already exists' });
       } else {
-        res.status(500).json({ success: false, error: 'Failed to update coupon' });
+        res.status(500).json({
+          success: false,
+          error: CouponController.formatErrorMessage(err, 'Failed to update coupon')
+        });
       }
     }
   }

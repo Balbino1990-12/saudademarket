@@ -201,11 +201,19 @@ function injectSharedSidebarStyles() {
 
         .content {
             margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            max-width: calc(100% - 260px) !important;
+            min-width: 0;
+            box-sizing: border-box;
             padding: 20px;
         }
 
         .content-header {
             margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            max-width: calc(100% - 260px) !important;
+            min-width: 0;
+            box-sizing: border-box;
             padding: 20px 20px 0;
         }
 
@@ -227,6 +235,8 @@ function injectSharedSidebarStyles() {
             .content,
             .content-header {
                 margin-left: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
             }
         }
     `;

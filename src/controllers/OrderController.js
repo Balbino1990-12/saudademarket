@@ -10,6 +10,45 @@ const { sendOrderConfirmationEmail } = require('../services/EmailService');
 const Stripe = require('stripe');
 const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
+// Allowed French post codes for checkout
+const ALLOWED_POSTCODES = [
+  '25790',
+  '25570',
+  '25500',
+  '25130',
+  '25210',
+  '25140',
+  '25120',
+  '25450',
+  '25470'
+];
+
+function isPostcodeAllowed(zipCode) {
+  if (!zipCode) return false;
+  // Remove spaces and normalize
+  const normalized = String(zipCode).replace(/\s/g, '').trim();
+  return ALLOWED_POSTCODES.includes(normalized);
+}
+
+function extractPostcodeFromAddress(address) {
+  if (!address) return null;
+  // Try to extract from structured format: [street, zipCode, city, country]
+  // or from comma-separated address
+  const parts = String(address).split(',').map(p => p.trim());
+  
+  // Look for 5-digit patterns that match our allowed codes
+  for (const part of parts) {
+    // Check if it's a 5-digit code
+    if (/^\d{5}$/.test(part)) {
+      return part;
+    }
+  }
+  
+  // Fallback: search for any 5-digit sequence in the address
+  const match = String(address).match(/\b(\d{5})\b/);
+  return match ? match[1] : null;
+}
+
 function calculateShippingCost(total) {
   if (typeof total !== 'number' || total <= 0) return 0;
   if (total >= 100) return 0;
@@ -33,6 +72,15 @@ exports.placeOrder = async (req, res) => {
     console.log('[placeOrder] Session buyerId:', req.session.buyerId);
     if (!buyerId || !address) return res.status(400).json({ error: 'Missing buyer or address' });
     if (!paymentIntentId) return res.status(400).json({ error: 'Missing paymentIntentId' });
+
+    // Validate post code before proceeding
+    const postcode = extractPostcodeFromAddress(address);
+    if (!isPostcodeAllowed(postcode)) {
+      return res.status(400).json({ 
+        error: 'Your post code is not in the allowed delivery zones. Allowed post codes: ' + ALLOWED_POSTCODES.join(', '),
+        code: 'POSTCODE_NOT_ALLOWED'
+      });
+    }
 
     if (!stripe) return res.status(500).json({ error: 'Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.' });
 

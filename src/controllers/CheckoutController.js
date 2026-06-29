@@ -1,9 +1,28 @@
 const Checkout = require('../models/Checkout');
 const Cart = require('../models/Cart');
 const Coupon = require('../models/Coupon');
-const { geocodeAddress, isPointAllowed } = require('../middleware/geofence');
 const Stripe = require('stripe');
 const stripe = process.env.STRIPE_SECRET_KEY ? Stripe(process.env.STRIPE_SECRET_KEY) : null;
+
+// Allowed French post codes for checkout
+const ALLOWED_POSTCODES = [
+  '25790',
+  '25570',
+  '25500',
+  '25130',
+  '25210',
+  '25140',
+  '25120',
+  '25450',
+  '25470'
+];
+
+function isPostcodeAllowed(zipCode) {
+  if (!zipCode) return false;
+  // Remove spaces and normalize
+  const normalized = String(zipCode).replace(/\s/g, '').trim();
+  return ALLOWED_POSTCODES.includes(normalized);
+}
 
 function calculateShippingCost(total) {
   if (typeof total !== 'number' || total <= 0) return 0;
@@ -89,29 +108,40 @@ class CheckoutController {
       if (!buyerId) return res.status(401).json({ error: 'Unauthorized' });
 
       const body = req.body || {};
+      const zipCode = body.zipCode || body.postalCode || body.postCode;
       const address = body.address || [body.street, body.zipCode, body.city, body.country].filter(Boolean).join(', ');
-      const lat = body.lat || body.latitude;
-      const lng = body.lng || body.longitude;
 
-      if ((lat == null || lng == null) && !address) {
-        return res.status(400).json({ error: 'Please provide an address or latitude/longitude for delivery validation.' });
+      // Only check post code
+      if (zipCode) {
+        if (!isPostcodeAllowed(zipCode)) {
+          return res.json({
+            allowed: false,
+            message: 'Your post code is not in the allowed delivery zones. Allowed post codes: ' + ALLOWED_POSTCODES.join(', '),
+            messageKey: 'checkout.postcode.denied',
+            coords: null,
+            source: 'postcode_validation'
+          });
+        }
       }
 
-      let coords = { lat, lng };
-      if ((coords.lat == null || coords.lng == null) && address) {
-        coords = await geocodeAddress(address);
+      if (!address) {
+        return res.status(400).json({ error: 'Please provide a delivery address.' });
       }
 
-      if (coords.lat == null || coords.lng == null) {
-        return res.status(400).json({ error: 'Unable to resolve delivery coordinates from the provided address.' });
-      }
-
-      const allowed = isPointAllowed(coords.lat, coords.lng);
-      const message = allowed ? 'Your zone is allowed' : 'Your area is outside of allowed zones';
-      return res.json({ allowed, message, coords, source: coords.source || 'direct' });
+      // Postcode is allowed
+      return res.json({ 
+        allowed: true, 
+        message: 'Your delivery address is valid', 
+        messageKey: 'checkout.delivery.allowed', 
+        coords: null, 
+        source: 'postcode_validation' 
+      });
     } catch (err) {
       console.error('[CheckoutController.validateAddress] Error:', err);
-      return res.status(500).json({ error: err.message || 'Address validation failed' });
+      return res.status(500).json({
+        error: err.message || 'Address validation failed',
+        messageKey: 'checkout.delivery.unavailable'
+      });
     }
   }
 
